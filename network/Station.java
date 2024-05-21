@@ -3,5 +3,6 @@
  */
 
 public class Station extends Object {
-
+    String name;
+    
 }

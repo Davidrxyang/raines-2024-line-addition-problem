@@ -9,5 +9,6 @@ import java.util.HashMap;
 
 public class Network {
     HashMap<String, Station> stations;
-    HashMap<String, Connection> routes;
+    HashMap<String, Line> lines;
+    
 }
