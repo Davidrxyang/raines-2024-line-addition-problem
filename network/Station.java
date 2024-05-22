@@ -17,6 +17,12 @@ public class Station extends Object {
 
     String comment; 
 
+    /*
+     * add more data members for ridership data?
+     */
+
+     // int averageDailyRidership;
+
     public Station(String name, Double longitude, Double latitude) {
         this.name = name;
         this.longitude = longitude;
@@ -27,8 +33,17 @@ public class Station extends Object {
 
     /*
      * calculates the geographical distance in miles between two stations
+     * 
+     * this distance is not super consistent with distanc measures given 
+     * by google maps, however, it should be consistent/proportional across
+     * all stations within this model, and it will only be used for comparison
+     * purposes - it should suffice? 
+     * 
+     * generated with help from chatGPT
+     * 
+     * https://chatgpt.com/share/2a85fee2-6c2a-4cac-abd3-a168da813c0b
      */
-    
+
     public Double getDistance(Station station) {
 
         double EARTH_RADIUS = 3958.8; // for calculation
@@ -49,6 +64,10 @@ public class Station extends Object {
 
         // Distance in miles
         return EARTH_RADIUS * c;
+    }
+
+    public String toString() {
+        return name;
     }
 }
 
