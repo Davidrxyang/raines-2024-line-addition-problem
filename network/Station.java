@@ -2,6 +2,8 @@
  * an individual metro station in the network
  */
 
+import java.util.ArrayList;
+
 public class Station extends Object {
 
     String name; // full name of the station
@@ -15,13 +17,20 @@ public class Station extends Object {
     Double latitude;
     String address;
 
-    String comment; 
-
     /*
-     * add more data members for ridership data?
+     * all lines that this station is a part of 
      */
 
-     // int averageDailyRidership;
+    ArrayList<Line> lines;
+
+    
+    /*
+    * add more data members for ridership data?
+    */
+    
+    // int averageDailyRidership;
+
+    String comment; 
 
     public Station(String name, Double longitude, Double latitude) {
         this.name = name;
@@ -29,6 +38,11 @@ public class Station extends Object {
         this.latitude = latitude;
         this.address = "";
         this.comment = "";
+        this.lines = new ArrayList<Line>();
+    }
+
+    public void addLine(Line line) {
+        this.lines.add(line);
     }
 
     /*
