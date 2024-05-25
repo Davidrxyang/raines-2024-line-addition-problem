@@ -12,6 +12,7 @@ public class Line {
     String name;
     Station origin;
     Station destination; // this is the direction of the line
+    Double length;
 
     /*
      * note: the arraylist of connections is not necessarily in correct order,
@@ -26,9 +27,11 @@ public class Line {
     public Line(String name) {
         this.name = name;
         connections = new ArrayList<>();
+        stations = new ArrayList<>();
 
         origin = null;
         destination = null;
+        length = 0.0;
     }
 
     /*
@@ -41,6 +44,27 @@ public class Line {
 
     public void setDestination(Station station) {
         this.destination = station;
+    }
+
+    public void calculateLength() {
+        for (int i = 0; i < connections.size(); i++) {
+            length += connections.get(i).distance;
+        }
+    }
+
+    public Double getLength() {
+        if (length == 0.0) {
+            calculateLength();
+        }
+        return length;
+    }
+
+    public Boolean empty() {
+        return connections.size() == 0;
+    }
+
+    public String toString() {
+        return connections.toString();
     }
 
     /*
@@ -63,7 +87,13 @@ public class Line {
             origin = station;
         }
         else {
-            Station lastStation = connections.getLast().destination;
+            Station lastStation;
+            if (empty()) {
+                lastStation = origin;
+            }
+            else {
+                lastStation = connections.getLast().destination;
+            }
             Connection newConnection = new Connection(lastStation, station, distance);
             connections.add(newConnection);
         }
