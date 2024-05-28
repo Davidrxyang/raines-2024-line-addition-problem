@@ -1,6 +1,5 @@
 /*
- * a trip through the network
- * in the form of a start and end station
+ * the demand from one station to another
  */
 
 public class Demand {
@@ -14,7 +13,11 @@ public class Demand {
         this.trips = 0;
     }
 
-    public void addTrip() {
-        trips++;
+    public void addTrip(int i) {
+        trips+=i;
+    }
+
+    public String toString() {
+        return start.name + " to " + end.name + ": " + trips + "\n";
     }
 }
