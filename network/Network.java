@@ -4,11 +4,10 @@
  * 
  */
 
-
 import java.util.HashMap;
 
 public class Network {
-    HashMap<String, Station> stations;
-    HashMap<String, Line> lines;
-    
+
+    public HashMap<String, Station> stations;
+    public HashMap<String, Line> lines;
 }

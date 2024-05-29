@@ -5,6 +5,7 @@
 import java.util.ArrayList;
 
 public class Station extends Object {
+    String name;
 
     String name; // full name of the station
 
