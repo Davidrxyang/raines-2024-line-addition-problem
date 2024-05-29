@@ -97,6 +97,6 @@ public class DemandSet {
         // sample usage
         Network network = new Network();
         DemandSet demandSet = new DemandSet();
-        demandSet.loadTrips("WMATA-network/data.csv", network);
+        demandSet.loadTrips("network/data.csv", network);
     }
 }
