@@ -5,8 +5,6 @@
 import java.util.ArrayList;
 
 public class Station extends Object {
-    String name;
-
     String name; // full name of the station
 
     /*
@@ -37,6 +35,16 @@ public class Station extends Object {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.address = "";
+        this.comment = "";
+        this.lines = new ArrayList<Line>();
+    }
+
+    // temp simple constructor
+    public Station(String name) {
+        this.name = name;
+        this.longitude = 0.0;
+        this.latitude = 0.0;
         this.address = "";
         this.comment = "";
         this.lines = new ArrayList<Line>();
