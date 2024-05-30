@@ -96,7 +96,7 @@ public class DemandSet {
     public static void main(String[] args) {
 
         // sample usage
-        Network network = new Network(null);
+        Network network = new Network(null, null);
         DemandSet demandSet = new DemandSet();
         demandSet.loadTrips("network/data.csv", network);
     }
