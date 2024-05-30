@@ -31,5 +31,7 @@ public class Main {
         System.out.println(blue_line.getLength());
         System.out.println(blue_line);
 
+        
+
     }
 }
