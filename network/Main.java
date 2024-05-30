@@ -1,5 +1,9 @@
+import java.util.ArrayList;
+
 public class Main {
     public static void main(String[] args) {
+
+        ArrayList<Station> WMATAStations = new ArrayList<>();
 
         Station rosslyn = new Station("rosslyn", 38.8969, -77.0720);
         Station foggy_bottom = new Station("foggy bottom", 38.9009, -77.0505);
@@ -31,5 +35,12 @@ public class Main {
         System.out.println(blue_line.getLength());
         System.out.println(blue_line);
 
+        WMATAStations.addAll(blue_line.stations);
+
+        Network WMATA = new Network("WMATA", WMATAStations);
+
+        WMATA.addLine(blue_line);
+
+        System.out.println(WMATA);
     }
 }

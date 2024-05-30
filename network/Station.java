@@ -22,6 +22,11 @@ public class Station extends Object {
 
     ArrayList<Line> lines;
 
+    /*
+     * where in the matrix is this station?
+     */
+
+    int index;
     
     /*
     * add more data members for ridership data?
@@ -38,6 +43,7 @@ public class Station extends Object {
         this.address = "";
         this.comment = "";
         this.lines = new ArrayList<Line>();
+        index = -1;
     }
 
     public void addLine(Line line) {
