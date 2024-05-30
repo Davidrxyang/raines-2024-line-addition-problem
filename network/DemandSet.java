@@ -51,11 +51,12 @@ public class DemandSet {
                 Station endStation;
 
                 // temporary fix to create station information
+
                 if (!network.stations.containsKey(start)) {
-                    network.stations.put(start, new Station(start));
+                    network.stations.put(start, new Station(start, 0.0, 0.0));
                 }
                 if (!network.stations.containsKey(end)) {
-                    network.stations.put(end, new Station(end));
+                    network.stations.put(end, new Station(end, 0.0, 0.0));
                 }
 
                 startStation = network.stations.get(start);

@@ -40,16 +40,6 @@ public class Station extends Object {
         this.lines = new ArrayList<Line>();
     }
 
-    // temp simple constructor
-    public Station(String name) {
-        this.name = name;
-        this.longitude = 0.0;
-        this.latitude = 0.0;
-        this.address = "";
-        this.comment = "";
-        this.lines = new ArrayList<Line>();
-    }
-
     public void addLine(Line line) {
         this.lines.add(line);
     }
