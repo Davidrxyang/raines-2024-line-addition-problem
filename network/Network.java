@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 public class Network {
 
+    String name;
+
     // nodes
     public ArrayList<Station> stationList;
     public HashMap<String, Station> stations;
@@ -24,7 +26,11 @@ public class Network {
     // adjacency matrix
     public Double[][] matrix;
 
-    public Network(ArrayList<Station> stationList) {
+    public Network(String name, ArrayList<Station> stationList) {
+
+        this.name = name;
+
+        stations = new HashMap<>();
         this.stationList = stationList;
         nStations = stationList.size();
 
@@ -33,7 +39,7 @@ public class Network {
         for (int i = 0; i < nStations; i++) {
             stations.put(stationList.get(i).name, stationList.get(i));
 
-            stations.get(i).index = i;
+            stationList.get(i).index = i;
         }
         connections = new ArrayList<>();
         lines = new ArrayList<>();
@@ -77,5 +83,20 @@ public class Network {
         }
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
 
+        sb.append("----------").append(name).append("----------\n");
+
+        for (int i = 0; i < nStations; i++) {
+            for (int j = 0; j < nStations; j++) {
+                sb.append(" ").append(matrix[i][j] != -1.0).append(" ");
+            }
+            sb.append("\n");
+        }
+
+        sb.append("----------------------------\n");
+
+        return sb.toString();
+    }
 }
