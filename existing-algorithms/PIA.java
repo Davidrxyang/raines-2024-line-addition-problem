@@ -1,6 +1,7 @@
 /*
  * PIA algorithm implementation
- * 
+ * since PIA operates on an undirected graph,
+ * Network and Station is treated as undirected
  */
 
 public class PIA {

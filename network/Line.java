@@ -17,12 +17,14 @@ public class Line {
     /*
      * note: the arraylist of connections is not necessarily in correct order,
      * since each connected is directed and unique, and each station, except for
-     * the line's origin and destination, must occur exactly twice in the network, once 
-     * as an origin for some connection and once as the destination for some connection
+     * the line's origin and destination, must occur exactly twice in the network,
+     * once
+     * as an origin for some connection and once as the destination for some
+     * connection
      */
 
     ArrayList<Connection> connections;
-    ArrayList<Station> stations; 
+    ArrayList<Station> stations;
 
     public Line(String name) {
         this.name = name;
@@ -32,6 +34,17 @@ public class Line {
         origin = null;
         destination = null;
         length = 0.0;
+    }
+
+    // copy constructor
+    // used in existing algorithms to insert stations into lines
+    public Line(Line l) {
+        this.name = l.name;
+        this.connections = new ArrayList<>(l.connections);
+        this.stations = new ArrayList<>(l.stations);
+        this.origin = l.origin;
+        this.destination = l.destination;
+        this.length = l.length;
     }
 
     /*
@@ -71,13 +84,15 @@ public class Line {
      * two methods to construct a line
      * 
      * 1. add a bunch of stations IN ORDER - connections generated automatically
-     * 2. add a bunch of connections (unordered??) and specify origin and destination
+     * 2. add a bunch of connections (unordered??) and specify origin and
+     * destination
      */
 
     /*
      * METHOD 1
      * 
-     * add stations in correct order one by one and construct connections between them
+     * add stations in correct order one by one and construct connections between
+     * them
      * automatically
      */
 
@@ -85,13 +100,11 @@ public class Line {
         if (origin == null) {
             // this is the first station in the network
             origin = station;
-        }
-        else {
+        } else {
             Station lastStation;
             if (empty()) {
                 lastStation = origin;
-            }
-            else {
+            } else {
                 lastStation = connections.getLast().destination;
             }
             Connection newConnection = new Connection(lastStation, station, distance);
@@ -104,14 +117,21 @@ public class Line {
     /*
      * METHOD 2
      * 
-     * directly add connections to the line, separately specify origin and destination
+     * directly add connections to the line, separately specify origin and
+     * destination
      */
 
-     public void addConnection(Connection connection) {
+    public void addConnection(Connection connection) {
         connections.add(connection);
-     }
+    }
 
-     public void addConnection(ArrayList<Connection> connections) {
+    public void addConnection(ArrayList<Connection> connections) {
         connections.addAll(connections);
-     }
+    }
+
+    // order the stations in the line
+    // using the connection information
+    public void orderLine() {
+        // TODO: implement
+    }
 }
