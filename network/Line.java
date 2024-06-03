@@ -159,8 +159,25 @@ public class Line {
 
     // testing function, no actual use
     // shuffles the station arraylist
-    void shuffle() {
+    private void shuffle() {
         Collections.shuffle(stations);
+    }
+
+    /*
+     * for use in PIA
+     */
+    // inserts a station in a position on the line
+    public void insertStation(Station s, int i) {
+        stations.add(i, s);
+        if (i == 0) {
+            connections.add(i, new Connection(s, stations.get(1), s.getDistance(stations.get(1))));
+        } else if (i == stations.size() - 1) {
+            connections.add(i - 1, new Connection(stations.get(i - 1), s, s.getDistance(stations.get(i - 1))));
+        } else {
+            connections.remove(i - 1);
+            connections.add(i - 1, new Connection(stations.get(i - 1), s, s.getDistance(stations.get(i - 1))));
+            connections.add(i, new Connection(s, stations.get(i + 1), s.getDistance(stations.get(i + 1))));
+        }
     }
 
     public static void main(String[] args) {
@@ -177,6 +194,8 @@ public class Line {
         Station federal_center_sw = new Station("federal center sw", 38.8852, -77.0156);
         Station capitol_south = new Station("capitol south", 38.8858, -77.0060);
         Station eastern_market = new Station("eastern market", 38.8844, -76.9958);
+
+        Station test_station = new Station("test station", 38.8840, -76.99);
 
         Line blue_line = new Line("blue line");
 
@@ -201,6 +220,7 @@ public class Line {
         System.out.println(blue_line.stations);
 
         blue_line.sort();
+        blue_line.insertStation(test_station, 1);
         
         System.out.println(blue_line.getLength());
         System.out.println(blue_line);
