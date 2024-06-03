@@ -20,12 +20,57 @@ public class PathPlanning {
     }
 
     /*
+     * THIS FUNCTION IS 0 INDEXED
+     * 
+     * represents which station is this station in the order of stations in the line
+     */
+    public int K(Line line, Station station) {
+        
+        int i = 0;
+
+        for (Station s : line.stations) {
+            if (s.name.equals(station.name)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+    /*
      * power functions generated with help from chatgpt
      * 
      * https://chatgpt.com/share/ce4a0433-823f-4983-9f9d-a7d9070476e8
      */
 
     public int[][] matrixPower(int[][] matrix, int power) {
+        int n = matrix.length;
+        int[][] result = new int[n][n];
+
+        // Initialize result as the identity matrix
+        for (int i = 0; i < n; i++) {
+            result[i][i] = 1;
+        }
+
+        int[][] base = matrix;
+
+        while (power > 0) {
+            if ((power & 1) == 1) {
+                result = multiplyMatrix(result, base);
+            }
+            base = multiplyMatrix(base, base);
+            power >>= 1;
+        }
+
+        return result;
+    }
+
+    /*
+     * special function for connectivity matrix which takes
+     * into account the K value of the station-line pair
+     */
+    
+    public int[][] connectivityMatrixPower(int[][] matrix, int power) {
         int n = matrix.length;
         int[][] result = new int[n][n];
 

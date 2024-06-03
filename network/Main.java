@@ -54,5 +54,6 @@ public class Main {
 
         PathPlanning pp = new PathPlanning(WMATA);
         pp.printMatrix(pp.connectivityMatrix);
+        System.out.println(pp.K(blue_line, metro_center));
     }
 }
