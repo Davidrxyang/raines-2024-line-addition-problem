@@ -35,12 +35,21 @@ public class Main {
         System.out.println(blue_line.getLength());
         System.out.println(blue_line);
 
+        Line orange_line = new Line("orange line");
+        orange_line.addStation(capitol_south, null);
+        orange_line.addStation(eastern_market, 0.52);
+
+        System.out.println("eastern market lines");
+        System.out.println(eastern_market);
+
         WMATAStations.addAll(blue_line.stations);
+        WMATAStations.addAll(orange_line.stations);
 
         Network WMATA = new Network("WMATA", WMATAStations);
 
         WMATA.addLine(blue_line);
+        WMATA.addLine(orange_line);
 
-        System.out.println(WMATA);
+        //System.out.println(WMATA);
     }
 }

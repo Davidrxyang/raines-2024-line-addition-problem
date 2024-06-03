@@ -89,7 +89,14 @@ public class Station extends Object {
     }
 
     public String toString() {
-        return name;
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(name).append(": [");
+        for (Line line : lines) {
+            sb.append(line.name).append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
 
