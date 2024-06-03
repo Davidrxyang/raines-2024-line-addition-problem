@@ -47,7 +47,9 @@ public class Station extends Object {
     }
 
     public void addLine(Line line) {
-        this.lines.add(line);
+        if (!lines.contains(line)) {
+            this.lines.add(line);
+        }
     }
 
     /*
@@ -86,7 +88,14 @@ public class Station extends Object {
     }
 
     public String toString() {
-        return name;
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(name).append(": [");
+        for (Line line : lines) {
+            sb.append(line.name).append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
 
