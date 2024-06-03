@@ -69,7 +69,9 @@ public class PathPlanning {
      * special function for connectivity matrix which takes
      * into account the K value of the station-line pair
      */
-    
+
+    // TODO : WORK ON THIS
+
     public int[][] connectivityMatrixPower(int[][] matrix, int power) {
         int n = matrix.length;
         int[][] result = new int[n][n];
