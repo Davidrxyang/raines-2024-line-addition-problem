@@ -48,7 +48,9 @@ public class Station extends Object {
     }
 
     public void addLine(Line line) {
-        this.lines.add(line);
+        if (!lines.contains(line)) {
+            this.lines.add(line);
+        }
     }
 
     /*

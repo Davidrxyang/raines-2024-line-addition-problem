@@ -99,6 +99,7 @@ public class Line {
         }
         destination = station;
         stations.add(station);
+        station.addLine(this);
     }
 
     /*
@@ -109,9 +110,15 @@ public class Line {
 
      public void addConnection(Connection connection) {
         connections.add(connection);
+        connection.origin.addLine(this);
+        connection.destination.addLine(this);
      }
 
      public void addConnection(ArrayList<Connection> connections) {
         connections.addAll(connections);
+        for (Connection connection : connections) {
+            connection.origin.addLine(this);
+            connection.destination.addLine(this);
+        }
      }
 }
