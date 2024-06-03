@@ -6,21 +6,42 @@ public class PathPlanning {
         this.network = network;
     }
 
-    public int[][] Multiply(int[][] matrix) {
-
+    public int[][] matrixPower(int[][] matrix, int power) {
         int n = matrix.length;
-        int[][] T = new int[n][n];
+        int[][] result = new int[n][n];
+
+        // Initialize result as the identity matrix
+        for (int i = 0; i < n; i++) {
+            result[i][i] = 1;
+        }
+
+        int[][] base = matrix;
+
+        while (power > 0) {
+            if ((power & 1) == 1) {
+                result = multiplyMatrix(result, base);
+            }
+            base = multiplyMatrix(base, base);
+            power >>= 1;
+        }
+
+        return result;
+    }
+
+    public int[][] multiplyMatrix(int[][] a, int[][] b) {
+        int n = a.length;
+        int[][] result = new int[n][n];
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                T[i][j] = 0;
+                result[i][j] = 0;
                 for (int k = 0; k < n; k++) {
-                    T[i][j] += matrix[i][k] * matrix[k][j];
+                    result[i][j] += a[i][k] * b[k][j];
                 }
             }
         }
 
-        return T;
+        return result;
     }
 
     public void printMatrix(int[][] matrix) {
@@ -42,7 +63,7 @@ public class PathPlanning {
             {1, 0, 0}
         };
 
-        int[][] T2 = pp.Multiply(matrix);
+        int[][] T2 = pp.matrixPower(matrix, 3);
         pp.printMatrix(T2);
     }
 }
