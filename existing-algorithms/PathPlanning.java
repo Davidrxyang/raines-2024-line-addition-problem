@@ -6,6 +6,12 @@ public class PathPlanning {
         this.network = network;
     }
 
+    /*
+     * power functions generated with help from chatgpt
+     * 
+     * https://chatgpt.com/share/ce4a0433-823f-4983-9f9d-a7d9070476e8
+     */
+    
     public int[][] matrixPower(int[][] matrix, int power) {
         int n = matrix.length;
         int[][] result = new int[n][n];
