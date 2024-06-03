@@ -1,3 +1,17 @@
+/*
+ * PathPlanning Algorithm (implementation by Ruoxing Yang)
+ * 
+ * Chao-Lin Liu, Tun-Wen Pai, Chun-Tien Chang, Chang-Ming Hsieh
+ * 
+ * PathPlanning generates a path between an origin station and
+ * destination station in a public transportation network. The 
+ * original paper uses a bus network as an example but this 
+ * implementation generalizes the algorithm for metro networks, 
+ * which are the main focus of this research. The path is 
+ * generated taking into account transfers between lines/routes.
+ */
+
+
 public class PathPlanning {
 
     Network network;
