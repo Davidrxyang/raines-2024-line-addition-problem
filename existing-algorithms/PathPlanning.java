@@ -2,8 +2,21 @@ public class PathPlanning {
 
     Network network;
 
+    int[][] connectivityMatrix;
+
     public PathPlanning(Network network) {
         this.network = network;
+        connectivityMatrix = new int[network.nLines][network.nLines];
+
+        for (int i = 0; i < network.nLines; i++) {
+            for (int j = 0; j < network.nLines; j++) {
+                connectivityMatrix[i][j] = network.lines.get(i).commonStations(network.lines.get(j)).size();
+                if (i == j) {
+                    // the same way Liu, Pai, Chang, Hsieh sets up their algorithm
+                    connectivityMatrix[i][j] = 0;
+                }
+            }
+        }
     }
 
     /*
@@ -11,7 +24,7 @@ public class PathPlanning {
      * 
      * https://chatgpt.com/share/ce4a0433-823f-4983-9f9d-a7d9070476e8
      */
-    
+
     public int[][] matrixPower(int[][] matrix, int power) {
         int n = matrix.length;
         int[][] result = new int[n][n];

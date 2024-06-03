@@ -21,6 +21,7 @@ public class Network {
 
     // lines
     public ArrayList<Line> lines;
+    public int nLines;
     // public HashMap<String, Line> lines;
 
     // adjacency distanceMatrix
@@ -44,6 +45,7 @@ public class Network {
         }
         connections = new ArrayList<>();
         lines = new ArrayList<>();
+        nLines = 0;
 
         // instantiate and populate the distanceMatrix
         distanceMatrix = new Double[nStations][nStations];
@@ -63,6 +65,7 @@ public class Network {
      */
 
     public void addLine(Line line) {
+        nLines++;
         lines.add(line);
         connections.addAll(line.connections);
 
@@ -98,7 +101,7 @@ public class Network {
             }
             sb.append("\n");
         }
-        
+
         sb.append("----------------------------\n");
 
         for (int i = 0; i < nStations; i++) {

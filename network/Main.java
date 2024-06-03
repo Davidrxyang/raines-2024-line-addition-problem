@@ -51,5 +51,8 @@ public class Main {
         WMATA.addLine(orange_line);
 
         System.out.println(WMATA);
+
+        PathPlanning pp = new PathPlanning(WMATA);
+        pp.printMatrix(pp.connectivityMatrix);
     }
 }
