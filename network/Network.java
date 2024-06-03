@@ -23,8 +23,9 @@ public class Network {
     public ArrayList<Line> lines;
     // public HashMap<String, Line> lines;
 
-    // adjacency matrix
-    public Double[][] matrix;
+    // adjacency distanceMatrix
+    public Double[][] distanceMatrix;
+    public int[][] lineMatrix;
 
     public Network(String name, ArrayList<Station> stationList) {
 
@@ -44,19 +45,21 @@ public class Network {
         connections = new ArrayList<>();
         lines = new ArrayList<>();
 
-        // instantiate and populate the matrix
-        matrix = new Double[nStations][nStations];
+        // instantiate and populate the distanceMatrix
+        distanceMatrix = new Double[nStations][nStations];
+        lineMatrix = new int[nStations][nStations];
 
         for (int i = 0; i < nStations; i++) {
             for (int j = 0; j < nStations; j++) {
-                matrix[i][j] = -1.0;
+                distanceMatrix[i][j] = -1.0;
+                lineMatrix[i][j] = 0;
             }
         }
     }
 
     /*
      * the network is constructed iteratively by adding lines, each line
-     * will update the connectivity information stored in the matrix
+     * will update the connectivity information stored in the distanceMatrix
      */
 
     public void addLine(Line line) {
@@ -77,9 +80,10 @@ public class Network {
             connections.add(currentConnection);
 
             /*
-             * update the connectivity matrix value to be the distance
+             * update the connectivity distanceMatrix value to be the distance
              */
-            matrix[currentConnection.origin.index][currentConnection.destination.index] = currentConnection.distance;
+            distanceMatrix[currentConnection.origin.index][currentConnection.destination.index] = currentConnection.distance;
+            lineMatrix[currentConnection.origin.index][currentConnection.destination.index]++;
         }
     }
 
@@ -90,7 +94,16 @@ public class Network {
 
         for (int i = 0; i < nStations; i++) {
             for (int j = 0; j < nStations; j++) {
-                sb.append(" ").append(matrix[i][j] != -1.0).append(" ");
+                sb.append(" ").append(distanceMatrix[i][j] != -1.0).append(" ");
+            }
+            sb.append("\n");
+        }
+        
+        sb.append("----------------------------\n");
+
+        for (int i = 0; i < nStations; i++) {
+            for (int j = 0; j < nStations; j++) {
+                sb.append(" ").append(lineMatrix[i][j]).append(" ");
             }
             sb.append("\n");
         }

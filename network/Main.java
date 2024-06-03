@@ -50,6 +50,6 @@ public class Main {
         WMATA.addLine(blue_line);
         WMATA.addLine(orange_line);
 
-        //System.out.println(WMATA);
+        System.out.println(WMATA);
     }
 }
