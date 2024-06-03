@@ -137,6 +137,16 @@ public class Line {
         }
     }
 
+    public ArrayList<Station> commonStations(Line line) {
+        ArrayList<Station> commonStations = new ArrayList<>();
+        for (Station station : stations) {
+            if (line.stations.contains(station)) {
+                commonStations.add(station);
+            }
+        }
+        return commonStations;
+    }
+
     // order the stations in the line
     // using the connection information
     public void sort() {
