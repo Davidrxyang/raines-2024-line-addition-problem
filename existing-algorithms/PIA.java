@@ -1,6 +1,7 @@
 /*
  * PIA algorithm implementation
- * 
+ * since PIA operates on an undirected graph,
+ * Network and Station is treated as undirected
  */
 
 public class PIA {
@@ -38,7 +39,9 @@ public class PIA {
     // candidate function
     // chooses the most suitable line in the network to add the two stations from demand
     // and returns modified line
-    public Line candidate(Demand d) {
+    // returns in format [r', r'']
+    // where r' is the route with the new stations added, r'' is the original route
+    public Line[] candidate(Demand d) {
         return null;
     }
 

@@ -7,6 +7,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Line {
     String name;
@@ -17,12 +18,14 @@ public class Line {
     /*
      * note: the arraylist of connections is not necessarily in correct order,
      * since each connected is directed and unique, and each station, except for
-     * the line's origin and destination, must occur exactly twice in the network, once 
-     * as an origin for some connection and once as the destination for some connection
+     * the line's origin and destination, must occur exactly twice in the network,
+     * once
+     * as an origin for some connection and once as the destination for some
+     * connection
      */
 
     ArrayList<Connection> connections;
-    ArrayList<Station> stations; 
+    ArrayList<Station> stations;
 
     public Line(String name) {
         this.name = name;
@@ -32,6 +35,17 @@ public class Line {
         origin = null;
         destination = null;
         length = 0.0;
+    }
+
+    // copy constructor
+    // used in existing algorithms to insert stations into lines
+    public Line(Line l) {
+        this.name = l.name;
+        this.connections = new ArrayList<>(l.connections);
+        this.stations = new ArrayList<>(l.stations);
+        this.origin = l.origin;
+        this.destination = l.destination;
+        this.length = l.length;
     }
 
     /*
@@ -71,13 +85,15 @@ public class Line {
      * two methods to construct a line
      * 
      * 1. add a bunch of stations IN ORDER - connections generated automatically
-     * 2. add a bunch of connections (unordered??) and specify origin and destination
+     * 2. add a bunch of connections (unordered??) and specify origin and
+     * destination
      */
 
     /*
      * METHOD 1
      * 
-     * add stations in correct order one by one and construct connections between them
+     * add stations in correct order one by one and construct connections between
+     * them
      * automatically
      */
 
@@ -85,13 +101,11 @@ public class Line {
         if (origin == null) {
             // this is the first station in the network
             origin = station;
-        }
-        else {
+        } else {
             Station lastStation;
             if (empty()) {
                 lastStation = origin;
-            }
-            else {
+            } else {
                 lastStation = connections.getLast().destination;
             }
             Connection newConnection = new Connection(lastStation, station, distance);
@@ -104,14 +118,100 @@ public class Line {
     /*
      * METHOD 2
      * 
-     * directly add connections to the line, separately specify origin and destination
+     * directly add connections to the line, separately specify origin and
+     * destination
      */
 
-     public void addConnection(Connection connection) {
+    public void addConnection(Connection connection) {
         connections.add(connection);
-     }
+    }
 
-     public void addConnection(ArrayList<Connection> connections) {
+    public void addConnection(ArrayList<Connection> connections) {
         connections.addAll(connections);
-     }
+    }
+
+    // order the stations in the line
+    // using the connection information
+    public void sort() {
+        ArrayList<Station> sortedStationOrder = new ArrayList<>();
+        ArrayList<Connection> sortedConnectionOrder = new ArrayList<>();
+        Station current = origin;
+
+        while (current != destination) {
+            sortedStationOrder.add(current);
+            for (Connection c : connections) {
+                if (c.origin == current && !sortedStationOrder.contains(c.destination)) {
+                    current = c.destination;
+                    sortedConnectionOrder.add(c);
+                    break;
+                } else if (c.destination == current && !sortedStationOrder.contains(c.origin)) {
+                    current = c.origin;
+                    sortedConnectionOrder.add(c);
+                    break;
+                }
+            }
+        }
+
+        sortedStationOrder.add(current);
+        stations = sortedStationOrder;
+        connections = sortedConnectionOrder;
+    }
+
+    // testing function, no actual use
+    // shuffles the station arraylist
+    void shuffle() {
+        Collections.shuffle(stations);
+    }
+
+    public static void main(String[] args) {
+        ArrayList<Station> WMATAStations = new ArrayList<>();
+
+        Station rosslyn = new Station("rosslyn", 38.8969, -77.0720);
+        Station foggy_bottom = new Station("foggy bottom", 38.9009, -77.0505);
+        Station farragut_west = new Station("farragut west", 38.9016, -77.0420);
+        Station mcpherson_square = new Station("mcpherson square", 38.9013, -77.0322);
+        Station metro_center = new Station("metro center", 38.8987, -77.0278);
+        Station federal_triangle = new Station("federal triangle", 38.8940, -77.0283);
+        Station smithsonian = new Station("smithsonian", 38.8892, -77.0282);
+        Station lenfant_plaza = new Station("lenfant plaza", 38.8851, -77.0219);
+        Station federal_center_sw = new Station("federal center sw", 38.8852, -77.0156);
+        Station capitol_south = new Station("capitol south", 38.8858, -77.0060);
+        Station eastern_market = new Station("eastern market", 38.8844, -76.9958);
+
+        Line blue_line = new Line("blue line");
+
+        blue_line.addStation(rosslyn, null);
+        blue_line.addStation(foggy_bottom, 1.3);
+        blue_line.addStation(farragut_west, 0.5);
+        blue_line.addStation(mcpherson_square, 0.4);
+        blue_line.addStation(metro_center, 0.45);
+        blue_line.addStation(federal_triangle, 0.3);
+        blue_line.addStation(smithsonian, 0.38);
+        blue_line.addStation(lenfant_plaza, 0.54);
+        blue_line.addStation(federal_center_sw, 0.38);
+        blue_line.addStation(capitol_south, 0.58);
+        blue_line.addStation(eastern_market, 0.52);
+
+        blue_line.setDestination(eastern_market);
+
+        blue_line.shuffle();
+
+        System.out.println(blue_line.getLength());
+        System.out.println(blue_line);
+        System.out.println(blue_line.stations);
+
+        blue_line.sort();
+        
+        System.out.println(blue_line.getLength());
+        System.out.println(blue_line);
+        System.out.println(blue_line.stations);
+
+        // WMATAStations.addAll(blue_line.stations);
+
+        // Network WMATA = new Network("WMATA", WMATAStations);
+
+        // WMATA.addLine(blue_line);
+
+        // System.out.println(WMATA);
+    }
 }
