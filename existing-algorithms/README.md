@@ -7,4 +7,4 @@ Algorithms include:
 
 1. PIA
 2. RGA
-3. PathPlanning (used to evaluate network efficiency)
+3. PathPlanning (used to design a path between two stations accounting for line transfers)
