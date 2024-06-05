@@ -25,6 +25,7 @@ public class PIA {
     // when the ratio of the demand covered by the network is higher than the minimums
     public double D0min = 0.75;
     public double D01min = 1.0;
+    public double totalTrips;
 
     // constructor
     // main algorithm logic
@@ -33,6 +34,7 @@ public class PIA {
         this.existingNetwork = network;
         this.R = new Network("new", existingNetwork.stationList);
         R.connections = existingNetwork.connections;
+        totalTrips = demand.totalTrips();
     }
 
 
@@ -52,7 +54,30 @@ public class PIA {
 
     // updates D0 and D01
     public void updateD0() {
+        int oneTransfer = 0;
+        int moreTransfers = 0;
+        for (Demand d : l.trips) {
+            for (Line r1 : R.lines) {
+                for (Line r2: R.lines) {
+                    // work in progress
+                }
+            }
+        }
+    }
 
+    // deletes vertices in OD matrix that have demand covered entirely by one route
+    public void deleteVertices() {
+        for (Line line : R.lines) {
+            for (int i = 0; i < l.trips.size(); i++) {
+                Demand t = l.trips.get(i);
+                // if both start and end of a demand (trip) is on the same line,
+                // remove that from the demand matrix (demand set)
+                if (line.stations.contains(t.start) && line.stations.contains(t.end)) {
+                    l.trips.remove(t);
+                    i--;
+                }
+            }
+        }
     }
 
 }
