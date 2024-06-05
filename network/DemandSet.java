@@ -51,7 +51,6 @@ public class DemandSet {
                 Station endStation;
 
                 // temporary fix to create station information
-
                 if (!network.stations.containsKey(start)) {
                     network.stations.put(start, new Station(start, 0.0, 0.0));
                 }
@@ -93,11 +92,20 @@ public class DemandSet {
         }
     }
 
-    public static void main(String[] args) {
+    public int totalTrips() {
+        int tripTotal = 0;
+        for (Demand d : trips) {
+            tripTotal += d.trips;
+        }
+        return tripTotal;
+    }
 
+    public static void main(String[] args) {
         // sample usage
-        Network network = new Network(null, null);
+        Network network = new Network("network", new ArrayList<>());
         DemandSet demandSet = new DemandSet();
         demandSet.loadTrips("network/data.csv", network);
+
+        System.out.println(demandSet.totalTrips());
     }
 }

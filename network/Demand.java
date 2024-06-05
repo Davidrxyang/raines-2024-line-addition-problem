@@ -12,6 +12,12 @@ public class Demand {
         this.end = end;
         this.trips = 0;
     }
+    
+    public Demand(Station start, Station end, int trips) {
+        this.start = start;
+        this.end = end;
+        this.trips = trips;
+    }
 
     public void addTrip(int i) {
         trips+=i;
