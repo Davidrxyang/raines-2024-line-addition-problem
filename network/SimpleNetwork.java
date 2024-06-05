@@ -1,3 +1,7 @@
+/*
+ * simple dataset created for testing purposes
+ */
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
