@@ -50,6 +50,10 @@ public class Main {
         WMATA.addLine(blue_line);
         WMATA.addLine(orange_line);
 
-        //System.out.println(WMATA);
+        System.out.println(WMATA);
+
+        PathPlanning pp = new PathPlanning(WMATA);
+        pp.printMatrix(pp.connectivityMatrix);
+        System.out.println(pp.K(blue_line, metro_center));
     }
 }
