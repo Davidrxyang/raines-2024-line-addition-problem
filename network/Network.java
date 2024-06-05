@@ -18,6 +18,7 @@ public class Network {
 
     // edges
     public ArrayList<Connection> connections;
+    public HashMap<String, Connection> connectionMap;
 
     // lines
     public ArrayList<Line> lines;
@@ -44,6 +45,7 @@ public class Network {
             stationList.get(i).index = i;
         }
         connections = new ArrayList<>();
+        connectionMap = new HashMap<>();
         lines = new ArrayList<>();
         nLines = 0;
 
@@ -67,7 +69,10 @@ public class Network {
     public void addLine(Line line) {
         nLines++;
         lines.add(line);
-        connections.addAll(line.connections);
+
+        for (Connection connection : line.connections) {
+            connectionMap.put(connection.toString(), connection);
+        }
 
         // iterate through the set of connections encapsulated within the line
         

@@ -11,6 +11,7 @@
  * generated taking into account transfers between lines/routes.
  */
 
+import java.util.ArrayList;
 
 public class PathPlanning {
 
@@ -31,6 +32,46 @@ public class PathPlanning {
                 }
             }
         }
+    }
+
+    public Path pathPlan(Station origin, Station destination) {
+        Path path = new Path();
+
+        // look at this - if no path is found, return NULL
+        path.setOrigin(origin);
+        path.setDestination(destination);
+
+        // PathPlanning algorithm
+
+        // step 1 - for completeness, check if origin is destination
+        if (origin.equals(destination)) {
+            return path;
+        }
+
+        // step 2 - check if the commute can be completed with direct connection
+        
+        // iterate through each line that origin belongs to
+        for (Line line : origin.lines) {
+            for (Station station : line.stations) {
+                if (destination.equals(station)) {
+                    // generate a path 
+                    Station currentStation = station;
+                    path.stations.add(currentStation);
+
+                    while(!currentStation.equals(origin)) {
+                        Station firstStation = line.getPreviousStation(currentStation);
+                        String connectionName = firstStation.name + " -> " + currentStation.name;
+                        Connection c = network.connectionMap.get(connectionName);
+                        path.connections.add(c);
+                        currentStation = firstStation;
+                        path.stations.add(currentStation);
+                    }
+                }
+            }
+        }
+
+        path.sort();
+        return path;
     }
 
     /*
@@ -83,8 +124,6 @@ public class PathPlanning {
      * special function for connectivity matrix which takes
      * into account the K value of the station-line pair
      */
-
-    // TODO : WORK ON THIS
 
     public int[][] connectivityMatrixPower(int[][] matrix, int power) {
         int n = matrix.length;
