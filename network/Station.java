@@ -87,6 +87,10 @@ public class Station extends Object {
         return EARTH_RADIUS * c;
     }
 
+    public boolean equals(Station station) {
+        return name.equals(station.name);
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
 

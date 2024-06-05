@@ -11,6 +11,7 @@
  * generated taking into account transfers between lines/routes.
  */
 
+import java.util.ArrayList;
 
 public class PathPlanning {
 
@@ -31,6 +32,32 @@ public class PathPlanning {
                 }
             }
         }
+    }
+
+    public ArrayList<Connection> PathPlan(Station origin, Station destination) {
+        ArrayList<Connection> path = new ArrayList<>();
+
+        // PathPlanning algorithm
+
+        // step 1 - for completeness, check if origin is destination
+        if (origin.equals(destination)) {
+            return path;
+        }
+
+        // step 2 - check if the commute can be completed with direct connection
+        
+        // iterate through each line that origin belongs to
+        for (Line line : origin.lines) {
+            for (Station station : line.stations) {
+                if (destination.equals(station)) {
+                    // generate a path 
+                    
+                }
+            }
+        }
+
+
+        return path;
     }
 
     /*
