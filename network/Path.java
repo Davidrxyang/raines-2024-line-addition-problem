@@ -1,16 +1,10 @@
 /*
- * a collection of connections that together represent one transit line 
- * 
- * each line is DIRECTED, since lines in reality go in both directions, 
- * there will be two line instantiations for each line, one for each 
- * direction
+ * a collection of connections that together represent one transit PATH
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-public class Line {
-    String name;
+public class Path {
     Station origin;
     Station destination; // this is the direction of the line
     Double length;
@@ -27,8 +21,7 @@ public class Line {
     ArrayList<Connection> connections;
     ArrayList<Station> stations;
 
-    public Line(String name) {
-        this.name = name;
+    public Path() {
         connections = new ArrayList<>();
         stations = new ArrayList<>();
 
@@ -39,8 +32,7 @@ public class Line {
 
     // copy constructor
     // used in existing algorithms to insert stations into lines
-    public Line(Line l) {
-        this.name = l.name;
+    public Path(Path l) {
         this.connections = new ArrayList<>(l.connections);
         this.stations = new ArrayList<>(l.stations);
         this.origin = l.origin;
@@ -113,7 +105,6 @@ public class Line {
         }
         destination = station;
         stations.add(station);
-        station.addLine(this);
     }
 
     /*
@@ -125,16 +116,10 @@ public class Line {
 
     public void addConnection(Connection connection) {
         connections.add(connection);
-        connection.origin.addLine(this);
-        connection.destination.addLine(this);
     }
 
     public void addConnection(ArrayList<Connection> connections) {
         connections.addAll(connections);
-        for (Connection connection : connections) {
-            connection.origin.addLine(this);
-            connection.destination.addLine(this);
-        }
     }
 
     public ArrayList<Station> commonStations(Line line) {
@@ -147,25 +132,6 @@ public class Line {
         return commonStations;
     }
 
-    public Station getNextStation(Station station) {
-        for (Connection connection : connections) {
-            if (connection.origin.equals(station)) {
-                return connection.destination;
-            }
-        }
-        return null;
-    }
-
-    
-    public Station getPreviousStation(Station station) {
-        for (Connection connection : connections) {
-            if (connection.destination.equals(station)) {
-                return connection.origin;
-            }
-        }
-        return null;
-    }
-    
     // order the stations in the line
     // using the connection information
     public void sort() {
@@ -191,12 +157,6 @@ public class Line {
         sortedStationOrder.add(current);
         stations = sortedStationOrder;
         connections = sortedConnectionOrder;
-    }
-
-    // testing function, no actual use
-    // shuffles the station arraylist
-    private void shuffle() {
-        Collections.shuffle(stations);
     }
 
     /*
@@ -248,8 +208,6 @@ public class Line {
         blue_line.addStation(eastern_market, 0.52);
 
         blue_line.setDestination(eastern_market);
-
-        blue_line.shuffle();
 
         System.out.println(blue_line.getLength());
         System.out.println(blue_line);

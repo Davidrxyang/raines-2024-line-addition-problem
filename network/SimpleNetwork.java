@@ -1,3 +1,7 @@
+/*
+ * simple dataset created for testing purposes
+ */
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -42,5 +46,6 @@ public class SimpleNetwork {
         PathPlanning pathPlanning = new PathPlanning(simpleNetwork);
         pathPlanning.printMatrix(pathPlanning.connectivityMatrix);
 
+        System.out.println(pathPlanning.pathPlan(A, C).connections);
     }
 }

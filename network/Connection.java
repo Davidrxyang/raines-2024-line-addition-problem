@@ -29,6 +29,6 @@ public class Connection {
     }
 
     public String toString() {
-        return (new StringBuilder()).append(origin).append(" -> ").append(destination).toString();
+        return (new StringBuilder()).append(origin.name).append(" -> ").append(destination.name).toString();
     }
 }
