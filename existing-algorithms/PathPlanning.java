@@ -34,8 +34,12 @@ public class PathPlanning {
         }
     }
 
-    public ArrayList<Connection> PathPlan(Station origin, Station destination) {
-        ArrayList<Connection> path = new ArrayList<>();
+    public Path pathPlan(Station origin, Station destination) {
+        Path path = new Path();
+
+        // look at this - if no path is found, return NULL
+        path.setOrigin(origin);
+        path.setDestination(destination);
 
         // PathPlanning algorithm
 
@@ -51,12 +55,22 @@ public class PathPlanning {
             for (Station station : line.stations) {
                 if (destination.equals(station)) {
                     // generate a path 
-                    
+                    Station currentStation = station;
+                    path.stations.add(currentStation);
+
+                    while(!currentStation.equals(origin)) {
+                        Station firstStation = line.getPreviousStation(currentStation);
+                        String connectionName = firstStation.name + " -> " + currentStation.name;
+                        Connection c = network.connectionMap.get(connectionName);
+                        path.connections.add(c);
+                        currentStation = firstStation;
+                        path.stations.add(currentStation);
+                    }
                 }
             }
         }
 
-
+        path.sort();
         return path;
     }
 
@@ -110,8 +124,6 @@ public class PathPlanning {
      * special function for connectivity matrix which takes
      * into account the K value of the station-line pair
      */
-
-    // TODO : WORK ON THIS
 
     public int[][] connectivityMatrixPower(int[][] matrix, int power) {
         int n = matrix.length;

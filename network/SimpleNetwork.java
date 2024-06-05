@@ -46,5 +46,6 @@ public class SimpleNetwork {
         PathPlanning pathPlanning = new PathPlanning(simpleNetwork);
         pathPlanning.printMatrix(pathPlanning.connectivityMatrix);
 
+        System.out.println(pathPlanning.pathPlan(A, C).connections);
     }
 }
