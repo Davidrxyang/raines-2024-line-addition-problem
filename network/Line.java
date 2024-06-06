@@ -166,6 +166,26 @@ public class Line {
         return null;
     }
     
+    /*
+     * since each line is directed, this function automatically generates the reverse direction lin
+     */
+
+    public Line generateReverseDirection(String name) {
+        Line reverseLine = new Line(name);
+        reverseLine.origin = this.destination;
+        reverseLine.destination = this.origin;
+        reverseLine.length = this.length;
+        reverseLine.stations.addAll(this.stations);
+
+        for (Connection connection : this.connections) {
+            Connection reverseConnection = new Connection(connection.destination, connection.origin, connection.distance);
+            reverseLine.addConnection(reverseConnection);
+        }
+        
+        reverseLine.sort();
+        return reverseLine;
+    }
+    
     // order the stations in the line
     // using the connection information
     public void sort() {

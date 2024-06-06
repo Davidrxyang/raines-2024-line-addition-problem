@@ -19,33 +19,43 @@ public class SimpleNetwork {
         
         ArrayList<Station> allStations = new ArrayList<Station>(Arrays.asList(A, B, C, D, E, F));
 
-        Line red = new Line("red");
-        Line green = new Line("green");
-        Line blue = new Line("blue");
+        Line red_AE = new Line("red A -> E");
+        Line green_AE = new Line("green A -> E");
+        Line blue_EF = new Line("blue E -> F");
 
-        red.addStation(A, null);
-        red.addStation(D, 1.0);
-        red.addStation(E, 1.0);
-        red.setDestination(E);
+        red_AE.addStation(A, null);
+        red_AE.addStation(D, 1.0);
+        red_AE.addStation(E, 1.0);
+        red_AE.setDestination(E);
 
-        green.addStation(A, null);
-        green.addStation(B, 1.0);
-        green.addStation(C, 1.0);
-        green.addStation(D, 1.0);
-        green.addStation(E, 1.0);
-        green.setDestination(E);
+        
+        green_AE.addStation(A, null);
+        green_AE.addStation(B, 1.0);
+        green_AE.addStation(C, 1.0);
+        green_AE.addStation(D, 1.0);
+        green_AE.addStation(E, 1.0);
+        green_AE.setDestination(E);
+        
+        blue_EF.addStation(E, null);
+        blue_EF.addStation(F, 1.0);
+        blue_EF.setDestination(F); 
 
-        blue.addStation(E, null);
-        blue.addStation(F, 1.0);
-        blue.setDestination(F); 
+        // generate reverse lines
+        Line red_EA = red_AE.generateReverseDirection("red E -> A");
+        Line green_EA = green_AE.generateReverseDirection("green E -> A");
+        Line blue_FE = blue_EF.generateReverseDirection("blue F -> E");
         
         Network simpleNetwork = new Network("simple network", allStations);
-        simpleNetwork.addLine(red);
-        simpleNetwork.addLine(green);
-        simpleNetwork.addLine(blue);
+        simpleNetwork.addLine(red_AE);
+        simpleNetwork.addLine(green_AE);
+        simpleNetwork.addLine(blue_EF);
+        simpleNetwork.addLine(red_EA);
+        simpleNetwork.addLine(green_EA);
+        simpleNetwork.addLine(blue_FE);
+
         PathPlanning pathPlanning = new PathPlanning(simpleNetwork);
         pathPlanning.printMatrix(pathPlanning.connectivityMatrix);
 
-        System.out.println(pathPlanning.pathPlan(A, C).connections);
+        System.out.println(pathPlanning.pathPlan(C, A).connections);
     }
 }
