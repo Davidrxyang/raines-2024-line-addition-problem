@@ -53,7 +53,8 @@ public class PathPlanning {
         // iterate through each line that origin belongs to
         for (Line line : origin.lines) {
             for (Station station : line.stations) {
-                if (destination.equals(station)) {
+                if (destination.equals(station) &&
+                K(line, origin) < K(line, destination)) {
                     // generate a path 
                     Station currentStation = station;
                     path.stations.add(currentStation);
@@ -66,12 +67,13 @@ public class PathPlanning {
                         currentStation = firstStation;
                         path.stations.add(currentStation);
                     }
+                    path.sort();
+                    return path;
                 }
             }
         }
-
-        path.sort();
-        return path;
+        // no path was found
+        return null;
     }
 
     /*
