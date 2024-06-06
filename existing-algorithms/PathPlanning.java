@@ -34,6 +34,12 @@ public class PathPlanning {
         }
     }
 
+    /*
+     * TODO: INCOMPLETE
+     * 
+     * This algorithm prioritizes minimizing the amount of transfers required
+     */
+
     public Path pathPlan(Station origin, Station destination) {
         Path path = new Path();
 
