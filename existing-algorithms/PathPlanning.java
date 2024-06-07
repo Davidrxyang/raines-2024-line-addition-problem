@@ -63,17 +63,8 @@ public class PathPlanning {
                 if (destination.equals(station) &&
                 K(line, origin) < K(line, destination)) {
                     // generate a path 
-                    Station currentStation = station;
-                    path.stations.add(currentStation);
+                    path.buildPath(network, line, origin, destination);
 
-                    while(!currentStation.equals(origin)) {
-                        Station firstStation = line.getPreviousStation(currentStation);
-                        String connectionName = firstStation.name + " -> " + currentStation.name;
-                        Connection c = network.connectionMap.get(connectionName);
-                        path.connections.add(c);
-                        currentStation = firstStation;
-                        path.stations.add(currentStation);
-                    }
                     path.sort();
                     return path;
                 }
@@ -107,31 +98,8 @@ public class PathPlanning {
                         (K(destinationLine, commonStation) < K(destinationLine, destination))) {
                             // use commonStation to generate a path 
 
-                            // step 1 - generate path backwards from destination to CS
-                            Station currentStation = destination;
-                            path.stations.add(currentStation);
-        
-                            while(!currentStation.equals(commonStation)) {
-                                Station firstStation = destinationLine.getPreviousStation(currentStation);
-                                String connectionName = firstStation.name + " -> " + currentStation.name;
-                                Connection c = network.connectionMap.get(connectionName);
-                                path.connections.add(c);
-                                currentStation = firstStation;
-                                path.stations.add(currentStation);
-                            }
-
-                            // step 2 - generate path backwards from CS to origin
-                            currentStation = commonStation;
-                            path.stations.add(currentStation);
-        
-                            while(!currentStation.equals(origin)) {
-                                Station firstStation = originLine.getPreviousStation(currentStation);
-                                String connectionName = firstStation.name + " -> " + currentStation.name;
-                                Connection c = network.connectionMap.get(connectionName);
-                                path.connections.add(c);
-                                currentStation = firstStation;
-                                path.stations.add(currentStation);
-                            }
+                            path.buildPath(network, destinationLine, commonStation, destination);
+                            path.buildPath(network, originLine, origin, commonStation);
 
                             path.sort();
                             return path;
