@@ -33,6 +33,9 @@ public class PIA {
     // the number of lines in the network
     public int lineNumber;
 
+    // constraints for candidate
+    public double maxCircuity = 2;
+
     // constructor
     // main algorithm logic
     public PIA(DemandSet demand, Network network) {
@@ -45,18 +48,28 @@ public class PIA {
 
         while (D0 < D0min || D01 < D01min) {
             Demand d = l.getMaxDemand();
-            Line r = new Line("r" + lineNumber);
-            r.addStation(d.start, 0.0);
-            r.addStation(d.end, d.end.getDistance(d.start));
+            Line r = network.bfs(d.start, d.end, "r" + lineNumber);
+            r.insertStation(d.start, 0);
+            r.insertStation(d.end, r.stations.size());
+            
 
-            System.out.println(r.name);
+            Line[] candidateLines = null;
+            Line rPrime = null;
+            Line rDoublePrime = null;
+
+            System.out.println("r");
             System.out.println(r);
+            if (R.lines.size() > 0) {
+                candidateLines = candidate(d, r.travelCost(d.start, d.end));
+                rPrime = candidateLines[0];
+                rDoublePrime = candidateLines[1];
+                System.out.println("r'");
+                System.out.println(rPrime);
+            }
 
-            Line[] candidateLines = candidate(d);
-            Line rPrime = candidateLines[0];
-            Line rDoublePrime = candidateLines[1];
-            if (R.lines.isEmpty()) {
+            if (R.lines.size() == 0 || rPrime == null ){
                 R.lines.add(r);
+                
                 lineNumber++;
             } else if (cost(r) < cost(rPrime) - cost(rDoublePrime)) {
                 R.lines.add(r);
@@ -64,7 +77,7 @@ public class PIA {
             } else {
                 R.lines.remove(rDoublePrime);
                 R.lines.add(rPrime);
-                
+
                 d.start.removeLine(r);
                 d.start.removeLine(rDoublePrime);
                 d.end.removeLine(r);
@@ -87,7 +100,9 @@ public class PIA {
     // and returns modified line
     // returns in format [r', r'']
     // where r' is the route with the new stations added, r'' is the original route
-    public Line[] candidate(Demand d) {
+    // TODO: add constraints on round trip time and circuity factor as per the paper
+    public Line[] candidate(Demand d, double directCost) {
+
         Line rPrime = null;
         Line rDoublePrime = null;
         double rCost = Double.MAX_VALUE;
@@ -95,11 +110,35 @@ public class PIA {
             if (r.stations.contains(d.start)) {
                 for (int i = 0; i < r.stations.size() + 1; i++) {
                     Line rPrimeTemp = new Line(r);
-                    // TODO: check adjacency information (if stations can be reached in the network)
-                    // instead of just inserting the station and looking at distance,
-                    // find shortest path to station in network
-                    rPrimeTemp.insertStation(d.end, i);
-                    if (cost(rPrimeTemp) < rCost) {
+
+                    // find shortest path in graph
+                    // when inserting a station into a line at a certain position
+                    // we need to find the shortest path from the station before to the station,
+                    // and from the station to the station after
+                    // and make that the new line
+                    Line bfs1 = null;
+                    if (i > 0) {
+                        bfs1 = existingNetwork.bfs(r.stations.get(i-1), d.end, r.name);
+                    }
+                    Line bfs2 = null;
+                    if (i < r.stations.size()) {
+                        bfs2 = existingNetwork.bfs(d.end, r.stations.get(i), r.name);
+                    }
+
+
+                    if (i <= 0) {
+                        rPrimeTemp.insertStation(d.end, 0);
+                        rPrimeTemp.insertLine(bfs2, i + 1);
+                    } else if (i >= r.stations.size()) {
+                        rPrimeTemp.insertLine(bfs1, i);
+                        rPrimeTemp.insertStation(d.end, rPrimeTemp.stations.size());
+                    } else {
+                        rPrimeTemp.insertStation(d.end, i);
+                        rPrimeTemp.insertLine(bfs2, i+1);
+                        rPrimeTemp.insertLine(bfs1, i);
+                    }
+
+                    if (cost(rPrimeTemp) < rCost && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
                         rPrime = rPrimeTemp;
                         rCost = cost(rPrimeTemp);
                         rDoublePrime = r;
@@ -110,8 +149,30 @@ public class PIA {
             else if (r.stations.contains(d.end)) {
                 for (int i = 0; i < r.stations.size() + 1; i++) {
                     Line rPrimeTemp = new Line(r);
-                    rPrimeTemp.insertStation(d.start, i);
-                    if (cost(rPrimeTemp) < rCost) {
+                    // find shortest path in graph
+                    Line bfs1 = null;
+                    if (i > 0) {
+                        bfs1 = existingNetwork.bfs(r.stations.get(i-1), d.start, r.name);
+                    }
+                    Line bfs2 = null;
+                    if (i < r.stations.size()) {
+                        bfs2 = existingNetwork.bfs(d.start, r.stations.get(i), r.name);
+                    }
+
+                    if (i <= 0) {
+                        rPrimeTemp.insertStation(d.start, 0);
+                        rPrimeTemp.insertLine(bfs2, i + 1);
+                    } else if (i >= r.stations.size()) {
+                        rPrimeTemp.insertLine(bfs1, i);
+                        rPrimeTemp.insertStation(d.start, rPrimeTemp.stations.size());
+                    } else {
+                        rPrimeTemp.insertStation(d.start, i);
+                        rPrimeTemp.insertLine(bfs2, i+1);
+                        rPrimeTemp.insertLine(bfs1, i);
+                    }
+
+                    // max circuity bound
+                    if (cost(rPrimeTemp) < rCost && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
                         rPrime = rPrimeTemp;
                         rCost = cost(rPrimeTemp);
                         rDoublePrime = r;
@@ -120,15 +181,59 @@ public class PIA {
             }
             else {
                 for (int i = 0; i < r.stations.size() + 1; i++) {
-                    for (int j = 0; j < r.stations.size() + 2; j++) {
-                        Line rPrimeTemp = new Line(r);
+                    Line rPrimeTemp = new Line(r);
+                        
+                    // find shortest path in graph
+                    // should've been its own function but oh well
+                    Line bfs1 = null;
+                    if (i > 0) {
+                        bfs1 = existingNetwork.bfs(r.stations.get(i-1), d.start, r.name);
+                    }
+                    Line bfs2 = null;
+                    if (i < r.stations.size()) {
+                        bfs2 = existingNetwork.bfs(d.start, r.stations.get(i), r.name);
+                    }
+
+                    if (i <= 0) {
+                        rPrimeTemp.insertStation(d.start, 0);
+                        rPrimeTemp.insertLine(bfs2, i +1);
+                    } else if (i >= r.stations.size()) {
+                        rPrimeTemp.insertLine(bfs1, i);
+                        rPrimeTemp.insertStation(d.start, rPrimeTemp.stations.size());
+                    } else {
                         rPrimeTemp.insertStation(d.start, i);
-                        rPrimeTemp.insertStation(d.end, j);
-                        if (cost(rPrimeTemp) < rCost) {
-                            rPrime = rPrimeTemp;
-                            rCost = cost(rPrimeTemp);
+                        rPrimeTemp.insertLine(bfs2, i+1);
+                        rPrimeTemp.insertLine(bfs1, i);
+                    }
+                    for (int j = 0; j < rPrimeTemp.stations.size() + 1; j++) {
+                        Line rPrimeTemp2 = new Line(rPrimeTemp);
+
+                        // find shortest path in graph
+                        if (j > 0) {
+                            bfs1 = existingNetwork.bfs(rPrimeTemp.stations.get(j-1), d.end, r.name);
+                        }
+                        if (j < rPrimeTemp.stations.size()) {
+                            bfs2 = existingNetwork.bfs(d.end, rPrimeTemp.stations.get(j), r.name);
+                        }
+
+                        if (j <= 0) {
+                            rPrimeTemp2.insertStation(d.end, 0);
+                            rPrimeTemp2.insertLine(bfs2, j + 1);
+                        } else if (j >= rPrime.stations.size()) {
+                            rPrimeTemp2.insertLine(bfs1, j);
+                            rPrimeTemp2.insertStation(d.end, rPrimeTemp.stations.size());
+                        } else {
+                            rPrimeTemp2.insertStation(d.end, j);
+                            rPrimeTemp2.insertLine(bfs2, j+1);
+                            rPrimeTemp2.insertLine(bfs1, j);
+                        }
+
+                        if (cost(rPrimeTemp2) < rCost && rPrimeTemp2.travelCost(d.start, d.end) < maxCircuity * directCost) {
+                            rPrime = rPrimeTemp2;
+                            rCost = cost(rPrimeTemp2);
                             rDoublePrime = r;
                         }
+
                     }
                 }
             }
@@ -208,6 +313,30 @@ public class PIA {
         stationList.add(test9);
 
         Network network = new Network("test", stationList);
+
+        network.connections.add(new Connection(test1, test2, test1.getDistance(test2)));
+        network.connections.add(new Connection(test2, test3, test1.getDistance(test3)));
+        network.connections.add(new Connection(test4, test5, test4.getDistance(test5)));
+        network.connections.add(new Connection(test5, test6, test5.getDistance(test6)));
+        network.connections.add(new Connection(test7, test8, test7.getDistance(test8)));
+        network.connections.add(new Connection(test8, test9, test8.getDistance(test9)));
+
+        network.connections.add(new Connection(test1, test4, test1.getDistance(test4)));
+        network.connections.add(new Connection(test2, test5, test2.getDistance(test5)));
+        network.connections.add(new Connection(test3, test6, test3.getDistance(test6)));
+        network.connections.add(new Connection(test4, test7, test4.getDistance(test6)));
+        network.connections.add(new Connection(test5, test8, test5.getDistance(test7)));
+        network.connections.add(new Connection(test6, test9, test6.getDistance(test9)));
+
+        network.connections.add(new Connection(test1, test5, test1.getDistance(test5)));
+        network.connections.add(new Connection(test3, test5, test3.getDistance(test5)));
+        network.connections.add(new Connection(test7, test5, test7.getDistance(test5)));
+        network.connections.add(new Connection(test9, test5, test9.getDistance(test5)));
+
+        network.connections.add(new Connection(test2, test6, test2.getDistance(test6)));
+        network.connections.add(new Connection(test6, test8, test6.getDistance(test8)));
+        network.connections.add(new Connection(test8, test4, test8.getDistance(test4)));
+        network.connections.add(new Connection(test4, test2, test4.getDistance(test2)));
 
         Random random = new Random();
 
