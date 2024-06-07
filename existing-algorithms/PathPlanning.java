@@ -26,6 +26,7 @@ public class PathPlanning {
         for (int i = 0; i < network.nLines; i++) {
             for (int j = 0; j < network.nLines; j++) {
                 connectivityMatrix[i][j] = network.lines.get(i).commonStations(network.lines.get(j)).size();
+                network.lines.get(i).index = i; // self aware line object
                 if (i == j) {
                     // the same way Liu, Pai, Chang, Hsieh sets up their algorithm
                     connectivityMatrix[i][j] = 0;
@@ -78,6 +79,68 @@ public class PathPlanning {
                 }
             }
         }
+
+        // step 3 - check if the commute can be completed using one transfer
+
+        // use the line connectivity matrix
+
+        /*
+         * for each line that belongs to each station, we know that
+         * none of these lines overlap otherwise we would have found 
+         * a direct connection commute, hence we find look at the 
+         * line connectivity matrix to determine if you can transfer
+         * from one line to the other line
+         */
+
+        for (Line originLine : origin.lines) {
+            for (Line destinationLine : destination.lines) {
+                if (connectivityMatrix[originLine.index][destinationLine.index] >= 1) {
+                    // this indicates the two lines have COMMON STOPS 
+                    // and we can take a transfer at any of these common stops
+                    // but we have to check K values
+                    
+                    // check k values in common stations
+                    for (Station commonStation : originLine.commonStations(destinationLine)) {
+                        // we grab the first common station that satisfies the K
+                        // constraint to use as our transfer station
+                        if ((K(originLine, origin) < K(originLine, commonStation)) &
+                        (K(destinationLine, commonStation) < K(destinationLine, destination))) {
+                            // use commonStation to generate a path 
+
+                            // step 1 - generate path backwards from destination to CS
+                            Station currentStation = destination;
+                            path.stations.add(currentStation);
+        
+                            while(!currentStation.equals(commonStation)) {
+                                Station firstStation = destinationLine.getPreviousStation(currentStation);
+                                String connectionName = firstStation.name + " -> " + currentStation.name;
+                                Connection c = network.connectionMap.get(connectionName);
+                                path.connections.add(c);
+                                currentStation = firstStation;
+                                path.stations.add(currentStation);
+                            }
+
+                            // step 2 - generate path backwards from CS to origin
+                            currentStation = commonStation;
+                            path.stations.add(currentStation);
+        
+                            while(!currentStation.equals(origin)) {
+                                Station firstStation = originLine.getPreviousStation(currentStation);
+                                String connectionName = firstStation.name + " -> " + currentStation.name;
+                                Connection c = network.connectionMap.get(connectionName);
+                                path.connections.add(c);
+                                currentStation = firstStation;
+                                path.stations.add(currentStation);
+                            }
+
+                            path.sort();
+                            return path;
+                        }
+                    }
+                }
+            }
+        }
+
         // no path was found
         return null;
     }

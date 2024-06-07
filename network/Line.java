@@ -14,6 +14,7 @@ public class Line {
     Station origin;
     Station destination; // this is the direction of the line
     Double length;
+    int index; // self aware indexing for pathplanning matrix
 
     /*
      * note: the arraylist of connections is not necessarily in correct order,
@@ -35,6 +36,7 @@ public class Line {
         origin = null;
         destination = null;
         length = 0.0;
+        index = -1;
     }
 
     // copy constructor
@@ -46,6 +48,7 @@ public class Line {
         this.origin = l.origin;
         this.destination = l.destination;
         this.length = l.length;
+        index = -1;
     }
 
     /*

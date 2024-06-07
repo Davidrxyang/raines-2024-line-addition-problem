@@ -57,5 +57,7 @@ public class SimpleNetwork {
         pathPlanning.printMatrix(pathPlanning.connectivityMatrix);
 
         System.out.println(pathPlanning.pathPlan(C, A).connections);
+        System.out.println(pathPlanning.pathPlan(F, A).connections);
+
     }
 }
