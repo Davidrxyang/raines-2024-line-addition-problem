@@ -170,11 +170,11 @@ public class Line {
         while (current != destination) {
             sortedStationOrder.add(current);
             for (Connection c : connections) {
-                if (c.origin == current && !sortedStationOrder.contains(c.destination)) {
+                if (c.origin == current && !sortedConnectionOrder.contains(c)) {
                     current = c.destination;
                     sortedConnectionOrder.add(c);
                     break;
-                } else if (c.destination == current && !sortedStationOrder.contains(c.origin)) {
+                } else if (c.destination == current && !sortedConnectionOrder.contains(c)) {
                     current = c.origin;
                     sortedConnectionOrder.add(c);
                     break;
@@ -232,7 +232,7 @@ public class Line {
         if (!stations.contains(start) && !stations.contains(end)) {
             return -1;
         }
-        double cost = 0;
+        double cost = -1;
         sort();
         for (int i = 0; i < stations.size(); i++) {
             if (stations.get(i) == start) {
@@ -253,7 +253,6 @@ public class Line {
                         return cost;
                     }
                 }
-            
             }
         }
         return cost;

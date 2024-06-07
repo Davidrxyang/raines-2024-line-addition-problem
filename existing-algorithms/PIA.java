@@ -100,7 +100,6 @@ public class PIA {
     // and returns modified line
     // returns in format [r', r'']
     // where r' is the route with the new stations added, r'' is the original route
-    // TODO: add constraints on round trip time and circuity factor as per the paper
     public Line[] candidate(Demand d, double directCost) {
 
         Line rPrime = null;
@@ -125,7 +124,6 @@ public class PIA {
                         bfs2 = existingNetwork.bfs(d.end, r.stations.get(i), r.name);
                     }
 
-
                     if (i <= 0) {
                         rPrimeTemp.insertStation(d.end, 0);
                         rPrimeTemp.insertLine(bfs2, i + 1);
@@ -138,7 +136,7 @@ public class PIA {
                         rPrimeTemp.insertLine(bfs1, i);
                     }
 
-                    if (cost(rPrimeTemp) < rCost && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
+                    if (cost(rPrimeTemp) < rCost && noLoop(rPrimeTemp) && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
                         rPrime = rPrimeTemp;
                         rCost = cost(rPrimeTemp);
                         rDoublePrime = r;
@@ -172,7 +170,7 @@ public class PIA {
                     }
 
                     // max circuity bound
-                    if (cost(rPrimeTemp) < rCost && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
+                    if (cost(rPrimeTemp) < rCost && noLoop(rPrimeTemp) && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
                         rPrime = rPrimeTemp;
                         rCost = cost(rPrimeTemp);
                         rDoublePrime = r;
@@ -219,7 +217,7 @@ public class PIA {
                         if (j <= 0) {
                             rPrimeTemp2.insertStation(d.end, 0);
                             rPrimeTemp2.insertLine(bfs2, j + 1);
-                        } else if (j >= rPrime.stations.size()) {
+                        } else if (j >= rPrimeTemp.stations.size()) {
                             rPrimeTemp2.insertLine(bfs1, j);
                             rPrimeTemp2.insertStation(d.end, rPrimeTemp.stations.size());
                         } else {
@@ -228,7 +226,7 @@ public class PIA {
                             rPrimeTemp2.insertLine(bfs1, j);
                         }
 
-                        if (cost(rPrimeTemp2) < rCost && rPrimeTemp2.travelCost(d.start, d.end) < maxCircuity * directCost) {
+                        if (cost(rPrimeTemp2) < rCost && noLoop(rPrimeTemp2) && rPrimeTemp2.travelCost(d.start, d.end) < maxCircuity * directCost) {
                             rPrime = rPrimeTemp2;
                             rCost = cost(rPrimeTemp2);
                             rDoublePrime = r;
@@ -288,6 +286,20 @@ public class PIA {
         }
     }
 
+    // checks if a loop exists in the line
+    public boolean noLoop(Line l) {
+        // copilot wrote this, not me
+        // if i was not lazy i'd write this using a hashmap
+        for (int i = 0; i < l.stations.size(); i++) {
+            for (int j = 0; j < l.stations.size(); j++) {
+                if (i != j && l.stations.get(i).name.equals(l.stations.get(j).name)) {
+                    System.out.println("loop: " + l);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     public static void main(String[] args) {
         // dummy test data
