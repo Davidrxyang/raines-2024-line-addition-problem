@@ -85,6 +85,8 @@ public class PathPlanning {
 
         for (Line originLine : origin.lines) {
             for (Line destinationLine : destination.lines) {
+
+                // first two conditionals check if the line actually exists in the network
                 if (originLine.index > -1 &&
                 destinationLine.index > -1 &&
                 connectivityMatrix[originLine.index][destinationLine.index] >= 1) {
