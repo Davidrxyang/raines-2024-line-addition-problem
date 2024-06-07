@@ -115,4 +115,53 @@ public class Network {
 
         return sb.toString();
     }
+
+    // dfs function for PIA
+    // finds the shortest path between two stations
+    // using existing connections
+    public Line bfs(Station start, Station end, String pathname) {
+        ArrayList<Station> visited = new ArrayList<>();
+        ArrayList<Station> queue = new ArrayList<>();
+        HashMap<Station, Station> parent = new HashMap<>();
+        ArrayList<Station> path = new ArrayList<>();
+
+        queue.add(start);
+        visited.add(start);
+
+        while (!queue.isEmpty()) {
+            Station current = queue.remove(0);
+
+            if (current == end) {
+                Station node = end;
+                while (node != start) {
+                    path.add(node);
+                    node = parent.get(node);
+                }
+                path.add(start);
+
+                Line l = new Line(pathname);
+                for (int i = path.size() - 2; i > 0; i--) {
+                    l.insertStation(path.get(i), path.size() - 2 - i);
+                }
+                return l;
+            }
+
+            for (Connection c : connections) {
+                if (c.origin == current && !visited.contains(c.destination)) {
+                    visited.add(c.destination);
+                    queue.add(c.destination);
+                    parent.put(c.destination, c.origin);
+                } else if (c.destination == current && !visited.contains(c.origin)) {
+                    visited.add(c.origin);
+                    queue.add(c.origin);
+                    parent.put(c.origin, c.destination);
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+
 }
