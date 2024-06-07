@@ -100,6 +100,18 @@ public class DemandSet {
         return tripTotal;
     }
 
+    public Demand getMaxDemand() {
+        int maxTrips = 0;
+        Demand d = null;
+        for (Demand trip : trips) {
+            if (trip.trips > maxTrips) {
+                maxTrips = trip.trips;
+                d = trip;
+            }
+        }
+        return d;
+    }
+
     public static void main(String[] args) {
         // sample usage
         Network network = new Network("network", new ArrayList<>());
