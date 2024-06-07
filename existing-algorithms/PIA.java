@@ -30,6 +30,9 @@ public class PIA {
     public double D01min = 1;
     public double totalTrips;
 
+    // the number of lines in the network
+    public int lineNumber;
+
     // constructor
     // main algorithm logic
     public PIA(DemandSet demand, Network network) {
@@ -38,6 +41,40 @@ public class PIA {
         this.R = new Network("new", existingNetwork.stationList);
         R.connections = existingNetwork.connections;
         totalTrips = demand.totalTrips();
+        lineNumber = 1;
+
+        while (D0 < D0min || D01 < D01min) {
+            Demand d = l.getMaxDemand();
+            Line r = new Line("r" + lineNumber);
+            r.addStation(d.start, 0.0);
+            r.addStation(d.end, d.end.getDistance(d.start));
+
+            System.out.println(r.name);
+            System.out.println(r);
+
+            Line[] candidateLines = candidate(d);
+            Line rPrime = candidateLines[0];
+            Line rDoublePrime = candidateLines[1];
+            if (R.lines.isEmpty()) {
+                R.lines.add(r);
+                lineNumber++;
+            } else if (cost(r) < cost(rPrime) - cost(rDoublePrime)) {
+                R.lines.add(r);
+                lineNumber++;
+            } else {
+                R.lines.remove(rDoublePrime);
+                R.lines.add(rPrime);
+                
+                d.start.removeLine(r);
+                d.start.removeLine(rDoublePrime);
+                d.end.removeLine(r);
+                d.end.removeLine(rDoublePrime);
+
+                d.start.addLine(rPrime);
+                d.end.addLine(rPrime);
+            }
+            updateD0();
+        }
     }
 
     public String toString() {
@@ -58,6 +95,9 @@ public class PIA {
             if (r.stations.contains(d.start)) {
                 for (int i = 0; i < r.stations.size() + 1; i++) {
                     Line rPrimeTemp = new Line(r);
+                    // TODO: check adjacency information (if stations can be reached in the network)
+                    // instead of just inserting the station and looking at distance,
+                    // find shortest path to station in network
                     rPrimeTemp.insertStation(d.end, i);
                     if (cost(rPrimeTemp) < rCost) {
                         rPrime = rPrimeTemp;
@@ -194,24 +234,36 @@ public class PIA {
         demand.trips.add(new Demand(test3, test7, random.nextInt(20)));
         demand.trips.add(new Demand(test3, test8, random.nextInt(20)));
         demand.trips.add(new Demand(test3, test9, random.nextInt(20)));
-        demand.trips.add(new Demand(test4, test5, random.nextInt(20)));
+        Demand testDemand2 = new Demand(test4, test5, random.nextInt(20));
+        demand.trips.add(testDemand2);
         demand.trips.add(new Demand(test4, test6, random.nextInt(20)));
         demand.trips.add(new Demand(test4, test7, random.nextInt(20)));
 
+        /*
+         * currently this implementation does not update matrix info
+         * in network
+         */
         PIA pia = new PIA(demand, network);
         System.out.println(pia);
-        Line testLine = new Line("test line");
-        testLine.addStation(test1, 0.0);
-        testLine.addStation(test2, test2.getDistance(test1));
-        pia.R.lines.add(testLine);
+        // Line testLine = new Line("test line");
+        // testLine.addStation(test1, 0.0);
+        // testLine.addStation(test2, test2.getDistance(test1));
+        // pia.R.lines.add(testLine);
 
-        pia.deleteVertices();
-        pia.updateD0();
+        // pia.deleteVertices();
+        // pia.updateD0();
 
-        System.out.println(pia.candidate(testDemand)[0].stations);
-        System.out.println(pia.R.lines);
+        // System.out.println(pia.candidate(testDemand2)[0].stations);
+        // System.out.println(pia.R.lines);
 
-        System.out.println(pia.D0);
-        System.out.println(pia.D01);
+        for (Line l : pia.R.lines) {
+            System.out.println(l);
+        }
+
+        System.out.println("D0: " + pia.D0);
+        System.out.println("D01: " + pia.D01);
+
+        // System.out.println(pia.D0);
+        // System.out.println(pia.D01);
     }
 }

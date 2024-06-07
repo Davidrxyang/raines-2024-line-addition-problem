@@ -52,6 +52,15 @@ public class Station extends Object {
         }
     }
 
+    public void removeLine(Line line) {
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).name.equals(line.name)) {
+                lines.remove(i);
+                return;
+            }
+        }
+    }
+
     /*
      * calculates the geographical distance in miles between two stations
      * 
