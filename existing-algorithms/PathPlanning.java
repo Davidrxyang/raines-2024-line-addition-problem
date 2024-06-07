@@ -24,9 +24,10 @@ public class PathPlanning {
         connectivityMatrix = new int[network.nLines][network.nLines];
 
         for (int i = 0; i < network.nLines; i++) {
+            network.lines.get(i).index = i; // self aware line object
+            System.out.println(network.lines.get(i).name);
             for (int j = 0; j < network.nLines; j++) {
                 connectivityMatrix[i][j] = network.lines.get(i).commonStations(network.lines.get(j)).size();
-                network.lines.get(i).index = i; // self aware line object
                 if (i == j) {
                     // the same way Liu, Pai, Chang, Hsieh sets up their algorithm
                     connectivityMatrix[i][j] = 0;
@@ -85,6 +86,7 @@ public class PathPlanning {
 
         for (Line originLine : origin.lines) {
             for (Line destinationLine : destination.lines) {
+                System.out.println(originLine.name + " " + destinationLine.name);
                 if (connectivityMatrix[originLine.index][destinationLine.index] >= 1) {
                     // this indicates the two lines have COMMON STOPS 
                     // and we can take a transfer at any of these common stops
@@ -108,6 +110,12 @@ public class PathPlanning {
                 }
             }
         }
+
+        // step 4 - two transfers
+
+        // use T2 matrix
+
+
 
         // no path was found
         return null;
