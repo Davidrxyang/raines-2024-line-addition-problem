@@ -48,10 +48,10 @@ public class SimpleNetwork {
         // add lines to network
         
         Network simpleNetwork = new Network("simple network", allStations);
-        //simpleNetwork.addLine(red_AE);
+        simpleNetwork.addLine(red_AE);
         simpleNetwork.addLine(green_AE);
         simpleNetwork.addLine(blue_EF);
-        //simpleNetwork.addLine(red_EA);
+        simpleNetwork.addLine(red_EA);
         simpleNetwork.addLine(green_EA);
         simpleNetwork.addLine(blue_FE);
 

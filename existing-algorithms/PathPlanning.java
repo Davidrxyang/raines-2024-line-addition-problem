@@ -25,7 +25,6 @@ public class PathPlanning {
 
         for (int i = 0; i < network.nLines; i++) {
             network.lines.get(i).index = i; // self aware line object
-            System.out.println(network.lines.get(i).name);
             for (int j = 0; j < network.nLines; j++) {
                 connectivityMatrix[i][j] = network.lines.get(i).commonStations(network.lines.get(j)).size();
                 if (i == j) {
@@ -86,8 +85,9 @@ public class PathPlanning {
 
         for (Line originLine : origin.lines) {
             for (Line destinationLine : destination.lines) {
-                System.out.println(originLine.name + " " + destinationLine.name);
-                if (connectivityMatrix[originLine.index][destinationLine.index] >= 1) {
+                if (originLine.index > -1 &&
+                destinationLine.index > -1 &&
+                connectivityMatrix[originLine.index][destinationLine.index] >= 1) {
                     // this indicates the two lines have COMMON STOPS 
                     // and we can take a transfer at any of these common stops
                     // but we have to check K values
