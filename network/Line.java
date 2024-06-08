@@ -98,6 +98,20 @@ public class Line {
      */
 
     public void addStation(Station station, Double distance) {
+        addStationWithoutAddingLine(station, distance);
+
+        boolean hasLine = false;
+        for (Line l : station.lines) {
+            if (l.name.equals(this.name)) {
+                hasLine = true;
+                break;
+            }
+        }
+        if (!hasLine)
+            station.addLine(this);
+    }
+
+    public void addStationWithoutAddingLine(Station station, Double distance) {
         if (origin == null) {
             // this is the first station in the network
             origin = station;
@@ -113,7 +127,6 @@ public class Line {
         }
         destination = station;
         stations.add(station);
-        station.addLine(this);
     }
 
     /*
@@ -196,11 +209,11 @@ public class Line {
         while (current != destination) {
             sortedStationOrder.add(current);
             for (Connection c : connections) {
-                if (c.origin == current && !sortedStationOrder.contains(c.destination)) {
+                if (c.origin == current && !sortedConnectionOrder.contains(c)) {
                     current = c.destination;
                     sortedConnectionOrder.add(c);
                     break;
-                } else if (c.destination == current && !sortedStationOrder.contains(c.origin)) {
+                } else if (c.destination == current && !sortedConnectionOrder.contains(c)) {
                     current = c.origin;
                     sortedConnectionOrder.add(c);
                     break;
@@ -225,15 +238,63 @@ public class Line {
     // inserts a station in a position on the line
     public void insertStation(Station s, int i) {
         stations.add(i, s);
-        if (i == 0) {
+        if (stations.size() == 1) {
+            origin = s;
+            destination = s;
+        } else if (i == 0) {
             connections.add(i, new Connection(s, stations.get(1), s.getDistance(stations.get(1))));
+            origin = s;
         } else if (i == stations.size() - 1) {
             connections.add(i - 1, new Connection(stations.get(i - 1), s, s.getDistance(stations.get(i - 1))));
+            destination = s;
         } else {
             connections.remove(i - 1);
             connections.add(i - 1, new Connection(stations.get(i - 1), s, s.getDistance(stations.get(i - 1))));
             connections.add(i, new Connection(s, stations.get(i + 1), s.getDistance(stations.get(i + 1))));
         }
+    }
+
+    /*
+     * for use in PIA
+     * inserts a line into a position on the line
+     */
+    public void insertLine(Line l, int i) {
+        if (l != null) {
+            for (int k = i; k < l.stations.size() + i; k++) {
+                insertStation(l.stations.get(k - i), k);
+            }
+        }
+    }
+
+    // cost of travelling down a line
+    public double travelCost(Station start, Station end) {
+        if (!stations.contains(start) && !stations.contains(end)) {
+            return -1;
+        }
+        double cost = -1;
+        sort();
+        for (int i = 0; i < stations.size(); i++) {
+            if (stations.get(i) == start) {
+                for (int j = i; j < stations.size(); j++) {
+                    if (stations.get(j) == end) {
+                        for (int k = i; k < j; k++) {
+                            cost += connections.get(k).distance;
+                        }
+                        return cost;
+                    }
+                }
+            } else if (stations.get(i) == end) {
+                for (int j = i; j < stations.size(); j++) {
+                    if (stations.get(j) == start) {
+                        for (int k = i; k < j; k++) {
+                            cost += connections.get(k).distance;
+                        }
+                        return cost;
+                    }
+                }
+            }
+        }
+        return cost;
     }
 
     public static void main(String[] args) {
