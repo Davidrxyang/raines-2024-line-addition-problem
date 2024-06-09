@@ -188,6 +188,29 @@ public class Line {
         reverseLine.sort();
         return reverseLine;
     }
+
+    /*
+     * CR function in path planning - returns lines that connect the two non-connected lines
+     * 
+     * this is terrible, I know
+     */
+
+    public ArrayList<Line> commonLines(Network network, Line targetLine) {
+        ArrayList<Line> commonLines = new ArrayList<>();
+
+        for (Station station : this.stations) {
+            for (Line line : station.lines) {
+                for (Station transferStation : line.stations) {
+                    if (targetLine.stations.contains(transferStation)) {
+                        if (!commonLines.contains(line)) {
+                            commonLines.add(line);
+                        }
+                    }
+                }
+            }
+        }
+        return commonLines;
+    }
     
     // order the stations in the line
     // using the connection information

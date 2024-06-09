@@ -117,6 +117,39 @@ public class PathPlanning {
 
         // use T2 matrix
 
+        int[][] T2 = connectivityMatrixPower(connectivityMatrix, 2);
+
+        for (Line originLine : origin.lines) {
+            for (Line destinationLine : destination.lines) {
+
+                // first two conditionals check if the line actually exists in the network
+                if (originLine.index > -1 &&
+                destinationLine.index > -1 &&
+                T2[originLine.index][destinationLine.index] >= 1) {
+                    // this indicates the two lines is connected degree 2
+                    // and we can take a transfer to some other line and
+                    // then transfer again
+
+                    for (Line commonLine : originLine.commonLines(network, destinationLine)) {
+                        // s is the first transfer station, t is the second
+                        // following paper jargon
+                        for (Station s : originLine.commonStations(commonLine)) {
+                            for (Station t : commonLine.commonStations(destinationLine)) {
+                                if ((K(originLine, origin) < K(originLine, s)) &&
+                                (K(commonLine, s) < K(commonLine, t)) &&
+                                (K(destinationLine, t) < K(destinationLine, destination))) {
+                                    path.buildPath(network, destinationLine, t, destination);
+                                    path.buildPath(network, commonLine, s, t);
+                                    path.buildPath(network, originLine, origin, s);
+                                    path.sort();
+                                    return path;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 
         // no path was found

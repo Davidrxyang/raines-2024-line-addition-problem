@@ -16,12 +16,15 @@ public class SimpleNetwork {
         Station D = new Station("D", 0.0, 1.0);
         Station E = new Station("E", 1.0, 1.0);
         Station F = new Station("F", 2.0, 1.0);
+        Station G = new Station("G", 3.0, 1.0);
         
-        ArrayList<Station> allStations = new ArrayList<Station>(Arrays.asList(A, B, C, D, E, F));
+        ArrayList<Station> allStations = new ArrayList<Station>(Arrays.asList(A, B, C, D, E, F, G));
 
         Line red_AE = new Line("red A -> E");
         Line green_AE = new Line("green A -> E");
         Line blue_EF = new Line("blue E -> F");
+        Line orange_AD = new Line("orange A -> D");
+        Line silver_FG = new Line("silve F -> D");
 
         red_AE.addStation(A, null);
         red_AE.addStation(D, 1.0);
@@ -40,10 +43,19 @@ public class SimpleNetwork {
         blue_EF.addStation(F, 1.0);
         blue_EF.setDestination(F); 
 
+        orange_AD.addStation(A, null);
+        orange_AD.addStation(D, 1.0);
+        orange_AD.setDestination(D);
+
+        silver_FG.addStation(F, null);
+        silver_FG.addStation(G, 1.0);
+
         // generate reverse lines
         Line red_EA = red_AE.generateReverseDirection("red E -> A");
         Line green_EA = green_AE.generateReverseDirection("green E -> A");
         Line blue_FE = blue_EF.generateReverseDirection("blue F -> E");
+        Line orange_DA = orange_AD.generateReverseDirection("orange D -> A");
+        Line silver_GF = silver_FG.generateReverseDirection("silver G -> F");
         
         // add lines to network
         
@@ -54,12 +66,20 @@ public class SimpleNetwork {
         simpleNetwork.addLine(red_EA);
         simpleNetwork.addLine(green_EA);
         simpleNetwork.addLine(blue_FE);
+        simpleNetwork.addLine(orange_AD);
+        simpleNetwork.addLine(orange_DA);
+        simpleNetwork.addLine(silver_FG);
+        simpleNetwork.addLine(silver_GF);
 
         PathPlanning pathPlanning = new PathPlanning(simpleNetwork);
         pathPlanning.printMatrix(pathPlanning.connectivityMatrix);
+        pathPlanning.printMatrix(pathPlanning.connectivityMatrixPower(pathPlanning.connectivityMatrix, 2));
 
         System.out.println(pathPlanning.pathPlan(C, A).connections);
         System.out.println(pathPlanning.pathPlan(F, A).connections);
+        System.out.println(pathPlanning.pathPlan(B, G).connections);
+
+        System.out.println(orange_AD.commonLines(simpleNetwork, blue_EF));
 
     }
 }
