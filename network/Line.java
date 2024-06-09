@@ -14,6 +14,7 @@ public class Line {
     Station origin;
     Station destination; // this is the direction of the line
     Double length;
+    int index; // self aware indexing for pathplanning matrix
 
     /*
      * note: the arraylist of connections is not necessarily in correct order,
@@ -35,6 +36,7 @@ public class Line {
         origin = null;
         destination = null;
         length = 0.0;
+        index = -1;
     }
 
     // copy constructor
@@ -46,6 +48,7 @@ public class Line {
         this.origin = l.origin;
         this.destination = l.destination;
         this.length = l.length;
+        index = -1;
     }
 
     /*
@@ -79,6 +82,10 @@ public class Line {
 
     public String toString() {
         return connections.toString();
+    }
+
+    public boolean equals(Line line) {
+        return this.name.equals(line.name);
     }
 
     /*
@@ -185,7 +192,46 @@ public class Line {
         reverseLine.sort();
         return reverseLine;
     }
+
+    /*
+     * CR function in path planning - returns lines that connect the two non-connected lines
+     * 
+     * this is terrible, I know
+     */
+
+    public ArrayList<Line> commonLines(Network network, Line targetLine) {
+        ArrayList<Line> commonLines = new ArrayList<>();
+
+        for (Station station : this.stations) {
+            for (Line line : station.lines) {
+                for (Station transferStation : line.stations) {
+                    if (targetLine.stations.contains(transferStation)) {
+                        if (!commonLines.contains(line)) {
+                            commonLines.add(line);
+                        }
+                    }
+                }
+            }
+        }
+        return commonLines;
+    }
     
+    /*
+     * all lines that the current line can transfer to
+     */
+
+    public ArrayList<Line> transferLines(Network network) {
+        ArrayList<Line> transferLines = new ArrayList<>();
+        for (Station station : this.stations) {
+            for (Line line : station.lines) {
+                if (!transferLines.contains(line) && !line.equals(this)) {
+                    transferLines.add(line);
+                }
+            }
+        }
+        return transferLines;
+    }
+
     // order the stations in the line
     // using the connection information
     public void sort() {

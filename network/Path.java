@@ -40,6 +40,20 @@ public class Path {
         this.length = l.length;
     }
 
+    public void buildPath(Network network, Line line, Station origin, Station destination) {
+        Station currentStation = destination;
+        stations.add(currentStation);
+
+        while(!currentStation.equals(origin)) {
+            Station firstStation = line.getPreviousStation(currentStation);
+            String connectionName = firstStation.name + " -> " + currentStation.name;
+            Connection c = network.connectionMap.get(connectionName);
+            connections.add(c);
+            currentStation = firstStation;
+            stations.add(currentStation);
+        }
+    }
+
     /*
      * these setter functions are dangerous
      */

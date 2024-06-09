@@ -24,6 +24,7 @@ public class PathPlanning {
         connectivityMatrix = new int[network.nLines][network.nLines];
 
         for (int i = 0; i < network.nLines; i++) {
+            network.lines.get(i).index = i; // self aware line object
             for (int j = 0; j < network.nLines; j++) {
                 connectivityMatrix[i][j] = network.lines.get(i).commonStations(network.lines.get(j)).size();
                 if (i == j) {
@@ -33,6 +34,10 @@ public class PathPlanning {
             }
         }
     }
+
+    /*
+     * This algorithm prioritizes minimizing the amount of transfers required
+     */
 
     public Path pathPlan(Station origin, Station destination) {
         Path path = new Path();
@@ -56,22 +61,133 @@ public class PathPlanning {
                 if (destination.equals(station) &&
                 K(line, origin) < K(line, destination)) {
                     // generate a path 
-                    Station currentStation = station;
-                    path.stations.add(currentStation);
+                    path.buildPath(network, line, origin, destination);
 
-                    while(!currentStation.equals(origin)) {
-                        Station firstStation = line.getPreviousStation(currentStation);
-                        String connectionName = firstStation.name + " -> " + currentStation.name;
-                        Connection c = network.connectionMap.get(connectionName);
-                        path.connections.add(c);
-                        currentStation = firstStation;
-                        path.stations.add(currentStation);
-                    }
                     path.sort();
                     return path;
                 }
             }
         }
+
+        // step 3 - check if the commute can be completed using one transfer
+
+        // use the line connectivity matrix
+
+        /*
+         * for each line that belongs to each station, we know that
+         * none of these lines overlap otherwise we would have found 
+         * a direct connection commute, hence we find look at the 
+         * line connectivity matrix to determine if you can transfer
+         * from one line to the other line
+         */
+
+        for (Line originLine : origin.lines) {
+            for (Line destinationLine : destination.lines) {
+
+                // first two conditionals check if the line actually exists in the network
+                if (originLine.index > -1 &&
+                destinationLine.index > -1 &&
+                connectivityMatrix[originLine.index][destinationLine.index] >= 1) {
+                    // this indicates the two lines have COMMON STOPS 
+                    // and we can take a transfer at any of these common stops
+                    // but we have to check K values
+                    
+                    // check k values in common stations
+                    for (Station commonStation : originLine.commonStations(destinationLine)) {
+                        // we grab the first common station that satisfies the K
+                        // constraint to use as our transfer station
+                        if ((K(originLine, origin) < K(originLine, commonStation)) &
+                        (K(destinationLine, commonStation) < K(destinationLine, destination))) {
+                            // use commonStation to generate a path 
+
+                            path.buildPath(network, destinationLine, commonStation, destination);
+                            path.buildPath(network, originLine, origin, commonStation);
+
+                            path.sort();
+                            return path;
+                        }
+                    }
+                }
+            }
+        }
+
+        // step 4 - two transfers
+
+        // use T2 matrix
+
+        int[][] T2 = connectivityMatrixPower(connectivityMatrix, 2);
+
+        for (Line originLine : origin.lines) {
+            for (Line destinationLine : destination.lines) {
+
+                // first two conditionals check if the line actually exists in the network
+                if (originLine.index > -1 &&
+                destinationLine.index > -1 &&
+                T2[originLine.index][destinationLine.index] >= 1) {
+                    // this indicates the two lines is connected degree 2
+                    // and we can take a transfer to some other line and
+                    // then transfer again
+
+                    for (Line commonLine : originLine.commonLines(network, destinationLine)) {
+                        // s is the first transfer station, t is the second
+                        // following paper jargon
+                        for (Station s : originLine.commonStations(commonLine)) {
+                            for (Station t : commonLine.commonStations(destinationLine)) {
+                                if ((K(originLine, origin) < K(originLine, s)) &&
+                                (K(commonLine, s) < K(commonLine, t)) &&
+                                (K(destinationLine, t) < K(destinationLine, destination))) {
+                                    path.buildPath(network, destinationLine, t, destination);
+                                    path.buildPath(network, commonLine, s, t);
+                                    path.buildPath(network, originLine, origin, s);
+                                    path.sort();
+                                    return path;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // step 5 - three transfers!
+
+        int[][] T3 = connectivityMatrixPower(connectivityMatrix, 3);
+
+        for (Line originLine : origin.lines) {
+            for (Line destinationLine : destination.lines) {
+
+                // first two conditionals check if the line actually exists in the network
+                if (originLine.index > -1 &&
+                destinationLine.index > -1 &&
+                T3[originLine.index][destinationLine.index] >= 1) {
+
+                    // for each line we can transfer to from the originLine, apply step 4
+
+                    for (Line firstTransferLine : originLine.transferLines(network)) {
+                        for (Line secondTransferLine : firstTransferLine.commonLines(network, destinationLine)) {
+                            for (Station x : originLine.commonStations(firstTransferLine)) {
+                                for (Station y : firstTransferLine.commonStations(secondTransferLine)) {
+                                    for (Station z : secondTransferLine.commonStations(destinationLine)) {
+                                        if ((K(originLine, origin) < K(originLine, x)) &&
+                                        (K(firstTransferLine, x) < K(firstTransferLine, y)) &&
+                                        (K(secondTransferLine, y) < K(secondTransferLine, z)) &&
+                                        (K(destinationLine, z) < K(destinationLine, destination))) {
+                                            path.buildPath(network, destinationLine, z, destination);
+                                            path.buildPath(network, secondTransferLine, y, z);
+                                            path.buildPath(network, firstTransferLine, x, y);
+                                            path.buildPath(network, originLine, origin, x);
+                                            path.sort();
+                                            return path;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // no path was found
         return null;
     }
