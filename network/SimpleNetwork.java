@@ -17,14 +17,16 @@ public class SimpleNetwork {
         Station E = new Station("E", 1.0, 1.0);
         Station F = new Station("F", 2.0, 1.0);
         Station G = new Station("G", 3.0, 1.0);
+        Station H = new Station("H", 2.0, -1.0);
         
-        ArrayList<Station> allStations = new ArrayList<Station>(Arrays.asList(A, B, C, D, E, F, G));
+        ArrayList<Station> allStations = new ArrayList<Station>(Arrays.asList(A, B, C, D, E, F, G, H));
 
         Line red_AE = new Line("red A -> E");
         Line green_AE = new Line("green A -> E");
         Line blue_EF = new Line("blue E -> F");
         Line orange_AD = new Line("orange A -> D");
         Line silver_FG = new Line("silve F -> D");
+        Line purple_BH = new Line("purple B -> H");
 
         red_AE.addStation(A, null);
         red_AE.addStation(D, 1.0);
@@ -49,6 +51,11 @@ public class SimpleNetwork {
 
         silver_FG.addStation(F, null);
         silver_FG.addStation(G, 1.0);
+        silver_FG.setDestination(G);
+
+        purple_BH.addStation(B, null);
+        purple_BH.addStation(H, 1.0);
+        purple_BH.setDestination(H);
 
         // generate reverse lines
         Line red_EA = red_AE.generateReverseDirection("red E -> A");
@@ -56,6 +63,7 @@ public class SimpleNetwork {
         Line blue_FE = blue_EF.generateReverseDirection("blue F -> E");
         Line orange_DA = orange_AD.generateReverseDirection("orange D -> A");
         Line silver_GF = silver_FG.generateReverseDirection("silver G -> F");
+        Line purple_HB = purple_BH.generateReverseDirection("purple H -> B");
         
         // add lines to network
         
@@ -70,6 +78,8 @@ public class SimpleNetwork {
         simpleNetwork.addLine(orange_DA);
         simpleNetwork.addLine(silver_FG);
         simpleNetwork.addLine(silver_GF);
+        simpleNetwork.addLine(purple_BH);
+        simpleNetwork.addLine(purple_HB);
 
         PathPlanning pathPlanning = new PathPlanning(simpleNetwork);
         pathPlanning.printMatrix(pathPlanning.connectivityMatrix);
@@ -78,8 +88,10 @@ public class SimpleNetwork {
         System.out.println(pathPlanning.pathPlan(C, A).connections);
         System.out.println(pathPlanning.pathPlan(F, A).connections);
         System.out.println(pathPlanning.pathPlan(B, G).connections);
+        System.out.println(pathPlanning.pathPlan(H, G).connections);
 
-        System.out.println(orange_AD.commonLines(simpleNetwork, blue_EF));
+
+        System.out.println(orange_AD.transferLines(simpleNetwork));
 
     }
 }

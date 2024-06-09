@@ -84,6 +84,10 @@ public class Line {
         return connections.toString();
     }
 
+    public boolean equals(Line line) {
+        return this.name.equals(line.name);
+    }
+
     /*
      * two methods to construct a line
      * 
@@ -212,6 +216,22 @@ public class Line {
         return commonLines;
     }
     
+    /*
+     * all lines that the current line can transfer to
+     */
+
+    public ArrayList<Line> transferLines(Network network) {
+        ArrayList<Line> transferLines = new ArrayList<>();
+        for (Station station : this.stations) {
+            for (Line line : station.lines) {
+                if (!transferLines.contains(line) && !line.equals(this)) {
+                    transferLines.add(line);
+                }
+            }
+        }
+        return transferLines;
+    }
+
     // order the stations in the line
     // using the connection information
     public void sort() {

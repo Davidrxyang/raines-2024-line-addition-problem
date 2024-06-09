@@ -36,8 +36,6 @@ public class PathPlanning {
     }
 
     /*
-     * TODO: INCOMPLETE
-     * 
      * This algorithm prioritizes minimizing the amount of transfers required
      */
 
@@ -151,6 +149,44 @@ public class PathPlanning {
             }
         }
 
+        // step 5 - three transfers!
+
+        int[][] T3 = connectivityMatrixPower(connectivityMatrix, 3);
+
+        for (Line originLine : origin.lines) {
+            for (Line destinationLine : destination.lines) {
+
+                // first two conditionals check if the line actually exists in the network
+                if (originLine.index > -1 &&
+                destinationLine.index > -1 &&
+                T3[originLine.index][destinationLine.index] >= 1) {
+
+                    // for each line we can transfer to from the originLine, apply step 4
+
+                    for (Line firstTransferLine : originLine.transferLines(network)) {
+                        for (Line secondTransferLine : firstTransferLine.commonLines(network, destinationLine)) {
+                            for (Station x : originLine.commonStations(firstTransferLine)) {
+                                for (Station y : firstTransferLine.commonStations(secondTransferLine)) {
+                                    for (Station z : secondTransferLine.commonStations(destinationLine)) {
+                                        if ((K(originLine, origin) < K(originLine, x)) &&
+                                        (K(firstTransferLine, x) < K(firstTransferLine, y)) &&
+                                        (K(secondTransferLine, y) < K(secondTransferLine, z)) &&
+                                        (K(destinationLine, z) < K(destinationLine, destination))) {
+                                            path.buildPath(network, destinationLine, z, destination);
+                                            path.buildPath(network, secondTransferLine, y, z);
+                                            path.buildPath(network, firstTransferLine, x, y);
+                                            path.buildPath(network, originLine, origin, x);
+                                            path.sort();
+                                            return path;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // no path was found
         return null;
