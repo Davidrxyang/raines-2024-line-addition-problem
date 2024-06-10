@@ -28,6 +28,21 @@ public class Line {
     ArrayList<Connection> connections;
     ArrayList<Station> stations;
 
+    /*
+     * default constructor defined for overloading
+     */
+
+    public Line() {
+        this.name = "";
+        connections = new ArrayList<>();
+        stations = new ArrayList<>();
+
+        origin = null;
+        destination = null;
+        length = 0.0;
+        index = -1;
+    }
+
     public Line(String name) {
         this.name = name;
         connections = new ArrayList<>();
