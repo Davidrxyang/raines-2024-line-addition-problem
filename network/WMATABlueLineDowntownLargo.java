@@ -3,6 +3,7 @@
  */
 
 public class WMATABlueLineDowntownLargo extends Line {
+
     public WMATABlueLineDowntownLargo(Network network) {
 
         this.name = "blue line franconia-springfield -> downtown largo";

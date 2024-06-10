@@ -37,6 +37,7 @@ public class WMATA {
         Network WMATA = new Network("WMATA", WMATAStations);
 
         Line blueLineDowntownLargo = new WMATABlueLineDowntownLargo(WMATA);
+        Line blueLineFranconiaSpringfield = new WMATABlueLineFranconiaSpringfield(WMATA);
 
         /*
         
