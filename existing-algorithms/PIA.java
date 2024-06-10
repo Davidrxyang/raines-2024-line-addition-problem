@@ -303,15 +303,15 @@ public class PIA {
 
     public static void main(String[] args) {
         // dummy test data
-        Station test1 = new Station("1", 0.0, 0.0);
-        Station test2 = new Station("2", 0.0, 0.1);
-        Station test3 = new Station("3", 0.0, 0.2);
-        Station test4 = new Station("4", 0.1, 0.0);
-        Station test5 = new Station("5", 0.1, 0.1);
-        Station test6 = new Station("6", 0.1, 0.2);
-        Station test7 = new Station("7", 0.2, 0.0);
-        Station test8 = new Station("8", 0.2, 0.1);
-        Station test9 = new Station("9", 0.2, 0.2);
+        Station test1 = new Station("1", 0.1, 0.0);
+        Station test2 = new Station("2", 0.1, 0.1);
+        Station test3 = new Station("3", 0.1, 0.2);
+        Station test4 = new Station("4", 0.2, 0.0);
+        Station test5 = new Station("5", 0.2, 0.1);
+        Station test6 = new Station("6", 0.2, 0.2);
+        Station test7 = new Station("7", 0.3, 0.0);
+        Station test8 = new Station("8", 0.3, 0.1);
+        Station test9 = new Station("9", 0.3, 0.2);
 
         ArrayList<Station> stationList = new ArrayList<>();
         stationList.add(test1);
