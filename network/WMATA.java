@@ -53,6 +53,7 @@ public class WMATA {
         
 
         WMATA.addLine(blueLineDowntownLargo);
+        WMATA.addLine(blueLineFranconiaSpringfield);
         // WMATA.addLine(orange_line);
 
         System.out.println(WMATA);
