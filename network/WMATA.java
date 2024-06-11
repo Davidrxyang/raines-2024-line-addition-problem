@@ -5,6 +5,10 @@ public class WMATA {
 
         ArrayList<Station> WMATAStations = new ArrayList<>();
 
+        /*
+         * Blue line stations
+         */
+
         WMATAStations.add( new Station("franconia-springfield", 38.7667, -77.1679));
         WMATAStations.add( new Station("van dorn st", 38.8000, -77.1288));
         WMATAStations.add( new Station("king st old town", 38.8071, -77.0597));
@@ -34,10 +38,32 @@ public class WMATA {
         WMATAStations.add( new Station("morgan blvd", 38.8940, -76.8677));
         WMATAStations.add( new Station("downtown largo", 38.9006, -76.8445));
         
+        /*
+         * Orange line stations
+         */
+
+        WMATAStations.add( new Station("vienna", 38.8770, -77.2714));
+        WMATAStations.add( new Station("dunn loring", 38.8840, -77.2710));
+        WMATAStations.add( new Station("west falls church", 38.9011, -77.18927));
+        WMATAStations.add( new Station("east falls church", 38.8861, -77.1570));
+        WMATAStations.add( new Station("ballston-mu", 38.8820, -77.1122));
+        WMATAStations.add( new Station("virginia sq-gmu", 38.8831, -77.1034));
+        WMATAStations.add( new Station("clarendon", 38.8867, -77.0954));
+        WMATAStations.add( new Station("court house", 38.8906, -77.0860));
+
+        // common stations with blue line
+
+        WMATAStations.add( new Station("minnesota ave", 38.8992, -76.9468));
+        WMATAStations.add( new Station("deanwood", 38.9082, -76.9352));
+        WMATAStations.add( new Station("cheverly", 38.9165, -76.9164));
+        WMATAStations.add( new Station("landover", 38.93345, -76.8913));
+        WMATAStations.add( new Station("new carrollton", 38.9480, -76.8718));
+
         Network WMATA = new Network("WMATA", WMATAStations);
 
         Line blueLineDowntownLargo = new WMATABlueLineDowntownLargo(WMATA);
         Line blueLineFranconiaSpringfield = new WMATABlueLineFranconiaSpringfield(WMATA);
+        Line orangeLine
 
         /*
         
