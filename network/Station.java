@@ -28,11 +28,9 @@ public class Station extends Object {
 
     int index;
     
-    /*
-    * add more data members for ridership data?
-    */
-    
-    // int averageDailyRidership;
+    // demand information
+    public int demand;
+    public int demandSatisfied;
 
     String comment; 
 
@@ -109,6 +107,19 @@ public class Station extends Object {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    public void calculateDemand(DemandSet d) {
+        demand = 0;
+        for (Demand trip : d.trips) {
+            if (trip.start == this || trip.end == this) {
+                demand += trip.trips;
+            }
+        }
+    }
+
+    public double calculateDemandSatisfied() {
+        return (double) demandSatisfied / demand;
     }
 }
 
