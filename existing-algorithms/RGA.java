@@ -27,12 +27,32 @@ public class RGA {
 
     // number of initial skeletons
     public int M;
+
+    // current line number
+    public int lineNumber;
     
     public RGA(int M) {
 
     }
 
-    public void removeSubsetRouts() {
+    // removes all the routes from network R
+    // that are a subset of another route
+    public void removeSubsetRoutes() {
+        
+    }
 
+    // generate the initial skeleton network
+    // for each of the M node pairs with highest demand,
+    // generate a line between them by finding the shortest path within network
+    public void generateInitialSkeleton() {
+        for (int i = R.lines.size(); i < M; i++) {
+            Demand d = l.getMaxDemand();
+            Station start = d.start;
+            Station end = d.end;
+            Line l = existingNetwork.bfs(start, end, "r" + lineNumber);
+
+            lineNumber++;
+            R.addLine(l);
+        }
     }
 }

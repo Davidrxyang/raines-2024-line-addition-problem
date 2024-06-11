@@ -167,6 +167,14 @@ public class Network {
         return null;
     }
 
-
+    public ArrayList<Station> getNeightbors(Station s) {
+        ArrayList<Station> neighbors = new ArrayList<>();
+        for (int i = 0; i < nStations; i++) {
+            if (distanceMatrix[s.index][i] != -1.0) {
+                neighbors.add(stationList.get(i));
+            }
+        }
+        return neighbors;
+    }
 
 }

@@ -34,7 +34,7 @@ public class PIA {
     public int lineNumber;
 
     // constraints for candidate
-    public double maxCircuity = 2;
+    public double maxCircuity = 1.5;
 
     // constructor
     // main algorithm logic
@@ -88,6 +88,14 @@ public class PIA {
             }
             updateD0();
         }
+
+        ArrayList<Line> lines = new ArrayList<>(R.lines);
+        R.lines.clear();;
+        for (Line l : lines) {
+            if (l.stations.size() > 1) {
+                R.addLine(l);
+            }
+        }
     }
 
     public String toString() {
@@ -136,7 +144,12 @@ public class PIA {
                         rPrimeTemp.insertLine(bfs1, i);
                     }
 
-                    if (cost(rPrimeTemp) < rCost && noLoop(rPrimeTemp) && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
+                    Line n = existingNetwork.bfs(rPrimeTemp.origin, rPrimeTemp.destination, r.name);
+                    n.insertStation(rPrimeTemp.origin, 0);
+                    n.insertStation(rPrimeTemp.destination, n.stations.size());
+                    if (cost(rPrimeTemp) < rCost && noLoop(rPrimeTemp)
+                    && rPrimeTemp.travelCost(rPrimeTemp.origin, rPrimeTemp.destination)
+                        < maxCircuity * n.travelCost(rPrimeTemp.origin, rPrimeTemp.destination)) {
                         rPrime = rPrimeTemp;
                         rCost = cost(rPrimeTemp);
                         rDoublePrime = r;
@@ -169,8 +182,13 @@ public class PIA {
                         rPrimeTemp.insertLine(bfs1, i);
                     }
 
+                    Line n = existingNetwork.bfs(rPrimeTemp.origin, rPrimeTemp.destination, r.name);
+                    n.insertStation(rPrimeTemp.origin, 0);
+                    n.insertStation(rPrimeTemp.destination, n.stations.size());
                     // max circuity bound
-                    if (cost(rPrimeTemp) < rCost && noLoop(rPrimeTemp) && rPrimeTemp.travelCost(d.start, d.end) < maxCircuity * directCost) {
+                    if (cost(rPrimeTemp) < rCost && noLoop(rPrimeTemp)
+                    && rPrimeTemp.travelCost(rPrimeTemp.origin, rPrimeTemp.destination)
+                    < maxCircuity * n.travelCost(rPrimeTemp.origin, rPrimeTemp.destination)) {
                         rPrime = rPrimeTemp;
                         rCost = cost(rPrimeTemp);
                         rDoublePrime = r;
@@ -226,7 +244,12 @@ public class PIA {
                             rPrimeTemp2.insertLine(bfs1, j);
                         }
 
-                        if (cost(rPrimeTemp2) < rCost && noLoop(rPrimeTemp2) && rPrimeTemp2.travelCost(d.start, d.end) < maxCircuity * directCost) {
+                        Line n = existingNetwork.bfs(rPrimeTemp2.origin, rPrimeTemp2.destination, r.name);
+                        n.insertStation(rPrimeTemp2.origin, 0);
+                        n.insertStation(rPrimeTemp2.destination, n.stations.size());
+                        if (cost(rPrimeTemp2) < rCost && noLoop(rPrimeTemp2) &&
+                        rPrimeTemp2.travelCost(rPrimeTemp2.origin, rPrimeTemp2.destination)
+                        < maxCircuity * n.travelCost(rPrimeTemp2.origin, rPrimeTemp2.destination)) {
                             rPrime = rPrimeTemp2;
                             rCost = cost(rPrimeTemp2);
                             rDoublePrime = r;
@@ -293,7 +316,7 @@ public class PIA {
         for (int i = 0; i < l.stations.size(); i++) {
             for (int j = 0; j < l.stations.size(); j++) {
                 if (i != j && l.stations.get(i).name.equals(l.stations.get(j).name)) {
-                    System.out.println("loop: " + l);
+                    // System.out.println("loop: " + l);
                     return false;
                 }
             }
