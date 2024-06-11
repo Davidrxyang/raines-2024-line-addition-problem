@@ -204,7 +204,6 @@ public class Line {
     /*
      * since each line is directed, this function automatically generates the reverse direction lin
      */
-
     public Line generateReverseDirection(String name) {
         Line reverseLine = new Line(name);
         reverseLine.origin = this.destination;
@@ -253,7 +252,6 @@ public class Line {
      * 
      * this is terrible, I know
      */
-
     public ArrayList<Line> commonLines(Network network, Line targetLine) {
         ArrayList<Line> commonLines = new ArrayList<>();
 
@@ -274,7 +272,6 @@ public class Line {
     /*
      * all lines that the current line can transfer to
      */
-
     public ArrayList<Line> transferLines(Network network) {
         ArrayList<Line> transferLines = new ArrayList<>();
         for (Station station : this.stations) {
