@@ -36,9 +36,23 @@ public class RGA {
 
     // node sharing factor
     public double fns = 0.8;
+
+    // circuity factor
+    public double fc = 3;
     
     public RGA(DemandSet d, Network n, int M) {
+        for (Station s : n.stationList) {
+            s.calculateDemand(d);
+        }
+        demandSet = d;
+        existingNetwork = n;
+        R = new Network("generated network", existingNetwork.stationList);
+        this.M = M;
+        lineNumber = 0;
 
+        totalTrips = demandSet.totalTrips();
+
+        generateInitialSkeleton();
     }
 
     // removes all the routes from network R
@@ -53,8 +67,11 @@ public class RGA {
     public void generateInitialSkeleton() {
         for (int i = R.lines.size(); i < M; i++) {
             Demand d = demandSet.getMaxDemand();
+            demandSet.trips.remove(d);
             Station start = d.start;
             Station end = d.end;
+            start.demandSatisfied += d.trips;
+            end.demandSatisfied += d.trips;
             Line l = existingNetwork.bfs(start, end, "r" + lineNumber);
             // necessary for the stupid way i set up bfs
             l.insertStation(start, 0);
@@ -67,10 +84,15 @@ public class RGA {
 
     // expands a line based on best station logic
     public void expandLine(Line l) {
-        Station n = pickBestStation(l);
-        if (n == null) {
-            return;
-        }
+        // picks an initial station to expand to
+        Station n = null;
+        // while the line can still be expanded, expand the line
+        // terminate when no suitable lines can be added
+        do {
+            n = pickBestStation(l);
+            if (n != null)
+                deleteVertices(n, l);
+        } while (n != null); // i love do while loops
     }
 
     // using MD heuristic
@@ -85,6 +107,8 @@ public class RGA {
 
         Station bestStation = null;
 
+        
+
         for (Station s : stationCandidates) {
             Line tempLine = new Line(l);
             if (s.getDistance(l.destination) < s.getDistance(l.origin)) {
@@ -93,12 +117,15 @@ public class RGA {
                 tempLine.insertStation(s, 0);
             }
 
-            Line direct = existingNetwork.bfs(tempLine.origin, tempLine.destination, "direct");
+            Line direct = existingNetwork.bfs(tempLine.origin, tempLine.destination, l.name);
+            // because of the stupid way i set up bfs, i have to insert the start and end stations manually
+            direct.insertStation(tempLine.origin, 0);
+            direct.insertStation(tempLine.destination, direct.stations.size());
 
             // check station constraints (page 37)
             if (l.stations.contains(s)
             || s.calculateDemandSatisfied() > fns
-            || tempLine.travelCost(tempLine.origin, tempLine.destination) < direct.travelCost(direct.origin, direct.destination)) {
+            || tempLine.travelCost(tempLine.origin, tempLine.destination) > fc * direct.travelCost(direct.origin, direct.destination)) {
                 continue;
             }
 
@@ -114,9 +141,35 @@ public class RGA {
                 demandIncrease = increase;
                 bestStation = s;
             }
+
+            System.out.println("line: " + l);
+            System.out.println("temp line: " + tempLine);
+        }
+
+        if (bestStation != null) {
+            if (bestStation.getDistance(l.destination) < bestStation.getDistance(l.origin)) {
+                l.insertStation(bestStation, l.stations.size());
+            } else {
+                l.insertStation(bestStation, 0);
+            }
         }
         return bestStation;
     }
+
+        // deletes vertices in OD matrix that have demand covered entirely by one route
+        public void deleteVertices(Station s, Line line) {
+            for (int i = 0; i < demandSet.trips.size(); i++) {
+                Demand t = demandSet.trips.get(i);
+                // if both start and end of a demand (trip) is on the same line,
+                // remove that from the demand matrix (demand set)
+                if (line.stations.contains(t.start) && line.stations.contains(t.end)) {
+                    t.start.demandSatisfied += t.trips;
+                    t.end.demandSatisfied += t.trips;
+                    demandSet.trips.remove(t);
+                    i--;
+                }
+            }
+        }
 
 
     public static void main(String[] args) {

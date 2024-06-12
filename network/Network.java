@@ -169,9 +169,11 @@ public class Network {
 
     public ArrayList<Station> getNeightbors(Station s) {
         ArrayList<Station> neighbors = new ArrayList<>();
-        for (int i = 0; i < nStations; i++) {
-            if (distanceMatrix[s.index][i] != -1.0) {
-                neighbors.add(stationList.get(i));
+        for (Connection c : connections) {
+            if (c.origin == s) {
+                neighbors.add(c.destination);
+            } else if (c.destination == s) {
+                neighbors.add(c.origin);
             }
         }
         return neighbors;
