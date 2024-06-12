@@ -23,7 +23,8 @@ public class RGA {
     public double D01 = 0;
 
     // parameters to determine termination of the algorithm
-    // when the ratio of the demand covered by the network is higher than the minimums
+    // when the ratio of the demand covered by the network is higher than the
+    // minimums
     public double D0min = 0.75;
     public double D01min = 1;
     public double totalTrips;
@@ -35,11 +36,11 @@ public class RGA {
     public int lineNumber;
 
     // node sharing factor
-    public double fns = 0.8;
+    public double fns = 0.9;
 
     // circuity factor
     public double fc = 3;
-    
+
     public RGA(DemandSet d, Network n, int M) {
         for (Station s : n.stationList) {
             s.calculateDemand(d);
@@ -52,7 +53,11 @@ public class RGA {
 
         totalTrips = demandSet.totalTrips();
 
-        generateInitialSkeleton();
+        do {
+            generateInitialSkeleton();
+            updateD0();
+            this.M++;
+        } while ((D0 < D0min || D01 < D01min) && demandSet.trips.size() > 0);
     }
 
     // removes all the routes from network R
@@ -107,8 +112,6 @@ public class RGA {
 
         Station bestStation = null;
 
-        
-
         for (Station s : stationCandidates) {
             Line tempLine = new Line(l);
             if (s.getDistance(l.destination) < s.getDistance(l.origin)) {
@@ -118,14 +121,16 @@ public class RGA {
             }
 
             Line direct = existingNetwork.bfs(tempLine.origin, tempLine.destination, l.name);
-            // because of the stupid way i set up bfs, i have to insert the start and end stations manually
+            // because of the stupid way i set up bfs, i have to insert the start and end
+            // stations manually
             direct.insertStation(tempLine.origin, 0);
             direct.insertStation(tempLine.destination, direct.stations.size());
 
             // check station constraints (page 37)
             if (l.stations.contains(s)
-            || s.calculateDemandSatisfied() > fns
-            || tempLine.travelCost(tempLine.origin, tempLine.destination) > fc * direct.travelCost(direct.origin, direct.destination)) {
+                    || s.calculateDemandSatisfied() > fns
+                    || tempLine.travelCost(tempLine.origin, tempLine.destination) > fc
+                            * direct.travelCost(direct.origin, direct.destination)) {
                 continue;
             }
 
@@ -141,9 +146,6 @@ public class RGA {
                 demandIncrease = increase;
                 bestStation = s;
             }
-
-            System.out.println("line: " + l);
-            System.out.println("temp line: " + tempLine);
         }
 
         if (bestStation != null) {
@@ -156,21 +158,43 @@ public class RGA {
         return bestStation;
     }
 
-        // deletes vertices in OD matrix that have demand covered entirely by one route
-        public void deleteVertices(Station s, Line line) {
-            for (int i = 0; i < demandSet.trips.size(); i++) {
-                Demand t = demandSet.trips.get(i);
-                // if both start and end of a demand (trip) is on the same line,
-                // remove that from the demand matrix (demand set)
-                if (line.stations.contains(t.start) && line.stations.contains(t.end)) {
-                    t.start.demandSatisfied += t.trips;
-                    t.end.demandSatisfied += t.trips;
-                    demandSet.trips.remove(t);
-                    i--;
-                }
+    // deletes vertices in OD matrix that have demand covered entirely by one route
+    public void deleteVertices(Station s, Line line) {
+        for (int i = 0; i < demandSet.trips.size(); i++) {
+            Demand t = demandSet.trips.get(i);
+            // if both start and end of a demand (trip) is on the same line,
+            // remove that from the demand matrix (demand set)
+            if (line.stations.contains(t.start) && line.stations.contains(t.end)) {
+                t.start.demandSatisfied += t.trips;
+                t.end.demandSatisfied += t.trips;
+                demandSet.trips.remove(t);
+                i--;
             }
         }
+    }
 
+    public void updateD0() {
+        // remove all trips that are covered by one route
+        int oneTransfer = 0;
+        int moreTransfers = 0;
+        for (Demand d : demandSet.trips) {
+            for (Line r1 : R.lines) {
+                for (Line r2 : R.lines) {
+                    if (r1.commonStations(r2).size() > 0) {
+                        if (r1.stations.contains(d.start) && r2.stations.contains(d.end)) {
+                            oneTransfer += d.trips;
+                            continue;
+                        }
+                    }
+                }
+            }
+            moreTransfers += d.trips;
+        }
+
+        int noTransfers = (int) totalTrips - oneTransfer - moreTransfers;
+        D0 = noTransfers / totalTrips;
+        D01 = (noTransfers + oneTransfer) / totalTrips;
+    }
 
     public static void main(String[] args) {
         // dummy test data
