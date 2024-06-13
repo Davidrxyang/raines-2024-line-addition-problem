@@ -78,6 +78,37 @@ public class WMATA {
 
         // common stations with blue line
 
+        /*
+         * red line stations
+         */
+
+        WMATAStations.add( new Station("shady grove", 39.1206, -77.1650));
+        WMATAStations.add( new Station("rockville", 39.0843, -77.1464));
+        WMATAStations.add( new Station("twinbrook", 39.0627, -77.1213));
+        WMATAStations.add( new Station("north bethesda", 39.0478, -77.1127));
+        WMATAStations.add( new Station("grosvenor-strathmore", 39.0296, -77.1040));
+        WMATAStations.add( new Station("medical center", 38.9987, -77.0969));
+        WMATAStations.add( new Station("bethesda", 38.9834, -77.0937));
+        WMATAStations.add( new Station("friendship heights", 38.9603, -77.0857));
+        WMATAStations.add( new Station("tenleytown-au", 38.9489, -77.0797));
+        WMATAStations.add( new Station("van ness-udc", 38.9436, -77.0632));
+        WMATAStations.add( new Station("cleveland park", 38.9354, -77.0585));
+        WMATAStations.add( new Station("woodley park", 38.9253, -77.0527));
+        WMATAStations.add( new Station("dupont circle", 38.9103, -77.0440));
+        WMATAStations.add( new Station("farragut north", 38.9032, -77.0397));
+        // metro center
+        WMATAStations.add( new Station("gallery place", 38.8983, -77.0228));
+        WMATAStations.add( new Station("judiciary sq", 38.8967, -77.0177));
+        WMATAStations.add( new Station("union station", 38.8975, -77.0075));
+        WMATAStations.add( new Station("noma-gallaudet u", 38.9066, -77.0033));
+        WMATAStations.add( new Station("rhode island ave", 38.9209, -76.9960));
+        WMATAStations.add( new Station("brookland-cua", 38.9333, -76.9945));
+        WMATAStations.add( new Station("fort totten", 38.9519, -77.0023));
+        WMATAStations.add( new Station("takoma", 38.9760, -77.0182));
+        WMATAStations.add( new Station("silver spring", 38.9939, -77.0313));
+        WMATAStations.add( new Station("forest glen", 39.0155, -77.0430));
+        WMATAStations.add( new Station("wheaton", 39.0380, -77.0504));
+        WMATAStations.add( new Station("glenmont", 39.0620, -77.0536));
 
         Network WMATA = new Network("WMATA", WMATAStations);
 
@@ -87,6 +118,8 @@ public class WMATA {
         Line orangeLineVienna = new WMATAOrangeLineVienna(WMATA);
         Line silverLineDowntownLargo = new WMATASilverLineDowntownLargo(WMATA);
         Line silverLineAshburn = new WMATASilverLineAshburn(WMATA);
+        Line redLineGlenmont = new WMATARedLineGlenmont(WMATA);
+        Line redLineShadyGrove = new WMATARedLineShadyGrove(WMATA);
         
 
         WMATA.addLine(blueLineDowntownLargo);
@@ -95,10 +128,14 @@ public class WMATA {
         WMATA.addLine(orangeLineVienna);
         WMATA.addLine(silverLineDowntownLargo);
         WMATA.addLine(silverLineAshburn);
+        WMATA.addLine(redLineGlenmont);
+        WMATA.addLine(redLineShadyGrove);
 
         System.out.println(WMATA);
 
         PathPlanning pp = new PathPlanning(WMATA);
         pp.printMatrix(pp.connectivityMatrix);
+        System.out.println(pp.pathPlan(WMATA.getStation("cleveland park"), WMATA.getStation("morgan blvd")).connections);
+
     }
 }

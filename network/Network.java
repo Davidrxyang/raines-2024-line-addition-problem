@@ -121,6 +121,10 @@ public class Network {
         return sb.toString();
     }
 
+    public Station getStation(String name) {
+        return stations.get(name);
+    }
+
     // dfs function for PIA
     // finds the shortest path between two stations
     // using existing connections
