@@ -1,3 +1,4 @@
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 
 public class WMATA {
@@ -59,30 +60,41 @@ public class WMATA {
         WMATAStations.add( new Station("landover", 38.93345, -76.8913));
         WMATAStations.add( new Station("new carrollton", 38.9480, -76.8718));
 
+        /*
+         * silver line stations
+         */
+
+        WMATAStations.add( new Station("ashburn", 39.0049, -77.4923));
+        WMATAStations.add( new Station("loudoun gateway", 38.9915, -77.4606));
+        WMATAStations.add( new Station("washington dulles international airport", 38.9560, -77.4480));
+        WMATAStations.add( new Station("innovation center", 38.9617, -77.4167));
+        WMATAStations.add( new Station("herndon", 38.9529, -77.3849));
+        WMATAStations.add( new Station("reston town center", 38.9527, -77.3601));
+        WMATAStations.add( new Station("wiehle-reston east", 38.9479, -77.3403));
+        WMATAStations.add( new Station("spring hill", 38.9292, -77.2420));
+        WMATAStations.add( new Station("greensboro", 38.9209, -77.2338));
+        WMATAStations.add( new Station("tysons", 38.9207, -77.2215));
+        WMATAStations.add( new Station("mclean", 38.9243, -77.2105));
+
+        // common stations with blue line
+
+
         Network WMATA = new Network("WMATA", WMATAStations);
 
         Line blueLineDowntownLargo = new WMATABlueLineDowntownLargo(WMATA);
         Line blueLineFranconiaSpringfield = new WMATABlueLineFranconiaSpringfield(WMATA);
         Line orangeLineNewCarrollton = new WMATAOrangeLineNewCarrollton(WMATA);
         Line orangeLineVienna = new WMATAOrangeLineVienna(WMATA);
-
-        /*
-        
-        Line orange_line = new Line("orange line");
-        orange_line.addStation(capitol_south, null);
-        orange_line.addStation(eastern_market, 0.52);
-        
-        System.out.println("eastern market lines");
-        System.out.println(eastern_market);
-        
-        WMATAStations.addAll(orange_line.stations);
-        */
+        Line silverLineDowntownLargo = new WMATASilverLineDowntownLargo(WMATA);
+        Line silverLineAshburn = new WMATASilverLineAshburn(WMATA);
         
 
         WMATA.addLine(blueLineDowntownLargo);
         WMATA.addLine(blueLineFranconiaSpringfield);
         WMATA.addLine(orangeLineNewCarrollton);
         WMATA.addLine(orangeLineVienna);
+        WMATA.addLine(silverLineDowntownLargo);
+        WMATA.addLine(silverLineAshburn);
 
         System.out.println(WMATA);
 
