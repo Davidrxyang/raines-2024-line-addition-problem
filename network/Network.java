@@ -167,6 +167,16 @@ public class Network {
         return null;
     }
 
-
+    public ArrayList<Station> getNeightbors(Station s) {
+        ArrayList<Station> neighbors = new ArrayList<>();
+        for (Connection c : connections) {
+            if (c.origin == s) {
+                neighbors.add(c.destination);
+            } else if (c.destination == s) {
+                neighbors.add(c.origin);
+            }
+        }
+        return neighbors;
+    }
 
 }
