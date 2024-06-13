@@ -63,7 +63,8 @@ public class WMATA {
 
         Line blueLineDowntownLargo = new WMATABlueLineDowntownLargo(WMATA);
         Line blueLineFranconiaSpringfield = new WMATABlueLineFranconiaSpringfield(WMATA);
-        Line orangeLine
+        Line orangeLineNewCarrollton = new WMATAOrangeLineNewCarrollton(WMATA);
+        Line orangeLineVienna = new WMATAOrangeLineVienna(WMATA);
 
         /*
         
@@ -80,7 +81,8 @@ public class WMATA {
 
         WMATA.addLine(blueLineDowntownLargo);
         WMATA.addLine(blueLineFranconiaSpringfield);
-        // WMATA.addLine(orange_line);
+        WMATA.addLine(orangeLineNewCarrollton);
+        WMATA.addLine(orangeLineVienna);
 
         System.out.println(WMATA);
 
