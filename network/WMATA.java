@@ -1,3 +1,4 @@
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 
 public class WMATA {
@@ -5,55 +6,191 @@ public class WMATA {
 
         ArrayList<Station> WMATAStations = new ArrayList<>();
 
-        Station rosslyn = new Station("rosslyn", 38.8969, -77.0720);
-        Station foggy_bottom = new Station("foggy bottom", 38.9009, -77.0505);
-        Station farragut_west = new Station("farragut west", 38.9016, -77.0420);
-        Station mcpherson_square = new Station("mcpherson square", 38.9013, -77.0322);
-        Station metro_center = new Station("metro center", 38.8987, -77.0278);
-        Station federal_triangle = new Station("federal triangle", 38.8940, -77.0283);
-        Station smithsonian = new Station("smithsonian", 38.8892, -77.0282);
-        Station lenfant_plaza = new Station("lenfant plaza", 38.8851, -77.0219);
-        Station federal_center_sw = new Station("federal center sw", 38.8852, -77.0156);
-        Station capitol_south = new Station("capitol south", 38.8858, -77.0060);
-        Station eastern_market = new Station("eastern market", 38.8844, -76.9958);
+        /*
+         * Blue line stations
+         */
 
-        Line blue_line = new Line("blue line");
+        WMATAStations.add( new Station("franconia-springfield", 38.7667, -77.1679));
+        WMATAStations.add( new Station("van dorn st", 38.8000, -77.1288));
+        WMATAStations.add( new Station("king st old town", 38.8071, -77.0597));
+        WMATAStations.add( new Station("braddock rd", 38.8138, -77.0541));
+        WMATAStations.add( new Station("potomac yard", 38.8332, -77.0462)); // note this one is "new"??
+        WMATAStations.add( new Station("ronald reagan washington international", 38.8536, -77.0440));
+        WMATAStations.add( new Station("crystal city", 38.8579, -77.0505));
+        WMATAStations.add( new Station("pentagon city", 38.8619, -77.0594));
+        WMATAStations.add( new Station("pentagon", 38.8685, -77.0547));
+        WMATAStations.add( new Station("arlington cemetery", 38.8846, -77.0631));
+        WMATAStations.add( new Station("rosslyn", 38.8969, -77.0720));
+        WMATAStations.add( new Station("foggy bottom", 38.9009, -77.0505));
+        WMATAStations.add( new Station("farragut west", 38.9016, -77.0420));
+        WMATAStations.add( new Station("mcpherson square", 38.9013, -77.0322));
+        WMATAStations.add( new Station("metro center", 38.8987, -77.0278));
+        WMATAStations.add( new Station("federal triangle", 38.8940, -77.0283));
+        WMATAStations.add( new Station("smithsonian", 38.8892, -77.0282));
+        WMATAStations.add( new Station("lenfant plaza", 38.8851, -77.0219));
+        WMATAStations.add( new Station("federal center sw", 38.8852, -77.0156));
+        WMATAStations.add( new Station("capitol south", 38.8858, -77.0060));
+        WMATAStations.add( new Station("eastern market", 38.8844, -76.9958));
+        WMATAStations.add( new Station("potomac ave", 38.8813, -76.9853));
+        WMATAStations.add( new Station("stadium-armory", 38.8874, -76.9771));
+        WMATAStations.add( new Station("benning rd", 38.8901, -76.9377));
+        WMATAStations.add( new Station("capitol heights", 38.8894, -76.9122));
+        WMATAStations.add( new Station("addison rd", 38.8867, -76.8955));
+        WMATAStations.add( new Station("morgan blvd", 38.8940, -76.8677));
+        WMATAStations.add( new Station("downtown largo", 38.9006, -76.8445));
+        
+        /*
+         * Orange line stations
+         */
 
-        blue_line.addStation(rosslyn, null);
-        blue_line.addStation(foggy_bottom, 1.3);
-        blue_line.addStation(farragut_west, 0.5);
-        blue_line.addStation(mcpherson_square, 0.4);
-        blue_line.addStation(metro_center, 0.45);
-        blue_line.addStation(federal_triangle, 0.3);
-        blue_line.addStation(smithsonian, 0.38);
-        blue_line.addStation(lenfant_plaza, 0.54);
-        blue_line.addStation(federal_center_sw, 0.38);
-        blue_line.addStation(capitol_south, 0.58);
-        blue_line.addStation(eastern_market, 0.52);
+        WMATAStations.add( new Station("vienna", 38.8770, -77.2714));
+        WMATAStations.add( new Station("dunn loring", 38.8840, -77.2710));
+        WMATAStations.add( new Station("west falls church", 38.9011, -77.18927));
+        WMATAStations.add( new Station("east falls church", 38.8861, -77.1570));
+        WMATAStations.add( new Station("ballston-mu", 38.8820, -77.1122));
+        WMATAStations.add( new Station("virginia sq-gmu", 38.8831, -77.1034));
+        WMATAStations.add( new Station("clarendon", 38.8867, -77.0954));
+        WMATAStations.add( new Station("court house", 38.8906, -77.0860));
 
-        blue_line.setDestination(eastern_market);
-        System.out.println(blue_line.getLength());
-        System.out.println(blue_line);
+        // common stations with blue line
 
-        Line orange_line = new Line("orange line");
-        orange_line.addStation(capitol_south, null);
-        orange_line.addStation(eastern_market, 0.52);
+        WMATAStations.add( new Station("minnesota ave", 38.8992, -76.9468));
+        WMATAStations.add( new Station("deanwood", 38.9082, -76.9352));
+        WMATAStations.add( new Station("cheverly", 38.9165, -76.9164));
+        WMATAStations.add( new Station("landover", 38.93345, -76.8913));
+        WMATAStations.add( new Station("new carrollton", 38.9480, -76.8718));
 
-        System.out.println("eastern market lines");
-        System.out.println(eastern_market);
+        /*
+         * silver line stations
+         */
 
-        WMATAStations.addAll(blue_line.stations);
-        WMATAStations.addAll(orange_line.stations);
+        WMATAStations.add( new Station("ashburn", 39.0049, -77.4923));
+        WMATAStations.add( new Station("loudoun gateway", 38.9915, -77.4606));
+        WMATAStations.add( new Station("washington dulles international airport", 38.9560, -77.4480));
+        WMATAStations.add( new Station("innovation center", 38.9617, -77.4167));
+        WMATAStations.add( new Station("herndon", 38.9529, -77.3849));
+        WMATAStations.add( new Station("reston town center", 38.9527, -77.3601));
+        WMATAStations.add( new Station("wiehle-reston east", 38.9479, -77.3403));
+        WMATAStations.add( new Station("spring hill", 38.9292, -77.2420));
+        WMATAStations.add( new Station("greensboro", 38.9209, -77.2338));
+        WMATAStations.add( new Station("tysons", 38.9207, -77.2215));
+        WMATAStations.add( new Station("mclean", 38.9243, -77.2105));
+
+        // common stations with blue line
+
+        /*
+         * red line stations
+         */
+
+        WMATAStations.add( new Station("shady grove", 39.1206, -77.1650));
+        WMATAStations.add( new Station("rockville", 39.0843, -77.1464));
+        WMATAStations.add( new Station("twinbrook", 39.0627, -77.1213));
+        WMATAStations.add( new Station("north bethesda", 39.0478, -77.1127));
+        WMATAStations.add( new Station("grosvenor-strathmore", 39.0296, -77.1040));
+        WMATAStations.add( new Station("medical center", 38.9987, -77.0969));
+        WMATAStations.add( new Station("bethesda", 38.9834, -77.0937));
+        WMATAStations.add( new Station("friendship heights", 38.9603, -77.0857));
+        WMATAStations.add( new Station("tenleytown-au", 38.9489, -77.0797));
+        WMATAStations.add( new Station("van ness-udc", 38.9436, -77.0632));
+        WMATAStations.add( new Station("cleveland park", 38.9354, -77.0585));
+        WMATAStations.add( new Station("woodley park", 38.9253, -77.0527));
+        WMATAStations.add( new Station("dupont circle", 38.9103, -77.0440));
+        WMATAStations.add( new Station("farragut north", 38.9032, -77.0397));
+        // metro center
+        WMATAStations.add( new Station("gallery place", 38.8983, -77.0228));
+        WMATAStations.add( new Station("judiciary sq", 38.8967, -77.0177));
+        WMATAStations.add( new Station("union station", 38.8975, -77.0075));
+        WMATAStations.add( new Station("noma-gallaudet u", 38.9066, -77.0033));
+        WMATAStations.add( new Station("rhode island ave", 38.9209, -76.9960));
+        WMATAStations.add( new Station("brookland-cua", 38.9333, -76.9945));
+        WMATAStations.add( new Station("fort totten", 38.9519, -77.0023));
+        WMATAStations.add( new Station("takoma", 38.9760, -77.0182));
+        WMATAStations.add( new Station("silver spring", 38.9939, -77.0313));
+        WMATAStations.add( new Station("forest glen", 39.0155, -77.0430));
+        WMATAStations.add( new Station("wheaton", 39.0380, -77.0504));
+        WMATAStations.add( new Station("glenmont", 39.0620, -77.0536));
+
+        /*
+         * yellow line stations
+         */
+
+        WMATAStations.add( new Station("huntington", 38.7939, -77.0754));
+        WMATAStations.add( new Station("eisenhower ave", 38.8004, -77.0712));
+
+        // blue line stations
+
+        // lenfant plaze
+
+        WMATAStations.add( new Station("archives", 38.8932, -77.0219));
+
+        // gallery place
+
+        WMATAStations.add( new Station("mt vernon sq", 38.9052, -77.0221));
+
+        /*
+         * green line stations
+         */
+
+        WMATAStations.add( new Station("branch ave", 38.8269, -76.9122));
+        WMATAStations.add( new Station("suitland", 38.8448, -76.9321));
+        WMATAStations.add( new Station("naylor rd", 38.8510, -76.9562));
+        WMATAStations.add( new Station("southern ave", 38.8410, -76.9751));
+        WMATAStations.add( new Station("congress heights", 38.8457, -76.9883));
+        WMATAStations.add( new Station("anacostia", 38.8625, -76.9953));
+        WMATAStations.add( new Station("navy yard-ballpark", 38.8765, -77.0055));
+        WMATAStations.add( new Station("waterfront", 38.8765, -77.0175));
+
+        // yellow line stations
+
+        WMATAStations.add( new Station("shaw-howard u", 38.8136, -77.0219));
+        WMATAStations.add( new Station("u st", 38.9169, -77.0281));
+        WMATAStations.add( new Station("columbia heights", 38.9282, -77.0326));
+        WMATAStations.add( new Station("georgia ave-petworth", 38.9374, -77.0235));
+
+        // fort totten
+
+        WMATAStations.add( new Station("west hyattsville", 38.9554, -76.9694));
+        WMATAStations.add( new Station("hyattsville crossing", 38.9655, -76.9562));
+        WMATAStations.add( new Station("college park-u of md", 38.9733, -76.92814));
+        WMATAStations.add( new Station("greenbelt", 39.0110, -76.9114));
+
+
+        // generating the network 
 
         Network WMATA = new Network("WMATA", WMATAStations);
 
-        WMATA.addLine(blue_line);
-        WMATA.addLine(orange_line);
+        Line blueLineDowntownLargo = new WMATABlueLineDowntownLargo(WMATA);
+        Line blueLineFranconiaSpringfield = new WMATABlueLineFranconiaSpringfield(WMATA);
+        Line orangeLineNewCarrollton = new WMATAOrangeLineNewCarrollton(WMATA);
+        Line orangeLineVienna = new WMATAOrangeLineVienna(WMATA);
+        Line silverLineDowntownLargo = new WMATASilverLineDowntownLargo(WMATA);
+        Line silverLineAshburn = new WMATASilverLineAshburn(WMATA);
+        Line redLineGlenmont = new WMATARedLineGlenmont(WMATA);
+        Line redLineShadyGrove = new WMATARedLineShadyGrove(WMATA);
+        Line yellowLineMtVernonSq = new WMATAYellowLineMtVernonSq(WMATA);
+        Line yellowLineHuntington = new WMATAYellowLineHuntington(WMATA);
+        Line greenLineBranchAve = new WMATAGreenLineBranchAve(WMATA);
+        Line greenLineGreenbelt = new WMATAGreenLineGreenbelt(WMATA);
+        
+
+        WMATA.addLine(blueLineDowntownLargo);
+        WMATA.addLine(blueLineFranconiaSpringfield);
+        WMATA.addLine(orangeLineNewCarrollton);
+        WMATA.addLine(orangeLineVienna);
+        WMATA.addLine(silverLineDowntownLargo);
+        WMATA.addLine(silverLineAshburn);
+        WMATA.addLine(redLineGlenmont);
+        WMATA.addLine(redLineShadyGrove);
+        WMATA.addLine(yellowLineMtVernonSq);
+        WMATA.addLine(yellowLineHuntington);
+        WMATA.addLine(greenLineBranchAve);
+        WMATA.addLine(greenLineGreenbelt);
 
         System.out.println(WMATA);
 
         PathPlanning pp = new PathPlanning(WMATA);
         pp.printMatrix(pp.connectivityMatrix);
-        System.out.println(pp.K(blue_line, metro_center));
+        System.out.println(pp.pathPlan(WMATA.getStation("cleveland park"), WMATA.getStation("morgan blvd")).connections);
+
     }
 }

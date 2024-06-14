@@ -28,6 +28,21 @@ public class Line {
     ArrayList<Connection> connections;
     ArrayList<Station> stations;
 
+    /*
+     * default constructor defined for overloading
+     */
+
+    public Line() {
+        this.name = "";
+        connections = new ArrayList<>();
+        stations = new ArrayList<>();
+
+        origin = null;
+        destination = null;
+        length = 0.0;
+        index = -1;
+    }
+
     public Line(String name) {
         this.name = name;
         connections = new ArrayList<>();
@@ -204,6 +219,33 @@ public class Line {
         
         reverseLine.sort();
         return reverseLine;
+    }
+
+    /*
+     * reverses the current line, new name - modification of above function
+     */
+
+    public void reverse(String name) {
+        Line reverseLine = new Line(name);
+        reverseLine.origin = this.destination;
+        reverseLine.destination = this.origin;
+        reverseLine.length = this.length;
+        reverseLine.stations.addAll(this.stations);
+
+        for (Connection connection : this.connections) {
+            Connection reverseConnection = new Connection(connection.destination, connection.origin, connection.distance);
+            reverseLine.addConnection(reverseConnection);
+        }
+        
+        reverseLine.sort();
+
+        this.name = reverseLine.name;
+        this.origin = reverseLine.origin;
+        this.destination = reverseLine.destination;
+        this.length = reverseLine.length;
+        this.index = reverseLine.index;
+        this.connections = reverseLine.connections;
+        this.stations = reverseLine.stations;
     }
 
     /*
