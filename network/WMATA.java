@@ -110,6 +110,53 @@ public class WMATA {
         WMATAStations.add( new Station("wheaton", 39.0380, -77.0504));
         WMATAStations.add( new Station("glenmont", 39.0620, -77.0536));
 
+        /*
+         * yellow line stations
+         */
+
+        WMATAStations.add( new Station("huntington", 38.7939, -77.0754));
+        WMATAStations.add( new Station("eisenhower ave", 38.8004, -77.0712));
+
+        // blue line stations
+
+        // lenfant plaze
+
+        WMATAStations.add( new Station("archives", 38.8932, -77.0219));
+
+        // gallery place
+
+        WMATAStations.add( new Station("mt vernon sq", 38.9052, -77.0221));
+
+        /*
+         * green line stations
+         */
+
+        WMATAStations.add( new Station("branch ave", 38.8269, -76.9122));
+        WMATAStations.add( new Station("suitland", 38.8448, -76.9321));
+        WMATAStations.add( new Station("naylor rd", 38.8510, -76.9562));
+        WMATAStations.add( new Station("southern ave", 38.8410, -76.9751));
+        WMATAStations.add( new Station("congress heights", 38.8457, -76.9883));
+        WMATAStations.add( new Station("anacostia", 38.8625, -76.9953));
+        WMATAStations.add( new Station("navy yard-ballpark", 38.8765, -77.0055));
+        WMATAStations.add( new Station("waterfront", 38.8765, -77.0175));
+
+        // yellow line stations
+
+        WMATAStations.add( new Station("shaw-howard u", 38.8136, -77.0219));
+        WMATAStations.add( new Station("u st", 38.9169, -77.0281));
+        WMATAStations.add( new Station("columbia heights", 38.9282, -77.0326));
+        WMATAStations.add( new Station("georgia ave-petworth", 38.9374, -77.0235));
+
+        // fort totten
+
+        WMATAStations.add( new Station("west hyattsville", 38.9554, -76.9694));
+        WMATAStations.add( new Station("hyattsville crossing", 38.9655, -76.9562));
+        WMATAStations.add( new Station("college park-u of md", 38.9733, -76.92814));
+        WMATAStations.add( new Station("greenbelt", 39.0110, -76.9114));
+
+
+        // generating the network 
+
         Network WMATA = new Network("WMATA", WMATAStations);
 
         Line blueLineDowntownLargo = new WMATABlueLineDowntownLargo(WMATA);
@@ -120,6 +167,10 @@ public class WMATA {
         Line silverLineAshburn = new WMATASilverLineAshburn(WMATA);
         Line redLineGlenmont = new WMATARedLineGlenmont(WMATA);
         Line redLineShadyGrove = new WMATARedLineShadyGrove(WMATA);
+        Line yellowLineMtVernonSq = new WMATAYellowLineMtVernonSq(WMATA);
+        Line yellowLineHuntington = new WMATAYellowLineHuntington(WMATA);
+        Line greenLineBranchAve = new WMATAGreenLineBranchAve(WMATA);
+        Line greenLineGreenbelt = new WMATAGreenLineGreenbelt(WMATA);
         
 
         WMATA.addLine(blueLineDowntownLargo);
@@ -130,6 +181,10 @@ public class WMATA {
         WMATA.addLine(silverLineAshburn);
         WMATA.addLine(redLineGlenmont);
         WMATA.addLine(redLineShadyGrove);
+        WMATA.addLine(yellowLineMtVernonSq);
+        WMATA.addLine(yellowLineHuntington);
+        WMATA.addLine(greenLineBranchAve);
+        WMATA.addLine(greenLineGreenbelt);
 
         System.out.println(WMATA);
 
