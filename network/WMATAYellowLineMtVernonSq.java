@@ -17,7 +17,7 @@ public class WMATAYellowLineMtVernonSq extends Line {
         this.addStation(network.stations.get("crystal city"), 0.55);
         this.addStation(network.stations.get("pentagon city"), 0.71);
         this.addStation(network.stations.get("pentagon"), 0.55);
-        this.addStation(network.stations.get("lenfant plaze"), 2.38);
+        this.addStation(network.stations.get("lenfant plaza"), 2.38);
         this.addStation(network.stations.get("archives"), 0.55);
         this.addStation(network.stations.get("gallery place"), 0.36);
         this.addStation(network.stations.get("mt vernon sq"), 0.49);

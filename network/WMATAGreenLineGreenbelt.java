@@ -16,13 +16,13 @@ public class WMATAGreenLineGreenbelt extends Line {
         this.addStation(network.stations.get("anacostia"), 1.25);
         this.addStation(network.stations.get("navy yard-ballpark"), 1.17);
         this.addStation(network.stations.get("waterfront"), 0.66);
-        this.addStation(network.stations.get("lenfant plaze"), 0.80);
+        this.addStation(network.stations.get("lenfant plaza"), 0.80);
         this.addStation(network.stations.get("archives"), 0.55);
         this.addStation(network.stations.get("gallery place"), 0.36);
         this.addStation(network.stations.get("mt vernon sq"), 0.49);
         this.addStation(network.stations.get("shaw-howard u"), 0.51);
         this.addStation(network.stations.get("u st"), 0.51);
-        this.addStation(network.stations.get("columnbia heights"), 0.91);
+        this.addStation(network.stations.get("columbia heights"), 0.91);
         this.addStation(network.stations.get("georgia ave-petworth"), 0.88);
         this.addStation(network.stations.get("fort totten"), 1.62);
         this.addStation(network.stations.get("west hyattsville"), 2.00);
