@@ -9,11 +9,11 @@ public class WMATABlueLineDowntownLargo extends Line {
         this.name = "blue line franconia-springfield -> downtown largo";
 
         this.addStation(network.stations.get("franconia-springfield"), null);
-        this.addStation(network.stations.get("van dorn st"), 3.51);
-        this.addStation(network.stations.get("king st old town"), 3.76);
-        this.addStation(network.stations.get("braddock rd"), 0.54);
+        this.addStation(network.stations.get("van dorn street"), 3.51);
+        this.addStation(network.stations.get("king street"), 3.76);
+        this.addStation(network.stations.get("braddock road"), 0.54);
         this.addStation(network.stations.get("potomac yard"), 1.0);
-        this.addStation(network.stations.get("ronald reagan washington international"), 1.48);
+        this.addStation(network.stations.get("reagan washington national airport"), 1.48);
         this.addStation(network.stations.get("crystal city"), 0.55);
         this.addStation(network.stations.get("pentagon city"), 0.71);
         this.addStation(network.stations.get("pentagon"), 0.55);
@@ -29,11 +29,11 @@ public class WMATABlueLineDowntownLargo extends Line {
         this.addStation(network.stations.get("federal center sw"), 0.38);
         this.addStation(network.stations.get("capitol south"), 0.58);
         this.addStation(network.stations.get("eastern market"), 0.52);
-        this.addStation(network.stations.get("potomac ave"), 0.59);
+        this.addStation(network.stations.get("potomac avenue"), 0.59);
         this.addStation(network.stations.get("stadium-armory"), 0.73);
-        this.addStation(network.stations.get("benning rd"), 2.48);
+        this.addStation(network.stations.get("benning road"), 2.48);
         this.addStation(network.stations.get("capitol heights"), 1.37);
-        this.addStation(network.stations.get("addison rd"), 0.92);
+        this.addStation(network.stations.get("addison road"), 0.92);
         this.addStation(network.stations.get("morgan blvd"), 1.60);
         this.addStation(network.stations.get("downtown largo"), 1.33);
 

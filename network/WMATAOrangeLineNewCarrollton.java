@@ -12,8 +12,8 @@
         this.addStation(network.stations.get("dunn loring"), 2.44);
         this.addStation(network.stations.get("west falls church"), 2.32);
         this.addStation(network.stations.get("east falls church"), 2.08);
-        this.addStation(network.stations.get("ballston-mu"), 2.65);
-        this.addStation(network.stations.get("virginia sq-gmu"), 0.41);
+        this.addStation(network.stations.get("ballston"), 2.65);
+        this.addStation(network.stations.get("virginia square-gmu"), 0.41);
         this.addStation(network.stations.get("clarendon"), 0.47);
         this.addStation(network.stations.get("court house"),0.57);
         this.addStation(network.stations.get("rosslyn"), 0.96);
@@ -27,9 +27,9 @@
         this.addStation(network.stations.get("federal center sw"), 0.38);
         this.addStation(network.stations.get("capitol south"), 0.58);
         this.addStation(network.stations.get("eastern market"), 0.52);
-        this.addStation(network.stations.get("potomac ave"), 0.59);
+        this.addStation(network.stations.get("potomac avenue"), 0.59);
         this.addStation(network.stations.get("stadium-armory"), 0.73);
-        this.addStation(network.stations.get("minnesota ave"), 1.95);
+        this.addStation(network.stations.get("minnesota avenue"), 1.95);
         this.addStation(network.stations.get("deanwood"), 0.89);
         this.addStation(network.stations.get("cheverly"), 1.18);
         this.addStation(network.stations.get("landover"), 1.83);
