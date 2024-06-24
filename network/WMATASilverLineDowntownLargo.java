@@ -11,14 +11,14 @@ public class WMATASilverLineDowntownLargo extends Line {
         this.addStation(network.stations.get("innovation center"), 2.10);
         this.addStation(network.stations.get("herndon"), 1.77);
         this.addStation(network.stations.get("reston town center"), 1.35);
-        this.addStation(network.stations.get("wiehle-reston east"), 1.12);
+        this.addStation(network.stations.get("wiehle"), 1.12);
         this.addStation(network.stations.get("spring hill"), 5.84);
         this.addStation(network.stations.get("greensboro"), 0.71);
-        this.addStation(network.stations.get("tysons"), 0.70);
+        this.addStation(network.stations.get("tysons corner"), 0.70);
         this.addStation(network.stations.get("mclean"), 0.66);
         this.addStation(network.stations.get("east falls church"), 4.18);
-        this.addStation(network.stations.get("ballston-mu"), 2.65);
-        this.addStation(network.stations.get("virginia sq-gmu"), 0.41);
+        this.addStation(network.stations.get("ballston"), 2.65);
+        this.addStation(network.stations.get("virginia square-gmu"), 0.41);
         this.addStation(network.stations.get("clarendon"), 0.47);
         this.addStation(network.stations.get("court house"),0.57);
         this.addStation(network.stations.get("rosslyn"), 0.96);
@@ -32,11 +32,11 @@ public class WMATASilverLineDowntownLargo extends Line {
         this.addStation(network.stations.get("federal center sw"), 0.38);
         this.addStation(network.stations.get("capitol south"), 0.58);
         this.addStation(network.stations.get("eastern market"), 0.52);
-        this.addStation(network.stations.get("potomac ave"), 0.59);
+        this.addStation(network.stations.get("potomac avenue"), 0.59);
         this.addStation(network.stations.get("stadium-armory"), 0.73);
-        this.addStation(network.stations.get("benning rd"), 2.48);
+        this.addStation(network.stations.get("benning road"), 2.48);
         this.addStation(network.stations.get("capitol heights"), 1.37);
-        this.addStation(network.stations.get("addison rd"), 0.92);
+        this.addStation(network.stations.get("addison road"), 0.92);
         this.addStation(network.stations.get("morgan blvd"), 1.60);
         this.addStation(network.stations.get("downtown largo"), 1.33);
 
