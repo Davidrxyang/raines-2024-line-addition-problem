@@ -78,10 +78,17 @@ public class Evaluation {
     }
 
     public Double routeEfficiency(Path path) {
-        
-        return 0.0;
+        Double transferWeight = Double.parseDouble(config.get("transferWeight"));
+        Double stationWeight = Double.parseDouble(config.get("stationWeight"));
+        Double distanceWeight = Double.parseDouble(config.get("distanceWeight"));   
+
+        return (transferWeight * path.nTransfers + stationWeight * path.stations.size() + distanceWeight * path.getLength());
     }
 
+    public Double networkEfficiency(Network network) {
+        return 0.0;
+    }
+    
     public Double averageCost() {
         Double totalCost = 0.0;
         for (Double cost : costData.costs) {
@@ -100,5 +107,6 @@ public class Evaluation {
         Path bethesdaToAnacostia = pp.pathPlan(WMATA.WMATA.getStation("bethesda"), WMATA.WMATA.getStation("anacostia"));
 
         System.out.println(eval.constructionCost(WMATA.WMATA.lines.get(0)));
+        System.out.println(eval.routeEfficiency(bethesdaToAnacostia));
     }
 }
