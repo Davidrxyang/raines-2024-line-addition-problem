@@ -7,10 +7,10 @@ A study on the redesign of the WMATA network using existing rail connections, wh
 Algorithms include:
 
 1. PIA
-Parameters:
-D0min: 0.65
-D01min: 1
-Max circuity factor: 2
+Parameters: \
+D0min: 0.65 \
+D01min: 1 \
+Max circuity factor: 2 \
 
 Results:
 [wiehle -> spring hill, spring hill -> greensboro, greensboro -> tysons corner, tysons corner -> mclean, mclean -> east falls church, east falls church -> ballston, ballston -> virginia square-gmu, virginia square-gmu -> clarendon, clarendon -> court house, court house -> rosslyn, rosslyn -> foggy bottom, foggy bottom -> farragut west]
