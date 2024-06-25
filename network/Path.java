@@ -191,7 +191,7 @@ public class Path {
     }
 
     public static void main(String[] args) {
-        ArrayList<Station> WMATAStations = new ArrayList<>();
+        // ArrayList<Station> WMATAStations = new ArrayList<>();
 
         Station rosslyn = new Station("rosslyn", 38.8969, -77.0720);
         Station foggy_bottom = new Station("foggy bottom", 38.9009, -77.0505);

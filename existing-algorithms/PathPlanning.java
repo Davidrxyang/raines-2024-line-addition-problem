@@ -11,8 +11,6 @@
  * generated taking into account transfers between lines/routes.
  */
 
-import java.util.ArrayList;
-
 public class PathPlanning {
 
     Network network;

@@ -3,7 +3,6 @@
  */
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class RGA {
     // the demand of the network
@@ -229,7 +228,7 @@ public class RGA {
          * currently this implementation does not update matrix info
          * in network
          */
-        RGA rga = new RGA(demandSet, wmata.WMATA, 6);
+        RGA rga = new RGA(demandSet, wmata.WMATA, 9);
         System.out.println(rga);
         // Line testLine = new Line("test line");
         // testLine.addStation(test1, 0.0);
