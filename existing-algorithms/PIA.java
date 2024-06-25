@@ -26,7 +26,7 @@ public class PIA {
 
     // parameters to determine termination of the algorithm
     // when the ratio of the demand covered by the network is higher than the minimums
-    public double D0min = 0;
+    public double D0min = 0.65;
     public double D01min = 1;
     public double totalTrips;
 
@@ -34,7 +34,7 @@ public class PIA {
     public int lineNumber;
 
     // constraints for candidate
-    public double maxCircuity = 1.5;
+    public double maxCircuity = 2;
 
     // constructor
     // main algorithm logic
@@ -71,7 +71,7 @@ public class PIA {
                 R.lines.add(r);
                 
                 lineNumber++;
-            } else if (cost(r) < cost(rPrime) - cost(rDoublePrime)) {
+            } else if (cost(r) < (cost(rPrime) - cost(rDoublePrime))) {
                 R.lines.add(r);
                 lineNumber++;
             } else {
