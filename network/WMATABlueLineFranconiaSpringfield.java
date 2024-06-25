@@ -25,8 +25,8 @@
         this.addStation(network.stations.get("smithsonian"), 0.54);
         this.addStation(network.stations.get("federal triangle"), 0.38);
         this.addStation(network.stations.get("metro center"), 0.30);
-        this.addStation(network.stations.get("farragut west"), 0.45);
         this.addStation(network.stations.get("mcpherson square"), 0.50);
+        this.addStation(network.stations.get("farragut west"), 0.45);
         this.addStation(network.stations.get("foggy bottom"), 0.40);
         this.addStation(network.stations.get("rosslyn"), 1.30);
         this.addStation(network.stations.get("arlington cemetery"), 0.94);

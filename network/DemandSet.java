@@ -44,51 +44,58 @@ public class DemandSet {
             sc.nextLine();
             while (sc.hasNextLine()) {
                 String[] line = sc.nextLine().split(",");
-                String start = line[2].substring(1, line[2].length() - 1).toLowerCase();
-                String end = line[3].substring(1, line[3].length() - 1).toLowerCase();
+                if (line[0].substring(1, line[0].length() - 1).equals("Weekday")
+                && line[4].substring(1, line[4].length() - 1).equals("AM Peak")) {
+                        
+                    String start = line[2].substring(1, line[2].length() - 1).toLowerCase();
+                    String end = line[3].substring(1, line[3].length() - 1).toLowerCase();
 
-                Station startStation;
-                Station endStation;
+                    Station startStation;
+                    Station endStation;
 
-                // temporary fix to create station information
-                // if (!network.stations.containsKey(start)) {
-                //     network.stations.put(start, new Station(start, 0.0, 0.0));
-                // }
-                // if (!network.stations.containsKey(end)) {
-                //     network.stations.put(end, new Station(end, 0.0, 0.0));
-                // }
+                    // temporary fix to create station information
+                    // if (!network.stations.containsKey(start)) {
+                    //     network.stations.put(start, new Station(start, 0.0, 0.0));
+                    // }
+                    // if (!network.stations.containsKey(end)) {
+                    //     network.stations.put(end, new Station(end, 0.0, 0.0));
+                    // }
 
-                System.out.println(start + " -> " + end);
-                startStation = network.stations.get(start);
-                endStation = network.stations.get(end);
-                // System.out.println(startStation + " -> " + endStation);
-                if (startStation == null) {
-                    System.out.println("Station not found: " + start);
-                    break;
-                }
-                if (endStation == null) {
-                    System.out.println("Station not found: " + end);
-                    break;
-                }
-
-                // number of trips from start to end
-                int tripNum = Integer.parseInt(line[6]);
-
-                Demand d;
-                boolean found = false;
-                for (Demand trip : trips) {
-                    if (trip.start == startStation && trip.end == endStation) {
-                        d = trip;
-                        d.addTrip(tripNum);
-                        found = true;
+                    System.out.println(start + " -> " + end);
+                    startStation = network.stations.get(start);
+                    endStation = network.stations.get(end);
+                    // System.out.println(startStation + " -> " + endStation);
+                    if (startStation == null) {
+                        System.out.println("Station not found: " + start);
                         break;
                     }
-                }
+                    if (endStation == null) {
+                        System.out.println("Station not found: " + end);
+                        break;
+                    }
 
-                if (!found) {
-                    d = new Demand(startStation, endStation);
-                    d.addTrip(tripNum);
-                    trips.add(d);
+                    // number of trips from start to end
+                    int tripNum = Integer.parseInt(line[6]);
+
+                    Demand d;
+                    boolean found = false;
+                    for (Demand trip : trips) {
+                        if (trip.start == startStation && trip.end == endStation) {
+                            d = trip;
+                            d.addTrip(tripNum);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        d = new Demand(startStation, endStation);
+                        d.addTrip(tripNum);
+                        trips.add(d);
+                    
+                    }
+                    
+                    
                 }
                 
             }
