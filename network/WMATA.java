@@ -198,14 +198,6 @@ public class WMATA {
         WMATA.addLine(yellowLineHuntington);
         WMATA.addLine(greenLineBranchAve);
         WMATA.addLine(greenLineGreenbelt);
-
-        System.out.println(WMATA);
-
-        PathPlanning pp = new PathPlanning(WMATA);
-        pp.printMatrix(pp.connectivityMatrix);
-        System.out
-                .println(pp.pathPlan(WMATA.getStation("cleveland park"), WMATA.getStation("morgan blvd")).connections);
-
     }
 
     public static void main(String[] args) {

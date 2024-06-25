@@ -44,10 +44,13 @@ public class PathPlanning {
         path.setOrigin(origin);
         path.setDestination(destination);
 
+        path.nTransfers = 0;
+
         // PathPlanning algorithm
 
         // step 1 - for completeness, check if origin is destination
         if (origin.equals(destination)) {
+            path.lines.add(origin.lines.get(0));
             return path;
         }
 
@@ -62,6 +65,7 @@ public class PathPlanning {
                     path.buildPath(network, line, origin, destination);
 
                     path.sort();
+                    path.nTransfers = 0;
                     return path;
                 }
             }
@@ -102,6 +106,7 @@ public class PathPlanning {
                             path.buildPath(network, originLine, origin, commonStation);
 
                             path.sort();
+                            path.nTransfers = 1;
                             return path;
                         }
                     }
@@ -138,6 +143,7 @@ public class PathPlanning {
                                     path.buildPath(network, commonLine, s, t);
                                     path.buildPath(network, originLine, origin, s);
                                     path.sort();
+                                    path.nTransfers = 2;
                                     return path;
                                 }
                             }
@@ -175,6 +181,7 @@ public class PathPlanning {
                                             path.buildPath(network, firstTransferLine, x, y);
                                             path.buildPath(network, originLine, origin, x);
                                             path.sort();
+                                            path.nTransfers = 3;
                                             return path;
                                         }
                                     }
@@ -187,6 +194,7 @@ public class PathPlanning {
         }
 
         // no path was found
+        path.nTransfers = 0;
         return null;
     }
 

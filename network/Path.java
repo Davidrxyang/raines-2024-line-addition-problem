@@ -9,6 +9,8 @@ public class Path {
     Station destination; // this is the direction of the line
     Double length;
 
+    int nTransfers;
+
     /*
      * note: the arraylist of connections is not necessarily in correct order,
      * since each connected is directed and unique, and each station, except for
@@ -20,14 +22,17 @@ public class Path {
 
     ArrayList<Connection> connections;
     ArrayList<Station> stations;
+    ArrayList<Line> lines;
 
     public Path() {
-        connections = new ArrayList<>();
-        stations = new ArrayList<>();
+        this.connections = new ArrayList<>();
+        this.stations = new ArrayList<>();
+        this.lines = new ArrayList<>();
 
-        origin = null;
-        destination = null;
-        length = 0.0;
+        this.origin = null;
+        this.destination = null;
+        this.length = 0.0;
+        this.nTransfers = 0;
     }
 
     // copy constructor
@@ -35,14 +40,18 @@ public class Path {
     public Path(Path l) {
         this.connections = new ArrayList<>(l.connections);
         this.stations = new ArrayList<>(l.stations);
+        this.lines = new ArrayList<>();
+
         this.origin = l.origin;
         this.destination = l.destination;
         this.length = l.length;
+        this.nTransfers = 0;
     }
 
     public void buildPath(Network network, Line line, Station origin, Station destination) {
         Station currentStation = destination;
         stations.add(currentStation);
+        lines.add(line);
 
         while(!currentStation.equals(origin)) {
             Station firstStation = line.getPreviousStation(currentStation);
@@ -84,7 +93,22 @@ public class Path {
     }
 
     public String toString() {
-        return connections.toString();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Path from ").append(origin.name).append("to ").append(destination.name).append("\n");
+        sb.append("\n");
+        sb.append("Lines: \n");
+        for (Line l : lines) {
+            sb.append(l.name).append("\n");
+        }
+        sb.append("\n");
+        sb.append("Transfers: ").append(nTransfers).append("\n");
+        sb.append("Connections: \n");
+        for (Connection c : connections) {
+            sb.append(c + "\n");
+        }
+        return sb.toString();
+
     }
 
     /*
@@ -112,7 +136,7 @@ public class Path {
             if (empty()) {
                 lastStation = origin;
             } else {
-                lastStation = connections.getLast().destination;
+                lastStation = connections.get(connections.size() - 1).destination;
             }
             Connection newConnection = new Connection(lastStation, station, distance);
             connections.add(newConnection);
@@ -191,55 +215,10 @@ public class Path {
     }
 
     public static void main(String[] args) {
-        // ArrayList<Station> WMATAStations = new ArrayList<>();
+        WMATA WMATA = new WMATA();
 
-        Station rosslyn = new Station("rosslyn", 38.8969, -77.0720);
-        Station foggy_bottom = new Station("foggy bottom", 38.9009, -77.0505);
-        Station farragut_west = new Station("farragut west", 38.9016, -77.0420);
-        Station mcpherson_square = new Station("mcpherson square", 38.9013, -77.0322);
-        Station metro_center = new Station("metro center", 38.8987, -77.0278);
-        Station federal_triangle = new Station("federal triangle", 38.8940, -77.0283);
-        Station smithsonian = new Station("smithsonian", 38.8892, -77.0282);
-        Station lenfant_plaza = new Station("lenfant plaza", 38.8851, -77.0219);
-        Station federal_center_sw = new Station("federal center sw", 38.8852, -77.0156);
-        Station capitol_south = new Station("capitol south", 38.8858, -77.0060);
-        Station eastern_market = new Station("eastern market", 38.8844, -76.9958);
-
-        Station test_station = new Station("test station", 38.8840, -76.99);
-
-        Line blue_line = new Line("blue line");
-
-        blue_line.addStation(rosslyn, null);
-        blue_line.addStation(foggy_bottom, 1.3);
-        blue_line.addStation(farragut_west, 0.5);
-        blue_line.addStation(mcpherson_square, 0.4);
-        blue_line.addStation(metro_center, 0.45);
-        blue_line.addStation(federal_triangle, 0.3);
-        blue_line.addStation(smithsonian, 0.38);
-        blue_line.addStation(lenfant_plaza, 0.54);
-        blue_line.addStation(federal_center_sw, 0.38);
-        blue_line.addStation(capitol_south, 0.58);
-        blue_line.addStation(eastern_market, 0.52);
-
-        blue_line.setDestination(eastern_market);
-
-        System.out.println(blue_line.getLength());
-        System.out.println(blue_line);
-        System.out.println(blue_line.stations);
-
-        blue_line.sort();
-        blue_line.insertStation(test_station, 1);
-        
-        System.out.println(blue_line.getLength());
-        System.out.println(blue_line);
-        System.out.println(blue_line.stations);
-
-        // WMATAStations.addAll(blue_line.stations);
-
-        // Network WMATA = new Network("WMATA", WMATAStations);
-
-        // WMATA.addLine(blue_line);
-
-        // System.out.println(WMATA);
+        PathPlanning pp = new PathPlanning(WMATA.WMATA);
+        Path bethesdaToAnacostia = pp.pathPlan(WMATA.WMATA.getStation("bethesda"), WMATA.WMATA.getStation("anacostia"));
+        System.out.println(bethesdaToAnacostia);
     }
 }
