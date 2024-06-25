@@ -25,8 +25,8 @@ public class RGA {
     // parameters to determine termination of the algorithm
     // when the ratio of the demand covered by the network is higher than the
     // minimums
-    public double D0min = 0.4;
-    public double D01min = 0.95;
+    public double D0min = 0;
+    public double D01min = 1;
     public double totalTrips;
 
     // number of initial skeletons
@@ -39,7 +39,7 @@ public class RGA {
     public double fns = 0.9;
 
     // circuity factor
-    public double fc = 3;
+    public double fc = 1.5;
 
     public RGA(DemandSet d, Network n, int M) {
         for (Station s : n.stationList) {
@@ -70,6 +70,7 @@ public class RGA {
     // for each of the M node pairs with highest demand,
     // generate a line between them by finding the shortest path within network
     public void generateInitialSkeleton() {
+        ArrayList<Line> skeletons = new ArrayList<Line>();
         for (int i = R.lines.size(); i < M; i++) {
             Demand d = demandSet.getMaxDemand();
             demandSet.trips.remove(d);
@@ -82,8 +83,12 @@ public class RGA {
             l.insertStation(start, 0);
             l.insertStation(end, l.stations.size());
 
+            skeletons.add(l);
+        }
+        for (Line l : skeletons) {
             expandLine(l);
-            R.addLine(l);
+            R.lines.add(l);
+            lineNumber++;
         }
     }
 

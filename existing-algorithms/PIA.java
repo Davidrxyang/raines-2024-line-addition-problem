@@ -27,7 +27,7 @@ public class PIA {
     // parameters to determine termination of the algorithm
     // when the ratio of the demand covered by the network is higher than the minimums
     public double D0min = 0;
-    public double D01min = 0.95;
+    public double D01min = 1;
     public double totalTrips;
 
     // the number of lines in the network
