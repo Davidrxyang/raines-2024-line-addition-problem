@@ -41,6 +41,8 @@ public class Station extends Object {
         this.address = "";
         this.comment = "";
         this.lines = new ArrayList<Line>();
+        this.demand = 0;
+        this.demandSatisfied = 0;
         index = -1;
     }
 

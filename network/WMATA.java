@@ -1,4 +1,3 @@
-import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 
 public class WMATA {

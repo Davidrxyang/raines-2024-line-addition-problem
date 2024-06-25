@@ -5,7 +5,6 @@
  */
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class PIA {
     // the demand of the network
@@ -87,10 +86,11 @@ public class PIA {
                 d.end.addLine(rPrime);
             }
             updateD0();
+            removeSubsetRoutes();
         }
 
         ArrayList<Line> lines = new ArrayList<>(R.lines);
-        R.lines.clear();;
+        R.lines.clear();
         for (Line l : lines) {
             if (l.stations.size() > 1) {
                 R.addLine(l);
@@ -310,6 +310,22 @@ public class PIA {
                     i--;
                 }
             }
+        }
+    }
+
+    // removes all the routes from network R
+    // that are a subset of another route
+    public void removeSubsetRoutes() {
+        ArrayList<Line> toRemove = new ArrayList<Line>();
+        for (Line l1 : R.lines) {
+            for (Line l2 : R.lines) {
+                if (l1 != l2 && l1.stations.containsAll(l2.stations)) {
+                    toRemove.add(l2);
+                }
+            }
+        }
+        for (Line l : toRemove) {
+            R.lines.remove(l);
         }
     }
 
