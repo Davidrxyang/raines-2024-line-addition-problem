@@ -26,8 +26,8 @@ public class PIA {
 
     // parameters to determine termination of the algorithm
     // when the ratio of the demand covered by the network is higher than the minimums
-    public double D0min = 0.75;
-    public double D01min = 1;
+    public double D0min = 0;
+    public double D01min = 0.95;
     public double totalTrips;
 
     // the number of lines in the network
@@ -46,7 +46,7 @@ public class PIA {
         totalTrips = demand.totalTrips();
         lineNumber = 1;
 
-        while (D0 < D0min || D01 < D01min) {
+        while ((D0 < D0min || D01 < D01min) && l.trips.size() > 0){
             Demand d = l.getMaxDemand();
             Line r = network.bfs(d.start, d.end, "r" + lineNumber);
             r.insertStation(d.start, 0);
@@ -274,22 +274,26 @@ public class PIA {
         // remove all trips that are covered by one route
         deleteVertices();
         int oneTransfer = 0;
-        int moreTransfers = 0;
         for (Demand d : l.trips) {
             for (Line r1 : R.lines) {
+                boolean found = false;
                 for (Line r2: R.lines) {
                     if (r1.commonStations(r2).size() > 0) {
-                        if (r1.stations.contains(d.start) && r2.stations.contains(d.end)) {
+                        if (r1.stations.contains(d.start) && r2.stations.contains(d.end)
+                        || r1.stations.contains(d.end) && r2.stations.contains(d.start)) {
                             oneTransfer += d.trips;
-                            continue;
+                            found = true;
+                            break;
                         }
                     }
                 }
+                if (found) {
+                    break;
+                }
             }
-            moreTransfers += d.trips;
         }
 
-        int noTransfers = (int) totalTrips - oneTransfer - moreTransfers;
+        int noTransfers = (int) totalTrips - l.totalTrips();
         D0 = noTransfers / totalTrips;
         D01 = (noTransfers + oneTransfer) / totalTrips;
     }
@@ -325,89 +329,15 @@ public class PIA {
     }
 
     public static void main(String[] args) {
-        // dummy test data
-        Station test1 = new Station("1", 0.1, 0.0);
-        Station test2 = new Station("2", 0.1, 0.1);
-        Station test3 = new Station("3", 0.1, 0.2);
-        Station test4 = new Station("4", 0.2, 0.0);
-        Station test5 = new Station("5", 0.2, 0.1);
-        Station test6 = new Station("6", 0.2, 0.2);
-        Station test7 = new Station("7", 0.3, 0.0);
-        Station test8 = new Station("8", 0.3, 0.1);
-        Station test9 = new Station("9", 0.3, 0.2);
-
-        ArrayList<Station> stationList = new ArrayList<>();
-        stationList.add(test1);
-        stationList.add(test2);
-        stationList.add(test3);
-        stationList.add(test4);
-        stationList.add(test5);
-        stationList.add(test6);
-        stationList.add(test7);
-        stationList.add(test8);
-        stationList.add(test9);
-
-        Network network = new Network("test", stationList);
-
-        network.connections.add(new Connection(test1, test2, test1.getDistance(test2)));
-        network.connections.add(new Connection(test2, test3, test1.getDistance(test3)));
-        network.connections.add(new Connection(test4, test5, test4.getDistance(test5)));
-        network.connections.add(new Connection(test5, test6, test5.getDistance(test6)));
-        network.connections.add(new Connection(test7, test8, test7.getDistance(test8)));
-        network.connections.add(new Connection(test8, test9, test8.getDistance(test9)));
-
-        network.connections.add(new Connection(test1, test4, test1.getDistance(test4)));
-        network.connections.add(new Connection(test2, test5, test2.getDistance(test5)));
-        network.connections.add(new Connection(test3, test6, test3.getDistance(test6)));
-        network.connections.add(new Connection(test4, test7, test4.getDistance(test6)));
-        network.connections.add(new Connection(test5, test8, test5.getDistance(test7)));
-        network.connections.add(new Connection(test6, test9, test6.getDistance(test9)));
-
-        network.connections.add(new Connection(test1, test5, test1.getDistance(test5)));
-        network.connections.add(new Connection(test3, test5, test3.getDistance(test5)));
-        network.connections.add(new Connection(test7, test5, test7.getDistance(test5)));
-        network.connections.add(new Connection(test9, test5, test9.getDistance(test5)));
-
-        network.connections.add(new Connection(test2, test6, test2.getDistance(test6)));
-        network.connections.add(new Connection(test6, test8, test6.getDistance(test8)));
-        network.connections.add(new Connection(test8, test4, test8.getDistance(test4)));
-        network.connections.add(new Connection(test4, test2, test4.getDistance(test2)));
-
-        Random random = new Random();
-
-        DemandSet demand = new DemandSet();
-        demand.trips.add(new Demand(test1, test2, random.nextInt(20)));
-        Demand testDemand = new Demand(test1, test3, random.nextInt(20));
-        demand.trips.add(testDemand);
-        demand.trips.add(new Demand(test1, test4, random.nextInt(20)));
-        demand.trips.add(new Demand(test1, test5, random.nextInt(20)));
-        demand.trips.add(new Demand(test1, test6, random.nextInt(20)));
-        demand.trips.add(new Demand(test1, test7, random.nextInt(20)));
-        demand.trips.add(new Demand(test1, test8, random.nextInt(20)));
-        demand.trips.add(new Demand(test1, test9, random.nextInt(20)));
-        demand.trips.add(new Demand(test2, test3, random.nextInt(20)));
-        demand.trips.add(new Demand(test2, test4, random.nextInt(20)));
-        demand.trips.add(new Demand(test2, test5, random.nextInt(20)));
-        demand.trips.add(new Demand(test2, test6, random.nextInt(20)));
-        demand.trips.add(new Demand(test2, test7, random.nextInt(20)));
-        demand.trips.add(new Demand(test2, test8, random.nextInt(20)));
-        demand.trips.add(new Demand(test2, test9, random.nextInt(20)));
-        demand.trips.add(new Demand(test3, test4, random.nextInt(20)));
-        demand.trips.add(new Demand(test3, test5, random.nextInt(20)));
-        demand.trips.add(new Demand(test3, test6, random.nextInt(20)));
-        demand.trips.add(new Demand(test3, test7, random.nextInt(20)));
-        demand.trips.add(new Demand(test3, test8, random.nextInt(20)));
-        demand.trips.add(new Demand(test3, test9, random.nextInt(20)));
-        Demand testDemand2 = new Demand(test4, test5, random.nextInt(20));
-        demand.trips.add(testDemand2);
-        demand.trips.add(new Demand(test4, test6, random.nextInt(20)));
-        demand.trips.add(new Demand(test4, test7, random.nextInt(20)));
+        WMATA wmata = new WMATA();
+        DemandSet demandSet = new DemandSet();
+        demandSet.loadTrips("network/data.csv", wmata.WMATA);
 
         /*
          * currently this implementation does not update matrix info
          * in network
          */
-        PIA pia = new PIA(demand, network);
+        PIA pia = new PIA(demandSet, wmata.WMATA);
         System.out.println(pia);
         // Line testLine = new Line("test line");
         // testLine.addStation(test1, 0.0);
@@ -423,6 +353,8 @@ public class PIA {
         for (Line l : pia.R.lines) {
             System.out.println(l);
         }
+
+        System.out.println("Number of lines: " + pia.R.lines.size());
 
         System.out.println("D0: " + pia.D0);
         System.out.println("D01: " + pia.D01);
