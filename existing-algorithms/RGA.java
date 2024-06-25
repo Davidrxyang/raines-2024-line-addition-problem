@@ -25,7 +25,7 @@ public class RGA {
     // parameters to determine termination of the algorithm
     // when the ratio of the demand covered by the network is higher than the
     // minimums
-    public double D0min = 0;
+    public double D0min = 0.75;
     public double D01min = 1;
     public double totalTrips;
 
@@ -36,7 +36,7 @@ public class RGA {
     public int lineNumber;
 
     // node sharing factor
-    public double fns = 0.9;
+    public double fns = 1;
 
     // circuity factor
     public double fc = 1.5;
