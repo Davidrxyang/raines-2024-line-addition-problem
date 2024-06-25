@@ -25,7 +25,7 @@ public class RGA {
     // parameters to determine termination of the algorithm
     // when the ratio of the demand covered by the network is higher than the
     // minimums
-    public double D0min = 0.75;
+    public double D0min = 0.7;
     public double D01min = 1;
     public double totalTrips;
 
@@ -56,6 +56,7 @@ public class RGA {
         do {
             generateInitialSkeleton();
             updateD0();
+            removeSubsetRoutes();
             this.M++;
         } while ((D0 < D0min || D01 < D01min) && demandSet.trips.size() > 0);
     }
@@ -63,14 +64,24 @@ public class RGA {
     // removes all the routes from network R
     // that are a subset of another route
     public void removeSubsetRoutes() {
-
+        ArrayList<Line> toRemove = new ArrayList<Line>();
+        for (Line l1 : R.lines) {
+            for (Line l2 : R.lines) {
+                if (l1 != l2 && l1.stations.containsAll(l2.stations)) {
+                    toRemove.add(l2);
+                }
+            }
+        }
+        for (Line l : toRemove) {
+            R.lines.remove(l);
+        }
     }
 
     // generate the initial skeleton network
     // for each of the M node pairs with highest demand,
     // generate a line between them by finding the shortest path within network
     public void generateInitialSkeleton() {
-        ArrayList<Line> skeletons = new ArrayList<Line>();
+        ArrayList<Line> skeleton = new ArrayList<Line>();
         for (int i = R.lines.size(); i < M; i++) {
             Demand d = demandSet.getMaxDemand();
             demandSet.trips.remove(d);
@@ -83,13 +94,15 @@ public class RGA {
             l.insertStation(start, 0);
             l.insertStation(end, l.stations.size());
 
-            skeletons.add(l);
+            skeleton.add(l);
         }
-        for (Line l : skeletons) {
+
+        for (Line l : skeleton) {
             expandLine(l);
             R.lines.add(l);
             lineNumber++;
         }
+
     }
 
     // expands a line based on best station logic
@@ -216,7 +229,7 @@ public class RGA {
          * currently this implementation does not update matrix info
          * in network
          */
-        RGA rga = new RGA(demandSet, wmata.WMATA, 3);
+        RGA rga = new RGA(demandSet, wmata.WMATA, 6);
         System.out.println(rga);
         // Line testLine = new Line("test line");
         // testLine.addStation(test1, 0.0);
