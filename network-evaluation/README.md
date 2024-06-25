@@ -21,3 +21,9 @@ Route efficiency is measured in arbitrary units.
 ### Network Efficiency Evaluation
 
 The overall efficiency of a network is calculated as the sum of the efficiencies of all possible routes within the network weighed by their route ridership (based on empirical ridership data), divided by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
+
+## Usage
+
+The evaluation class takes in a config file that specifies parameters such as costMode. The format for the config file is:
+
+`field:value:comments`
