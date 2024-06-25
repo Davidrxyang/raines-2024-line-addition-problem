@@ -142,7 +142,7 @@ public class Line {
             if (empty()) {
                 lastStation = origin;
             } else {
-                lastStation = connections.getLast().destination;
+                lastStation = connections.get(connections.size() - 1).destination;
             }
             Connection newConnection = new Connection(lastStation, station, distance);
             connections.add(newConnection);
