@@ -245,6 +245,23 @@ public class Line {
         this.index = reverseLine.index;
         this.connections = reverseLine.connections;
         this.stations = reverseLine.stations;
+
+        // add the reversed line to the line array in each station
+        for (Station station : stations) {
+            // THIS IS JANKY: 
+            // somewhere the reverse line is getting added
+            // twice to the station's lines array, 
+            // the fix is to remove the line and re-add it
+
+            for (Line line : station.lines) {
+                if (line.name.equals(this.name)) {
+                    station.lines.remove(line);
+                    break;
+                }
+            }   
+
+            station.addLine(this);
+        }
     }
 
     /*

@@ -19,11 +19,11 @@ public class PathPlanning {
 
     public PathPlanning(Network network) {
         this.network = network;
-        connectivityMatrix = new int[network.nLines][network.nLines];
+        connectivityMatrix = new int[network.lines.size()][network.lines.size()];
 
-        for (int i = 0; i < network.nLines; i++) {
+        for (int i = 0; i < network.lines.size(); i++) {
             network.lines.get(i).index = i; // self aware line object
-            for (int j = 0; j < network.nLines; j++) {
+            for (int j = 0; j < network.lines.size(); j++) {
                 connectivityMatrix[i][j] = network.lines.get(i).commonStations(network.lines.get(j)).size();
                 if (i == j) {
                     // the same way Liu, Pai, Chang, Hsieh sets up their algorithm
@@ -86,6 +86,7 @@ public class PathPlanning {
         for (Line originLine : origin.lines) {
             for (Line destinationLine : destination.lines) {
 
+
                 // first two conditionals check if the line actually exists in the network
                 if (originLine.index > -1 &&
                 destinationLine.index > -1 &&
@@ -98,7 +99,8 @@ public class PathPlanning {
                     for (Station commonStation : originLine.commonStations(destinationLine)) {
                         // we grab the first common station that satisfies the K
                         // constraint to use as our transfer station
-                        if ((K(originLine, origin) < K(originLine, commonStation)) &
+                        
+                        if ((K(originLine, origin) < K(originLine, commonStation)) &&
                         (K(destinationLine, commonStation) < K(destinationLine, destination))) {
                             // use commonStation to generate a path 
 
@@ -297,16 +299,11 @@ public class PathPlanning {
     }
 
     public static void main(String[] args) {
+        WMATA WMATA = new WMATA();
 
-        PathPlanning pp = new PathPlanning(null);
+        PathPlanning pp = new PathPlanning(WMATA.WMATA);
 
-        int[][] matrix = {
-            {0, 1, 0},
-            {0, 0, 2},
-            {1, 0, 0}
-        };
-
-        int[][] T2 = pp.matrixPower(matrix, 3);
-        pp.printMatrix(T2);
+        Path path = pp.pathPlan(WMATA.WMATA.getStation("glenmont"), WMATA.WMATA.getStation("king street"));
+        System.out.println(path);
     }
 }
