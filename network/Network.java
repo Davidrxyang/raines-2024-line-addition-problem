@@ -61,6 +61,8 @@ public class Network {
         }
     }
 
+    
+
     /*
      * the network is constructed iteratively by adding lines, each line
      * will update the connectivity information stored in the distanceMatrix

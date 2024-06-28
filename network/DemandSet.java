@@ -61,7 +61,7 @@ public class DemandSet {
                     //     network.stations.put(end, new Station(end, 0.0, 0.0));
                     // }
 
-                    System.out.println(start + " -> " + end);
+                    // System.out.println(start + " -> " + end);
                     startStation = network.stations.get(start);
                     endStation = network.stations.get(end);
                     // System.out.println(startStation + " -> " + endStation);
