@@ -56,14 +56,14 @@ public class PIA {
             Line rPrime = null;
             Line rDoublePrime = null;
 
-            System.out.println("r");
-            System.out.println(r);
+            //System.out.println("r");
+            //System.out.println(r);
             if (R.lines.size() > 0) {
                 candidateLines = candidate(d, r.travelCost(d.start, d.end));
                 rPrime = candidateLines[0];
                 rDoublePrime = candidateLines[1];
-                System.out.println("r'");
-                System.out.println(rPrime);
+                //System.out.println("r'");
+                //System.out.println(rPrime);
             }
 
             if (R.lines.size() == 0 || rPrime == null ){
@@ -94,6 +94,14 @@ public class PIA {
         for (Line l : lines) {
             if (l.stations.size() > 1) {
                 R.addLine(l);
+
+
+                // david's edits to add reverse lines
+                Line reverseLine = new Line(l);
+                StringBuilder sb = new StringBuilder();
+                sb.append(reverseLine.name).append(" reverse");
+                reverseLine.reverse(sb.toString());
+                R.addLine(reverseLine);
             }
         }
     }
