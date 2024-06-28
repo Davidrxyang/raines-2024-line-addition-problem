@@ -95,7 +95,6 @@ public class PIA {
             if (l.stations.size() > 1) {
                 R.addLine(l);
 
-
                 // david's edits to add reverse lines
                 Line reverseLine = new Line(l);
                 StringBuilder sb = new StringBuilder();
@@ -103,6 +102,12 @@ public class PIA {
                 reverseLine.reverse(sb.toString());
                 R.addLine(reverseLine);
             }
+        }
+
+        // resets connections so unused connections don't mess with pathplanning
+        R.connections.clear();
+        for (Connection c : R.connectionMap.values()) {
+            R.connections.add(c);
         }
     }
 
