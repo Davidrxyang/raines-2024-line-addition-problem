@@ -58,6 +58,37 @@ public class RGA {
             removeSubsetRoutes();
             this.M++;
         } while ((D0 < D0min || D01 < D01min) && demandSet.trips.size() > 0);
+
+        // remove existing lines from station
+        for (Station s : existingNetwork.stationList) {
+            s.lines.clear();
+        }
+
+        ArrayList<Line> lines = new ArrayList<>(R.lines);
+        R.lines.clear();
+        for (Line l : lines) {
+            if (l.stations.size() > 1) {
+                R.addLine(l);
+
+                // david's edits to add reverse lines
+                Line reverseLine = new Line(l);
+                StringBuilder sb = new StringBuilder();
+                sb.append(reverseLine.name).append(" reverse");
+                reverseLine.reverse(sb.toString());
+                R.addLine(reverseLine);
+
+                for (Station s : reverseLine.stations) {
+                    s.addLine(l);
+                    s.addLine(reverseLine);
+                }
+            }
+        }
+
+        // resets connections so unused connections don't mess with pathplanning
+        R.connections.clear();
+        for (Connection c : R.connectionMap.values()) {
+            R.connections.add(c);
+        }
     }
 
     // removes all the routes from network R
@@ -166,8 +197,6 @@ public class RGA {
         }
 
         if (bestStation != null) {
-            System.out.println("Line: " + l);
-            System.out.println("Best station: " + bestStation);
             if (bestStation.getDistance(l.destination) < bestStation.getDistance(l.origin)) {
                 l.insertStation(bestStation, l.stations.size());
             } else {

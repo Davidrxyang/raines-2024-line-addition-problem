@@ -49,6 +49,7 @@ public class Path {
     }
 
     public void buildPath(Network network, Line line, Station origin, Station destination) {
+
         Station currentStation = destination;
         stations.add(currentStation);
         lines.add(line);
@@ -60,7 +61,7 @@ public class Path {
             connections.add(c);
             currentStation = firstStation;
             stations.add(currentStation);
-            System.out.println("current connection made: " + c + " on " + line.name);
+            // System.out.println("current connection made: " + c + " on " + line.name);
         }
     }
 

@@ -48,6 +48,11 @@ public class PIA {
         totalTrips = demand.totalTrips();
         lineNumber = 1;
 
+        // remove existing lines from station
+        for (Station s : existingNetwork.stationList) {
+            s.lines.clear();
+        }
+
         while ((D0 < D0min || D01 < D01min) && l.trips.size() > 0){
             Demand d = l.getMaxDemand();
             Line r = network.bfs(d.start, d.end, "r" + lineNumber);
@@ -80,13 +85,6 @@ public class PIA {
                 R.lines.remove(rDoublePrime);
                 R.lines.add(rPrime);
 
-                d.start.removeLine(r);
-                d.start.removeLine(rDoublePrime);
-                d.end.removeLine(r);
-                d.end.removeLine(rDoublePrime);
-
-                d.start.addLine(rPrime);
-                d.end.addLine(rPrime);
             }
             updateD0();
             removeSubsetRoutes();
@@ -98,19 +96,24 @@ public class PIA {
             if (l.stations.size() > 1) {
                 R.addLine(l);
 
-
                 // david's edits to add reverse lines
                 Line reverseLine = new Line(l);
                 StringBuilder sb = new StringBuilder();
                 sb.append(reverseLine.name).append(" reverse");
                 reverseLine.reverse(sb.toString());
                 R.addLine(reverseLine);
+
+                for (Station s : reverseLine.stations) {
+                    s.addLine(l);
+                    s.addLine(reverseLine);
+                }
             }
         }
 
-        R.connections = new ArrayList<>();
-        for (Map.Entry<String, Connection> entry : R.connectionMap.entrySet()) {
-            R.connections.add(entry.getValue());
+        // resets connections so unused connections don't mess with pathplanning
+        R.connections.clear();
+        for (Connection c : R.connectionMap.values()) {
+            R.connections.add(c);
         }
     }
 
