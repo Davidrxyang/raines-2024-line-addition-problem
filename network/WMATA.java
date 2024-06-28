@@ -202,6 +202,6 @@ public class WMATA {
     }
 
     public static void main(String[] args) {
-        new WMATA();
+        WMATA WMATA = new WMATA();
     }
 }

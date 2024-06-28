@@ -6,7 +6,7 @@ public class Main {
         WMATA WMATA = new WMATA();
 
         PathPlanning pp = new PathPlanning(WMATA.WMATA);
-        Path bethesdaToAnacostia = pp.pathPlan(WMATA.WMATA.getStation("bethesda"), WMATA.WMATA.getStation("anacostia"));
-        System.out.println(bethesdaToAnacostia);
+        Path path = pp.pathPlan(WMATA.WMATA.getStation("glenmont"), WMATA.WMATA.getStation("king street"));
+        System.out.println(path);
     }
 }

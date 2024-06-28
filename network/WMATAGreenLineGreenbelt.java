@@ -6,7 +6,7 @@ public class WMATAGreenLineGreenbelt extends Line {
 
     public WMATAGreenLineGreenbelt(Network network) {
 
-        this.name = "yellow line huntington -> mt vernon sq";
+        this.name = "green line branch avenue -> greenbelt";
 
         this.addStation(network.stations.get("branch avenue"), null);
         this.addStation(network.stations.get("suitland"), 1.69);
