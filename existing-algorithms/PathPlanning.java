@@ -38,6 +38,8 @@ public class PathPlanning {
      */
 
     public Path pathPlan(Station origin, Station destination) {
+
+        System.out.println("Path Planning from " + origin.name + " to " + destination.name);
         Path path = new Path();
 
         // look at this - if no path is found, return NULL
