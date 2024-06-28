@@ -5,6 +5,9 @@
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class PIA {
     // the demand of the network
@@ -103,6 +106,11 @@ public class PIA {
                 reverseLine.reverse(sb.toString());
                 R.addLine(reverseLine);
             }
+        }
+
+        R.connections = new ArrayList<>();
+        for (Map.Entry<String, Connection> entry : R.connectionMap.entrySet()) {
+            R.connections.add(entry.getValue());
         }
     }
 

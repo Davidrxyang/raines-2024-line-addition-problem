@@ -60,6 +60,7 @@ public class Path {
             connections.add(c);
             currentStation = firstStation;
             stations.add(currentStation);
+            System.out.println("current connection made: " + c + " on " + line.name);
         }
     }
 
