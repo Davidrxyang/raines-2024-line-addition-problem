@@ -39,7 +39,7 @@ public class PathPlanning {
 
     public Path pathPlan(Station origin, Station destination) {
 
-        System.out.println("Path Planning from " + origin.name + " to " + destination.name);
+        // System.out.println("Path Planning from " + origin.name + " to " + destination.name);
         Path path = new Path();
 
         // look at this - if no path is found, return NULL
@@ -101,7 +101,7 @@ public class PathPlanning {
                     for (Station commonStation : originLine.commonStations(destinationLine)) {
                         // we grab the first common station that satisfies the K
                         // constraint to use as our transfer station
-                        
+
                         if ((K(originLine, origin) < K(originLine, commonStation)) &&
                         (K(destinationLine, commonStation) < K(destinationLine, destination))) {
                             // use commonStation to generate a path 

@@ -5,35 +5,22 @@ public class Main {
 
         WMATA wmata = new WMATA();
         DemandSet demandSet = new DemandSet();
+        DemandSet unmodifiedDemand = new DemandSet();
         demandSet.loadTrips("network/data.csv", wmata.WMATA);
-        // Evaluation eval = new Evaluation("network-evaluation/config");
+        unmodifiedDemand.loadTrips("network/data.csv", wmata.WMATA);
+        Evaluation eval = new Evaluation("network-evaluation/config");
         
-        // System.out.println("Old Network Efficiency: " + eval.networkEfficiency(wmata.WMATA, demandSet));
+        System.out.println("Old Network Efficiency: " + eval.networkEfficiency(wmata.WMATA, unmodifiedDemand));
         
         PIA pia = new PIA(demandSet, wmata.WMATA);
 
         Network newNetwork = pia.R;
 
-        for (Line line : newNetwork.lines) {
-            System.out.println("\n" + line.name + " Line");
-            if (line.origin.equals(newNetwork.getStation("glenmont"))) {
-                // System.out.println(line.connections);
-            }
-        }
-
-        for (Line line : newNetwork.getStation("glenmont").lines) {
-            System.out.println("glenmont lines: " + line.name);
-        }
-        
         PathPlanning pp = new PathPlanning(newNetwork);
-        Path path = pp.pathPlan(newNetwork.getStation("takoma"), newNetwork.getStation("farragut west"));
-        
-        for (Station station : path.stations) {
-            System.out.println(station.name);
-        }
+        //Path path = pp.pathPlan(newNetwork.getStation("capitol heights"), newNetwork.getStation("u street-cardozo"));
+        Path path = pp.pathPlan(newNetwork.getStation("capitol heights"), newNetwork.getStation("u street-cardozo"));
 
-
-        // System.out.println("New Network Efficiency: " + eval.networkEfficiency(newNetwork, demandSet));
+        System.out.println("New Network Efficiency: " + eval.networkEfficiency(newNetwork, unmodifiedDemand));
     
         /*
          * the issue is that the lines in the old network are still

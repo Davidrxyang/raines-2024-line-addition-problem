@@ -49,6 +49,7 @@ public class Path {
     }
 
     public void buildPath(Network network, Line line, Station origin, Station destination) {
+
         Station currentStation = destination;
         stations.add(currentStation);
         lines.add(line);
@@ -56,13 +57,11 @@ public class Path {
         while(!currentStation.equals(origin)) {
             Station firstStation = line.getPreviousStation(currentStation);
             String connectionName = firstStation.name + " -> " + currentStation.name;
-            System.out.println(connectionName);
             Connection c = network.connectionMap.get(connectionName);
-            System.out.println(c);
             connections.add(c);
             currentStation = firstStation;
             stations.add(currentStation);
-            System.out.println("current connection made: " + c + " on " + line.name);
+            // System.out.println("current connection made: " + c + " on " + line.name);
         }
     }
 
@@ -182,9 +181,7 @@ public class Path {
 
         while (current != destination) {
             sortedStationOrder.add(current);
-            System.out.println(connections);
             for (Connection c : connections) {
-                System.out.println(c);
                 if (c.origin == current && !sortedStationOrder.contains(c.destination)) {
                     current = c.destination;
                     sortedConnectionOrder.add(c);
