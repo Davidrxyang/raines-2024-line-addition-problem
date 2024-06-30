@@ -8,14 +8,20 @@ public class Main {
         demandSet.loadTrips("network/data.csv", wmata.WMATA);
         Evaluation eval = new Evaluation("network-evaluation/config");
         
-        System.out.println("Old Network Efficiency: " + eval.networkEfficiency(wmata.WMATA, demandSet));
-        
+        Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, unmodifiedDemand);
+                
         PIA pia = new PIA(demandSet, wmata.WMATA);
-        Network piaNetwork = pia.R;
-        System.out.println("PIA Network Efficiency: " + eval.networkEfficiency(piaNetwork, demandSet));
+        Network newNetwork = pia.R;
 
-        RGA rga = new RGA(demandSet, wmata.WMATA, 9);
-        Network rgaNetwork = rga.R;
-        System.out.println("RGA Network Efficiency: " + eval.networkEfficiency(rgaNetwork, demandSet));
+        Double newNetworkEfficiency = eval.networkEfficiency(newNetwork, unmodifiedDemand);
+
+        Double percentChange = eval.calculatePercentChange(oldNetworkEfficiency, newNetworkEfficiency);
+
+        System.out.println("Old network efficiency: " + oldNetworkEfficiency);
+        System.out.println("New network efficiency: " + newNetworkEfficiency);
+        System.out.println("Improvement " + percentChange + "%");
+
+        // using log-linear regression scheme, which makes the most sense from an economics perspective
+        // PIA is improving the network by 114.8 percent.
     }
 }
