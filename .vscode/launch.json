@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "Main",
+            "projectName": "raines-2024-line-addition-problem_ae1328a5"
+        },
+        {
+            "type": "java",
             "name": "PathPlanning",
             "request": "launch",
             "mainClass": "PathPlanning",
