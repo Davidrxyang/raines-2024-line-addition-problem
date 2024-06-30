@@ -10,18 +10,23 @@ public class Main {
         unmodifiedDemand.loadTrips("network/data.csv", wmata.WMATA);
         Evaluation eval = new Evaluation("network-evaluation/config");
         
-        Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, unmodifiedDemand);
-                
+        Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, demandSet);
+        
         PIA pia = new PIA(demandSet, wmata.WMATA);
-        Network newNetwork = pia.R;
+        Network piaNetwork = pia.R;
+        Double piaNetworkEfficiency = eval.networkEfficiency(piaNetwork, demandSet);
+        Double piaPercentChange = eval.calculatePercentChange(oldNetworkEfficiency, piaNetworkEfficiency);
 
-        Double newNetworkEfficiency = eval.networkEfficiency(newNetwork, demandSet);
-
-        Double percentChange = eval.calculatePercentChange(oldNetworkEfficiency, newNetworkEfficiency);
+        RGA rga = new RGA(demandSet, wmata.WMATA, 9);
+        Network rgaNetwork = rga.R;
+        Double rgaNetworkEfficiency = eval.networkEfficiency(rgaNetwork, demandSet);
+        Double rgaPercentChange = eval.calculatePercentChange(oldNetworkEfficiency, rgaNetworkEfficiency);
 
         System.out.println("Old network efficiency: " + oldNetworkEfficiency);
-        System.out.println("New network efficiency: " + newNetworkEfficiency);
-        System.out.println("Improvement " + percentChange + "%");
+        System.out.println("PIA network efficiency: " + piaNetworkEfficiency);
+        System.out.println("Improvement " + piaPercentChange + "%");
+        System.out.println("RGA network efficiency: " + rgaNetworkEfficiency);
+        System.out.println("Improvement " + rgaPercentChange + "%");
 
         // using log-linear regression scheme, which makes the most sense from an economics perspective
         // PIA is improving the network by 114.8 percent.
