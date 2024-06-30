@@ -2,7 +2,9 @@
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Evaluation {
 
@@ -40,18 +42,27 @@ public class Evaluation {
     public Double constructionCost(Line line) {
 
         Double cost = 0.0;
+        Double costMode = 0.0;
 
-        switch(config.get("costMode")) {
-            case "globalAverage":
-                cost = (averageCost() * line.getLength());
+        switch(config.get("cost-mode")) {
+            case "global-average":
+                costMode = averageCost();
+                break;
+
+            case "state-average-DC":
+                costMode = stateAverage("DC");
                 break;
 
             // add other cost calculation schemes here
 
             default:
-                System.out.println("Invalid cost mode");
+                System.out.println("Invalid cost mode, defaulting to global average");
+                costMode = averageCost();
                 break;
         }
+
+        cost = costMode * line.getLength();
+
         return cost;
     }
 
@@ -61,21 +72,30 @@ public class Evaluation {
      * returns total cost in millions of dollars
      */
 
-    public Double constructionCost(Path path) {
+     public Double constructionCost(Path path) {
 
         Double cost = 0.0;
+        Double costMode = 0.0;
 
-        switch(config.get("costMode")) {
-            case "globalAverage":
-                cost = (averageCost() * path.getLength());
+        switch(config.get("cost-mode")) {
+            case "global-average":
+                costMode = averageCost();
+                break;
+
+            case "state-average-DC":
+                costMode = stateAverage("DC");
                 break;
 
             // add other cost calculation schemes here
 
             default:
-                System.out.println("Invalid cost mode");
+                System.out.println("Invalid cost mode, defaulting to global average");
+                costMode = averageCost();
                 break;
         }
+
+        cost = costMode * path.getLength();
+
         return cost;
     }
 
@@ -85,9 +105,23 @@ public class Evaluation {
      */
 
     public Double routeEfficiency(Path path) {
-        Double transferWeight = Double.parseDouble(config.get("transferWeight"));
-        Double stationWeight = Double.parseDouble(config.get("stationWeight"));
-        Double distanceWeight = Double.parseDouble(config.get("distanceWeight"));   
+
+        // default values
+        Double transferWeight = 0.25;
+        Double stationWeight = 0.25;
+        Double distanceWeight = 0.5;
+
+        if (config.get("transfer-weight") != null) {
+            transferWeight = Double.parseDouble(config.get("transfer-weight"));
+        }
+
+        if (config.get("station-weight") != null) {
+            stationWeight = Double.parseDouble(config.get("station-weight"));
+        }
+
+        if (config.get("distance-weight") != null) {
+            distanceWeight = Double.parseDouble(config.get("distance-weight"));
+        }
 
         return (transferWeight * path.nTransfers + stationWeight * path.stations.size() + distanceWeight * path.getLength());
     }
@@ -98,6 +132,7 @@ public class Evaluation {
 
     public Double networkEfficiency(Network network, DemandSet demandSet) {
 
+        Double networkEfficiency = 0.0;
         PathPlanning pp = new PathPlanning(network);
         double tripsEfficiency = 0.0;
 
@@ -121,11 +156,50 @@ public class Evaluation {
             totalCost += constructionCost(line);
         }
 
-        // calculate the efficiency of the network as a whole
+        // calculate the efficiency of the network as a whole based on regression mode
 
-        double networkEfficiency = tripsEfficiency / totalCost;
+        switch (config.get("regression")) {
+            case "linear-linear":
+                networkEfficiency = tripsEfficiency / totalCost;
+                break;
+
+            case "log-linear":
+                networkEfficiency = Math.log(tripsEfficiency) / totalCost;
+                break;
+
+            case "linear-log":
+                networkEfficiency = tripsEfficiency / Math.log(totalCost);
+                break;
+
+            case "log-log":
+                networkEfficiency = Math.log(tripsEfficiency) / Math.log(totalCost);
+                break;
+
+            default:
+                System.out.println("Invalid regression mode, defaulting to linear-linear");
+                networkEfficiency = tripsEfficiency / totalCost;
+                break;
+        }
 
         return networkEfficiency;
+    }
+
+    /*
+     * calculates the percentage change in efficiency between two networks
+     */
+
+    public Double compareNetworks(Network oldNetwork, Network newNetwork, DemandSet demandSet) {
+        Double oldEfficiency = networkEfficiency(oldNetwork, demandSet);
+        Double newEfficiency = networkEfficiency(newNetwork, demandSet);
+
+        return 100.0 * ((newEfficiency - oldEfficiency) / oldEfficiency);
+    }
+
+    /*
+     * simple math helper function to calculate percent change
+     */
+    public Double calculatePercentChange(Double oldEfficiency, Double newEfficiency) {
+        return 100.0 * ((newEfficiency - oldEfficiency) / oldEfficiency);
     }
     
     // averages construction costs
@@ -137,13 +211,32 @@ public class Evaluation {
         return (totalCost / costData.costs.size());
     }
 
+    // averages construction costs by state
+    public Double stateAverage(String state) {
+        Double totalCost = 0.0;
+        int count = 0;
+
+        // iterate through states and find corresponding costs
+        for (int i = 0; i < costData.states.size(); i++) {
+            if (costData.states.get(i).equals(state)) {
+                totalCost += costData.costs.get(i);
+                count++;
+            }
+        }
+ 
+        return (totalCost / count);
+    }
+
     public static void main(String[] args) {
         Evaluation eval = new Evaluation("network-evaluation/config");
         WMATA WMATA = new WMATA();
         DemandSet demandSet = new DemandSet();
+        DemandSet protectedDemandSet = new DemandSet();
         demandSet.loadTrips("network/data.csv", WMATA.WMATA);
+        protectedDemandSet.loadTrips("network/data.csv", WMATA.WMATA);
 
-        System.out.println(eval.networkEfficiency(WMATA.WMATA, demandSet));
+        
+
 
     }
 }
