@@ -5,36 +5,17 @@ public class Main {
 
         WMATA wmata = new WMATA();
         DemandSet demandSet = new DemandSet();
-        DemandSet unmodifiedDemand = new DemandSet();
         demandSet.loadTrips("network/data.csv", wmata.WMATA);
-        unmodifiedDemand.loadTrips("network/data.csv", wmata.WMATA);
         Evaluation eval = new Evaluation("network-evaluation/config");
         
-        System.out.println("Old Network Efficiency: " + eval.networkEfficiency(wmata.WMATA, unmodifiedDemand));
+        System.out.println("Old Network Efficiency: " + eval.networkEfficiency(wmata.WMATA, demandSet));
         
         PIA pia = new PIA(demandSet, wmata.WMATA);
+        Network piaNetwork = pia.R;
+        System.out.println("PIA Network Efficiency: " + eval.networkEfficiency(piaNetwork, demandSet));
 
-        Network newNetwork = pia.R;
-
-        PathPlanning pp = new PathPlanning(newNetwork);
-        //Path path = pp.pathPlan(newNetwork.getStation("capitol heights"), newNetwork.getStation("u street-cardozo"));
-        Path path = pp.pathPlan(newNetwork.getStation("capitol heights"), newNetwork.getStation("u street-cardozo"));
-
-        System.out.println("New Network Efficiency: " + eval.networkEfficiency(newNetwork, unmodifiedDemand));
-    
-        /*
-         * the issue is that the lines in the old network are still
-         * being remembered by the station itself, so the station in
-         * the new nework thinks it belongs on the old WMATA line
-         * as well as the newly generated line. Since pathplanning
-         * uses the stations lines, it is trying to access old WMATA 
-         * connections, which are now null in the connections collection
-         * in the new network. 
-         * 
-         * fix:
-         * remove old lines from each station when adding new lines
-         * 
-         * or reallocated new stations?? 
-         */
+        RGA rga = new RGA(demandSet, wmata.WMATA, 9);
+        Network rgaNetwork = rga.R;
+        System.out.println("RGA Network Efficiency: " + eval.networkEfficiency(rgaNetwork, demandSet));
     }
 }

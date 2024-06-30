@@ -19,6 +19,12 @@ public class Demand {
         this.trips = trips;
     }
 
+    public Demand(Demand d) {
+        this.start = d.start;
+        this.end = d.end;
+        this.trips = d.trips;
+    }
+
     public void addTrip(int i) {
         trips+=i;
     }

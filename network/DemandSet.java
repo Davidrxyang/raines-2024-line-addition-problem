@@ -10,11 +10,18 @@ import java.util.Scanner;
 public class DemandSet {
     public ArrayList<Demand> trips;
     // tracks which station is which index in the origin-destination matrix
-    public HashMap<Station, Integer> stationNumber;
-    public int[][] demandMatrix;
+    // public HashMap<Station, Integer> stationNumber;
+    // public int[][] demandMatrix;
 
     public DemandSet() {
         trips = new ArrayList<Demand>();
+    }
+
+    public DemandSet(DemandSet d) {
+        trips = new ArrayList<Demand>();
+        for (Demand trip : d.trips) {
+            trips.add(new Demand(trip));
+        }
     }
 
     // loads trip information given a network and a data file
@@ -22,7 +29,7 @@ public class DemandSet {
     // https://planitmetro.com/2016/03/14/metrorail-ridership-data-download-october-2015/
     public void loadTrips(String filename, Network network) {
         // load station information and number the stations
-        stationNumber = new HashMap<Station, Integer>();
+        // stationNumber = new HashMap<Station, Integer>();
 
         // create origin-destination matrix based on network
         // currently not in use, integrate after combining with network
