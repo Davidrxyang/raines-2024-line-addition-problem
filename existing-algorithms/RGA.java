@@ -44,7 +44,7 @@ public class RGA {
         for (Station s : n.stationList) {
             s.calculateDemand(d);
         }
-        demandSet = d;
+        demandSet = new DemandSet(d);
         existingNetwork = n;
         R = new Network("generated network", existingNetwork.stationList);
         this.M = M;

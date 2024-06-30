@@ -41,7 +41,7 @@ public class PIA {
     // constructor
     // main algorithm logic
     public PIA(DemandSet demand, Network network) {
-        this.l = demand;
+        this.l = new DemandSet(demand);
         this.existingNetwork = network;
         this.R = new Network("new", existingNetwork.stationList);
         R.connections = existingNetwork.connections;
