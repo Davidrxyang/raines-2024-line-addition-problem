@@ -194,6 +194,13 @@ public class Evaluation {
 
         return 100.0 * ((newEfficiency - oldEfficiency) / oldEfficiency);
     }
+
+    /*
+     * simple math helper function to calculate percent change
+     */
+    public Double calculatePercentChange(Double oldEfficiency, Double newEfficiency) {
+        return 100.0 * ((newEfficiency - oldEfficiency) / oldEfficiency);
+    }
     
     // averages construction costs
     public Double averageCost() {
