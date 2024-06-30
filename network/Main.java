@@ -10,31 +10,20 @@ public class Main {
         unmodifiedDemand.loadTrips("network/data.csv", wmata.WMATA);
         Evaluation eval = new Evaluation("network-evaluation/config");
         
-        System.out.println("Old Network Efficiency: " + eval.networkEfficiency(wmata.WMATA, unmodifiedDemand));
-        
+        Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, unmodifiedDemand);
+                
         PIA pia = new PIA(demandSet, wmata.WMATA);
-
         Network newNetwork = pia.R;
 
-        PathPlanning pp = new PathPlanning(newNetwork);
-        //Path path = pp.pathPlan(newNetwork.getStation("capitol heights"), newNetwork.getStation("u street-cardozo"));
-        Path path = pp.pathPlan(newNetwork.getStation("capitol heights"), newNetwork.getStation("u street-cardozo"));
+        Double newNetworkEfficiency = eval.networkEfficiency(newNetwork, unmodifiedDemand);
 
-        System.out.println("New Network Efficiency: " + eval.networkEfficiency(newNetwork, unmodifiedDemand));
-    
-        /*
-         * the issue is that the lines in the old network are still
-         * being remembered by the station itself, so the station in
-         * the new nework thinks it belongs on the old WMATA line
-         * as well as the newly generated line. Since pathplanning
-         * uses the stations lines, it is trying to access old WMATA 
-         * connections, which are now null in the connections collection
-         * in the new network. 
-         * 
-         * fix:
-         * remove old lines from each station when adding new lines
-         * 
-         * or reallocated new stations?? 
-         */
+        Double percentChange = eval.calculatePercentChange(oldNetworkEfficiency, newNetworkEfficiency);
+
+        System.out.println("Old network efficiency: " + oldNetworkEfficiency);
+        System.out.println("New network efficiency: " + newNetworkEfficiency);
+        System.out.println("Improvement " + percentChange + "%");
+
+        // using log-linear regression scheme, which makes the most sense from an economics perspective
+        // PIA is improving the network by 114.8 percent.
     }
 }
