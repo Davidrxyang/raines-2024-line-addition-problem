@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PathPlanning",
+            "request": "launch",
+            "mainClass": "PathPlanning",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "PIA",
+            "request": "launch",
+            "mainClass": "PIA",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "Main",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
