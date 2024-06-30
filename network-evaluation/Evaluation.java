@@ -183,6 +183,17 @@ public class Evaluation {
 
         return networkEfficiency;
     }
+
+    /*
+     * calculates the percentage change in efficiency between two networks
+     */
+
+    public Double compareNetworks(Network oldNetwork, Network newNetwork, DemandSet demandSet) {
+        Double oldEfficiency = networkEfficiency(oldNetwork, demandSet);
+        Double newEfficiency = networkEfficiency(newNetwork, demandSet);
+
+        return 100.0 * ((newEfficiency - oldEfficiency) / oldEfficiency);
+    }
     
     // averages construction costs
     public Double averageCost() {
@@ -213,9 +224,12 @@ public class Evaluation {
         Evaluation eval = new Evaluation("network-evaluation/config");
         WMATA WMATA = new WMATA();
         DemandSet demandSet = new DemandSet();
+        DemandSet protectedDemandSet = new DemandSet();
         demandSet.loadTrips("network/data.csv", WMATA.WMATA);
+        protectedDemandSet.loadTrips("network/data.csv", WMATA.WMATA);
 
-        System.out.println(eval.networkEfficiency(WMATA.WMATA, demandSet));
+        
+
 
     }
 }
