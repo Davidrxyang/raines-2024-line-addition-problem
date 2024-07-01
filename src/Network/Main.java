@@ -1,4 +1,4 @@
-package Network; 
+package Network;
 
 import NetworkEvaluation.Evaluation;
 import NetworkEvaluation.CostData;
