@@ -8,6 +8,13 @@
             "type": "java",
             "name": "Main",
             "request": "launch",
+            "mainClass": "Network.Main",
+            "projectName": "raines-2024-line-addition-problem_836a820"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
             "mainClass": "Main",
             "projectName": "raines-2024-line-addition-problem_ae1328a5"
         },
