@@ -48,6 +48,21 @@ considers all cost data in the calculation
 
 considers only cost data from the specified state in the calculation. NOTE: replace "DC" with any state abbreviation within the dataset.
 
+### Evaluation mode
+
+defines the logic behind evaluating route efficiency
+
+options: 
+
+`eval-mode:standard`
+
+simply considers the distance covered, amount of transfers, and amount of station stops along the route.
+
+`eval-mode:adjusted`
+
+considers the above metrics, adjusted by dividing over the direct geographical distance between the origin and destination station and a weight coefficient. 
+
+
 ### Weights
 
 defines how each parameter is valued within the efficiency calculation algorithm
@@ -56,9 +71,12 @@ defines how each parameter is valued within the efficiency calculation algorithm
 transfer-weight:0.4
 station-weight:0.2
 distance-weight:0.8
+adjustment-weight:0.5
 `
 
-each value following the field name should be a floating point number within the range [0.0 - 1.0]
+each value following the field name should be a floating point number within the range [-1.0 - 1.0]
+
+adjustment-weight represents the weight of the direct geographical distance adjustment used with the adjusted evaluation mode
 
 a higher value represents greater significance within the efficiency consideration
 
