@@ -110,13 +110,13 @@ public class Evaluation {
     }
 
     /*
-     * calculates the efficiency of a route based on weights specified by
+     * calculates the complexity of a route based on weights specified by
      * config parameters
      * 
      * units are arbitrary 
      */
 
-    public Double routeEfficiency(Path path) {
+    public Double routeComplexity(Path path) {
 
         // default values
         Double transferWeight = 1.0;
@@ -139,13 +139,13 @@ public class Evaluation {
     }
 
     /*
-     * calculates the efficiency of a route adjusted for direct distance
+     * calculates the complexity of a route adjusted for direct distance
      * 
      * units are arbitrary 
      */
 
-    public Double adjustedRouteEfficiency(Path path) {
-        Double simpleEfficiency = routeEfficiency(path);
+    public Double adjustedRouteComplexity(Path path) {
+        Double simpleComplexity = routeComplexity(path);
         Double geographicalDistance = path.origin.getDistance(path.destination);
         Double adjustmentWeight = 0.5;
 
@@ -153,7 +153,9 @@ public class Evaluation {
             adjustmentWeight = Double.parseDouble(config.get("adjustment-weight"));
         }
 
-        return 100 * ((simpleEfficiency) / ((1 + adjustmentWeight) * geographicalDistance));
+        Double factor = simpleComplexity / (adjustmentWeight * geographicalDistance);
+
+        return factor * simpleComplexity;
     }
 
     /*
@@ -164,41 +166,43 @@ public class Evaluation {
 
         Double networkEfficiency = 0.0;
         PathPlanning pp = new PathPlanning(network);
-        Double tripsEfficiency = 0.0;
+        Double tripsComplexity = 0.0;
         String evaluationMode = "standard"; // default evaluation mode
 
         if (config.get("eval-mode") != null) {
             evaluationMode = config.get("eval-mode");
         }
 
-        // for each trip in the demand set, calculate the efficiency of that route/trip
+        // for each trip in the demand set, calculate the complexity of that route/trip
         // and weigh it based on the "trip" demand.
 
         // if the trip is not contained within the demandSet, then the demand is 0,
         // so it is fine to ignore it within efficiency calculations based on our
-        // definition of efficiency
+        // definition of complexity
 
         for (Demand d : demandSet.trips) {
             Path path = pp.pathPlan(d.start, d.end);
-            Double efficiency = 0.0;
+            Double complexity = 0.0;
             
             switch (evaluationMode) {
                 case "standard":
-                    efficiency = routeEfficiency(path);
+                    complexity = routeComplexity(path);
                     break;
 
                 case "adjusted":
-                    efficiency = adjustedRouteEfficiency(path);
+                    complexity = adjustedRouteComplexity(path);
                     break;
 
                 default:
                     System.out.println("Invalid evaluation mode, defaulting to standard");
-                    tripsEfficiency += d.trips * routeEfficiency(path);
+                    complexity = routeComplexity(path);
                     break;
             }   
 
-            System.out.println(tripsEfficiency);
-            tripsEfficiency += (double)d.trips * efficiency;
+            if (Double.isNaN(complexity)) {
+                complexity = 0.0;
+            }
+            tripsComplexity += (double)d.trips * complexity;
         }
 
         // calculate the total construction cost of the network, per line
@@ -212,24 +216,24 @@ public class Evaluation {
 
         switch (config.get("regression")) {
             case "linear-linear":
-                networkEfficiency = tripsEfficiency / totalCost;
+                networkEfficiency = tripsComplexity * totalCost;
                 break;
 
             case "log-linear":
-                networkEfficiency = Math.log(tripsEfficiency) / totalCost;
+                networkEfficiency = Math.log(tripsComplexity) * totalCost;
                 break;
 
             case "linear-log":
-                networkEfficiency = tripsEfficiency / Math.log(totalCost);
+                networkEfficiency = tripsComplexity * Math.log(totalCost);
                 break;
 
             case "log-log":
-                networkEfficiency = Math.log(tripsEfficiency) / Math.log(totalCost);
+                networkEfficiency = Math.log(tripsComplexity) * Math.log(totalCost);
                 break;
 
             default:
                 System.out.println("Invalid regression mode, defaulting to linear-linear");
-                networkEfficiency = tripsEfficiency / totalCost;
+                networkEfficiency = tripsComplexity * totalCost;
                 break;
         }
 

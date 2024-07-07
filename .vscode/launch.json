@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Evaluation",
+            "request": "launch",
+            "mainClass": "NetworkEvaluation.Evaluation",
+            "projectName": "raines-2024-line-addition-problem_836a820"
+        },
+        {
+            "type": "java",
             "name": "Main",
             "request": "launch",
             "mainClass": "Network.Main",

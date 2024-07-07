@@ -16,13 +16,13 @@ Efficiency is calculated at the route level and the network level.
 
 A route is defined as the most efficient path from one specific station in the network to a different specific station in the network. Routes between distinct station pairs are generated using the PathPlanning algorithm (Liu et al., 2001) found in existing-algorithms/PathPlanning.java. 
 
-The efficiency of an individual route is calculated on a per-rider basis and accounts for travel time (which is calculated based on distance covered, assuming constant travel speed,) number of stations (stops) and number of transfers required. 
+The complexity of an individual route is calculated on a per-rider basis and accounts for travel time (which is calculated based on distance covered, assuming constant travel speed,) number of stations (stops) and number of transfers required. 
 
-Route efficiency is measured in arbitrary units.
+Route complexity is measured in arbitrary units.
 
 ### Network Efficiency Evaluation
 
-The overall efficiency of a network is calculated as the sum of the efficiencies of all possible routes within the network weighed by their route ridership (based on empirical ridership data), divided by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
+The overall efficiency of a network is calculated as the sum of the complexities of all possible routes within the network weighed by their route ridership (based on empirical ridership data), multiplied by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
 
 ## Usage
 
@@ -50,7 +50,7 @@ considers only cost data from the specified state in the calculation. NOTE: repl
 
 ### Evaluation mode
 
-defines the logic behind evaluating route efficiency
+defines the logic behind evaluating route complexity
 
 options: 
 
@@ -58,14 +58,30 @@ options:
 
 simply considers the distance covered, amount of transfers, and amount of station stops along the route.
 
+mathematical formula for adjusted route complexity:
+
+Standardcomplexity = (Transfers * c1) + (Stations * c2) + (Distance * c3)
+
+where c1, c2, c3 are specified parameters, details below.
+
+route complexity is measured in arbitrary units, generally representing the complexity of a route. 
+
 `eval-mode:adjusted`
 
-considers the above metrics, adjusted by dividing over the direct geographical distance between the origin and destination station and a weight coefficient. 
+considers the above metrics, adjusted accounting for the direct geographical distance between the origin and destination station and a weight coefficient. 
+
+mathematical formula for adjusted route complexity:
+
+FinalComplexity = (StandardComplexity) * (StandardComplexity / (c1 * GeographicalDistance))
+
+where c1 is a specified parameter
+
+Logic: adjusted evaluation mode adjusts route complexity by comparing the public transit route with the direct geographical "route" between the origin and destination. For two origin-destination pairs with the same geographical separation, if one origin-destination pair's public transit route has a higher complexity than the other, then this complexity should be further "penalized."
 
 
 ### Weights
 
-defines how each parameter is valued within the efficiency calculation algorithm
+defines how each parameter is valued within the complexity calculation algorithm
 
 `
 transfer-weight:0.4
@@ -78,7 +94,7 @@ each value following the field name should be a floating point number within the
 
 adjustment-weight represents the weight of the direct geographical distance adjustment used with the adjusted evaluation mode
 
-a higher value represents greater significance within the efficiency consideration
+a higher value represents greater significance within the complexity consideration
 
 ### Regression
 
