@@ -1,2 +1,3 @@
 cost-mode:state-average-DC
 regression:log-linear
+eval-mode:standard

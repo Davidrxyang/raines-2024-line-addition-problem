@@ -110,30 +110,52 @@ public class Evaluation {
     }
 
     /*
-     * calculates the efficiency of a route based on weights specified by
+     * calculates the complexity of a route based on weights specified by
      * config parameters
+     * 
+     * units are arbitrary 
      */
 
-    public Double routeEfficiency(Path path) {
+    public Double routeComplexity(Path path) {
 
         // default values
-        Double transferWeight = 0.25;
-        Double stationWeight = 0.25;
-        Double distanceWeight = 0.5;
+        Double transferWeight = 1.0;
+        Double stationWeight = 1.0;
+        Double distanceWeight = 1.0;
 
         if (config.get("transfer-weight") != null) {
-            transferWeight = Double.parseDouble(config.get("transfer-weight"));
+            transferWeight = 1 + Double.parseDouble(config.get("transfer-weight"));
         }
 
         if (config.get("station-weight") != null) {
-            stationWeight = Double.parseDouble(config.get("station-weight"));
+            stationWeight = 1 + Double.parseDouble(config.get("station-weight"));
         }
 
         if (config.get("distance-weight") != null) {
-            distanceWeight = Double.parseDouble(config.get("distance-weight"));
+            distanceWeight = 1 + Double.parseDouble(config.get("distance-weight"));
         }
 
         return (transferWeight * path.nTransfers + stationWeight * path.stations.size() + distanceWeight * path.getLength());
+    }
+
+    /*
+     * calculates the complexity of a route adjusted for direct distance
+     * 
+     * units are arbitrary 
+     */
+
+    public Double adjustedRouteComplexity(Path path) {
+        Double simpleComplexity = routeComplexity(path);
+        Double geographicalDistance = path.origin.getDistance(path.destination);
+        Double adjustmentWeight = 0.5;
+
+        if (config.get("adjustment-weight") != null) {
+            adjustmentWeight = Double.parseDouble(config.get("adjustment-weight"));
+        }
+
+        Double factor = simpleComplexity / (adjustmentWeight * geographicalDistance);
+
+        return factor * simpleComplexity;
     }
 
     /*
@@ -144,19 +166,43 @@ public class Evaluation {
 
         Double networkEfficiency = 0.0;
         PathPlanning pp = new PathPlanning(network);
-        double tripsEfficiency = 0.0;
+        Double tripsComplexity = 0.0;
+        String evaluationMode = "standard"; // default evaluation mode
 
-        // for each trip in the demand set, calculate the efficiency of that route/trip
+        if (config.get("eval-mode") != null) {
+            evaluationMode = config.get("eval-mode");
+        }
+
+        // for each trip in the demand set, calculate the complexity of that route/trip
         // and weigh it based on the "trip" demand.
 
         // if the trip is not contained within the demandSet, then the demand is 0,
         // so it is fine to ignore it within efficiency calculations based on our
-        // definition of efficiency
+        // definition of complexity
 
         for (Demand d : demandSet.trips) {
             Path path = pp.pathPlan(d.start, d.end);
-            double efficiency = routeEfficiency(path); // calculate the efficiency of the route for one user/trip
-            tripsEfficiency += efficiency * d.trips; // weigh the efficiency by the number of trips
+            Double complexity = 0.0;
+            
+            switch (evaluationMode) {
+                case "standard":
+                    complexity = routeComplexity(path);
+                    break;
+
+                case "adjusted":
+                    complexity = adjustedRouteComplexity(path);
+                    break;
+
+                default:
+                    System.out.println("Invalid evaluation mode, defaulting to standard");
+                    complexity = routeComplexity(path);
+                    break;
+            }   
+
+            if (Double.isNaN(complexity)) {
+                complexity = 0.0;
+            }
+            tripsComplexity += (double)d.trips * complexity;
         }
 
         // calculate the total construction cost of the network, per line
@@ -170,24 +216,24 @@ public class Evaluation {
 
         switch (config.get("regression")) {
             case "linear-linear":
-                networkEfficiency = tripsEfficiency / totalCost;
+                networkEfficiency = tripsComplexity * totalCost;
                 break;
 
             case "log-linear":
-                networkEfficiency = Math.log(tripsEfficiency) / totalCost;
+                networkEfficiency = Math.log(tripsComplexity) * totalCost;
                 break;
 
             case "linear-log":
-                networkEfficiency = tripsEfficiency / Math.log(totalCost);
+                networkEfficiency = tripsComplexity * Math.log(totalCost);
                 break;
 
             case "log-log":
-                networkEfficiency = Math.log(tripsEfficiency) / Math.log(totalCost);
+                networkEfficiency = Math.log(tripsComplexity) * Math.log(totalCost);
                 break;
 
             default:
                 System.out.println("Invalid regression mode, defaulting to linear-linear");
-                networkEfficiency = tripsEfficiency / totalCost;
+                networkEfficiency = tripsComplexity * totalCost;
                 break;
         }
 
