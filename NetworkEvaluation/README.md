@@ -24,6 +24,10 @@ Route complexity is measured in arbitrary units.
 
 The overall efficiency of a network is calculated as the sum of the complexities of all possible routes within the network weighed by their route ridership (based on empirical ridership data), multiplied by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
 
+### Line Efficiency Evaluation
+
+The efficiency of a line is calculated as the sum of all complexities of all possible origin destination combinations of its stations, weighted by ridership data, multiplied by the construction cost of the line.
+
 ## Usage
 
 The evaluation class takes in a config file that specifies parameters such as costMode. The format for the config file is:
@@ -78,6 +82,14 @@ where c1 is a specified parameter
 
 Logic: adjusted evaluation mode adjusts route complexity by comparing the public transit route with the direct geographical "route" between the origin and destination. For two origin-destination pairs with the same geographical separation, if one origin-destination pair's public transit route has a higher complexity than the other, then this complexity should be further "penalized."
 
+### Line Evaluation Mode
+
+defines evaluation logic behind route complexity, but for line efficiency calculations. Works the same way. 
+
+`line-eval-mode:standard`
+
+`line-eval-mode:adjusted`
+
 
 ### Weights
 
@@ -119,7 +131,25 @@ considers efficiency as linear and cost as logarithmic
 
 considers both efficiency and cost as logarithmic variables
 
+### Line Regression
+
+defines the regression mode for the line efficiency evaluation
+
+options:
+
+`line-regression:linear-linear`
+
+considers both efficiency and cost as linear variables
+
+`line-regression:log-linear`
+
+considers efficiency as logarithmic and cost as linear
 
 
+`line-regression:linear-log`
 
+considers efficiency as linear and cost as logarithmic
 
+`line-regression:log-log`
+
+considers both efficiency and cost as logarithmic variables
