@@ -7,6 +7,11 @@ to compile using the command line, run:
 
 `javac @sources.txt`
 
+alternatively: 
+
+`./build`
+
+(make sure permissions for the bash script are set properly)
 
 to run the main function:
 

@@ -1,6 +1,7 @@
 ./ExistingAlgorithms/PathPlanning.java
 ./ExistingAlgorithms/RGA.java
 ./ExistingAlgorithms/PIA.java
+./ExistingAlgorithms/UCS.java
 ./NetworkEvaluation/CostData.java
 ./NetworkEvaluation/Evaluation.java
 ./Network/WMATABlueLineFranconiaSpringfield.java

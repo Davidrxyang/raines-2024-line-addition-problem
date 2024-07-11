@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import Network.Line;
 import Network.Path;
 import Network.Network;
+import Network.Station;
 import Network.DemandSet;
 import Network.Demand;
 import Network.WMATA;
@@ -61,7 +62,7 @@ public class Evaluation {
 
             case "state-average-DC":
                 costMode = stateAverage("DC");
-                break;
+                break; 
 
             // add other cost calculation schemes here
 
@@ -146,6 +147,14 @@ public class Evaluation {
 
     public Double adjustedRouteComplexity(Path path) {
         Double simpleComplexity = routeComplexity(path);
+
+        Double factor = routeEfficiency(path);
+
+        return factor * simpleComplexity;
+    }
+
+    public Double routeEfficiency(Path path) {
+        Double simpleComplexity = routeComplexity(path);
         Double geographicalDistance = path.origin.getDistance(path.destination);
         Double adjustmentWeight = 0.5;
 
@@ -153,11 +162,8 @@ public class Evaluation {
             adjustmentWeight = Double.parseDouble(config.get("adjustment-weight"));
         }
 
-        Double factor = simpleComplexity / (adjustmentWeight * geographicalDistance);
-
-        return factor * simpleComplexity;
+        return simpleComplexity / (adjustmentWeight * geographicalDistance);
     }
-
     /*
      * calculates the efficiency of a network based on route demand data
      */
@@ -240,6 +246,76 @@ public class Evaluation {
         return networkEfficiency;
     }
 
+    public Double lineEfficiency(Network network, Line line, DemandSet demandSet) {
+        Double lineEfficiency = 0.0;
+        Double tripsComplexity = 0.0;
+        PathPlanning pp = new PathPlanning(network);
+        String lineEvaluationMode = "standard"; // default evaluation mode
+
+        if (config.get("line-eval-mode") != null) {
+            lineEvaluationMode = config.get("line-eval-mode");
+        }
+        for (Station origin : line.stations) {
+            for (Station destination : line.stations) {
+                if (origin != destination) {
+                    Demand d = demandSet.getDemand(origin, destination);
+                    Path path = pp.pathPlan(origin, destination);
+                    Double complexity = 0.0;
+            
+                    switch (lineEvaluationMode) {
+                        case "standard":
+                            complexity = routeComplexity(path);
+                            break;
+        
+                        case "adjusted":
+                            complexity = adjustedRouteComplexity(path);
+                            break;
+        
+                        default:
+                            System.out.println("Invalid evaluation mode, defaulting to standard");
+                            complexity = routeComplexity(path);
+                            break;
+                    }   
+        
+                    if (Double.isNaN(complexity)) {
+                        complexity = 0.0;
+                    }
+
+                    if (d != null) {
+                        tripsComplexity += (double)d.trips * complexity;                
+                    }
+                }
+            }
+        }
+
+        Double totalCost = constructionCost(line);
+
+        switch (config.get("line-regression")) {
+            case "linear-linear":
+                lineEfficiency = tripsComplexity * totalCost;
+                break;
+
+            case "log-linear":
+                lineEfficiency = Math.log(tripsComplexity) * totalCost;
+                break;
+
+            case "linear-log":
+                lineEfficiency = tripsComplexity * Math.log(totalCost);
+                break;
+
+            case "log-log":
+                lineEfficiency = Math.log(tripsComplexity) * Math.log(totalCost);
+                break;
+
+            default:
+                System.out.println("Invalid regression mode, defaulting to linear-linear");
+                lineEfficiency = tripsComplexity * totalCost;
+                break;
+        }
+
+        return lineEfficiency;
+    }
+
     /*
      * calculates the percentage change in efficiency between two networks
      */
@@ -284,15 +360,14 @@ public class Evaluation {
     }
 
     public static void main(String[] args) {
-        Evaluation eval = new Evaluation("NetworkEvaluation/config");
-        WMATA WMATA = new WMATA();
+
+        WMATA wmata = new WMATA();
         DemandSet demandSet = new DemandSet();
-        DemandSet protectedDemandSet = new DemandSet();
-        demandSet.loadTrips("Network/data.csv", WMATA.WMATA);
-        protectedDemandSet.loadTrips("Network/data.csv", WMATA.WMATA);
-
+        DemandSet unmodifiedDemand = new DemandSet();
+        demandSet.loadTrips("Network/data.csv", wmata.WMATA);
+        unmodifiedDemand.loadTrips("Network/data.csv", wmata.WMATA);
+        Evaluation eval = new Evaluation("NetworkEvaluation/config");
         
-
-
+        System.out.println("line efficiency" + eval.lineEfficiency(wmata.WMATA, wmata.WMATA.lines.get(0), unmodifiedDemand));
     }
 }
