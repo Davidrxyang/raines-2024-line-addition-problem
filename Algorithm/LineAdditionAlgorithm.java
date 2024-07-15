@@ -22,12 +22,12 @@ public class LineAdditionAlgorithm {
 
     }
 
-    public void constructLine(Station vi, Station vj, ArrayList<Station> stations, Line l) {
+    public void constructLine(Station vi, Station vj, ArrayList<Station> stations, Line l, double height) {
         // the stations that are considered in a range between vi and vj
         ArrayList<Station> s = new ArrayList<>();
 
         for (Station station : stations) {
-            if (stationInCorridor(vi, vj, station, 0.3) && station != vi && station != vj) {
+            if (stationInCorridor(vi, vj, station, height) && station != vi && station != vj) {
                 s.add(station);
             }
         }
@@ -47,14 +47,32 @@ public class LineAdditionAlgorithm {
             int maxDemand = 0;
             Station vk = null;
             for (Station station : s) {
-                int demand = D.getDemand(station, vj).trips + D.getDemand(station, vi).trips + D.getDemand(vj, station).trips + D.getDemand(vi, station).trips;
+                int demand = 0;
+                Demand d1 = D.getDemand(vi, station);
+                Demand d2 = D.getDemand(station, vi);
+                Demand d3 = D.getDemand(vj, station);
+                Demand d4 = D.getDemand(station, vj);
+
+                if (d1 != null) {
+                    demand += d1.trips;
+                }
+                if (d2 != null) {
+                    demand += d2.trips;
+                }
+                if (d3 != null) {
+                    demand += d3.trips;
+                }
+                if (d4 != null) {
+                    demand += d4.trips;
+                }
+                
                 if (demand > maxDemand && station != vi && station != vj) {
                     vk = station;
                     maxDemand = demand;
                 }
             }
-            constructLine(vi, vk, s, l);
-            constructLine(vk, vj, s, l);
+            constructLine(vi, vk, s, l, height);
+            constructLine(vk, vj, s, l, height);
         }
     }
 
@@ -130,7 +148,7 @@ public class LineAdditionAlgorithm {
         d.loadTrips("network/data.csv", wmata.WMATA);
         Line l = new Line();
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
-        laa.constructLine(wmata.WMATA.getStation("mclean"), wmata.WMATA.getStation("takoma"), wmata.WMATA.stationList, l);
+        laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
         System.out.println(l);
     }
 }
