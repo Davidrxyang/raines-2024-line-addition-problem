@@ -145,7 +145,7 @@ public class LineAdditionAlgorithm {
     public static void main(String[] args) {
         WMATA wmata = new WMATA();
         DemandSet d = new DemandSet();
-        d.loadTrips("network/data.csv", wmata.WMATA);
+        d.loadTrips("Network/data.csv", wmata.WMATA);
         Line l = new Line();
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
         laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
