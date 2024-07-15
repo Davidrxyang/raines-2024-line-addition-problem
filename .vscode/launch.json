@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Path",
+            "request": "launch",
+            "mainClass": "Network.Path",
+            "projectName": "raines-2024-line-addition-problem_836a820"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
