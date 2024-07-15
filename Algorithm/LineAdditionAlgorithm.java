@@ -47,7 +47,25 @@ public class LineAdditionAlgorithm {
             int maxDemand = 0;
             Station vk = null;
             for (Station station : s) {
-                int demand = D.getDemand(station, vj).trips + D.getDemand(station, vi).trips + D.getDemand(vj, station).trips + D.getDemand(vi, station).trips;
+                int demand = 0;
+                Demand d1 = D.getDemand(vi, station);
+                Demand d2 = D.getDemand(station, vi);
+                Demand d3 = D.getDemand(vj, station);
+                Demand d4 = D.getDemand(station, vj);
+
+                if (d1 != null) {
+                    demand += d1.trips;
+                }
+                if (d2 != null) {
+                    demand += d2.trips;
+                }
+                if (d3 != null) {
+                    demand += d3.trips;
+                }
+                if (d4 != null) {
+                    demand += d4.trips;
+                }
+                
                 if (demand > maxDemand && station != vi && station != vj) {
                     vk = station;
                     maxDemand = demand;
@@ -130,7 +148,7 @@ public class LineAdditionAlgorithm {
         d.loadTrips("network/data.csv", wmata.WMATA);
         Line l = new Line();
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
-        laa.constructLine(wmata.WMATA.getStation("downtown largo"), wmata.WMATA.getStation("fort totten"), wmata.WMATA.stationList, l, 0.3);
+        laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
         System.out.println(l);
     }
 }
