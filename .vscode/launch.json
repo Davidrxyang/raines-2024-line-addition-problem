@@ -6,128 +6,93 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Network.Main",
-            "projectName": "raines-2024-line-addition-problem_836a820"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "raines-2024-line-addition-problem_ae1328a5"
-        },
-        {
-            "type": "java",
-            "name": "PathPlanning",
-            "request": "launch",
-            "mainClass": "PathPlanning",
-            "projectName": "raines-2024-line-addition-problem_5db06d4b"
-        },
-        {
-            "type": "java",
-            "name": "PIA",
-            "request": "launch",
-            "mainClass": "PIA",
-            "projectName": "raines-2024-line-addition-problem_5db06d4b"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "raines-2024-line-addition-problem_5db06d4b"
-        },
-        {
-            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
         },
         {
             "type": "java",
-            "name": "CostData",
-            "request": "launch",
-            "mainClass": "CostData",
-            "projectName": "raines-2024-line-addition-problem_836a820"
-        },
-        {
-            "type": "java",
-            "name": "DemandSet",
-            "request": "launch",
-            "mainClass": "DemandSet",
-            "projectName": "raines-2024-line-addition-problem_836a820"
-        },
-        {
-            "type": "java",
-            "name": "Evaluation",
-            "request": "launch",
-            "mainClass": "Evaluation",
-            "projectName": "raines-2024-line-addition-problem_836a820"
-        },
-        {
-            "type": "java",
-            "name": "Line",
-            "request": "launch",
-            "mainClass": "Line",
-            "projectName": "raines-2024-line-addition-problem_836a820"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "raines-2024-line-addition-problem_836a820"
-        },
-        {
-            "type": "java",
             "name": "PIA",
             "request": "launch",
-            "mainClass": "PIA",
-            "projectName": "raines-2024-line-addition-problem_836a820"
-        },
-        {
-            "type": "java",
-            "name": "Path",
-            "request": "launch",
-            "mainClass": "Path",
-            "projectName": "raines-2024-line-addition-problem_836a820"
+            "mainClass": "ExistingAlgorithms.PIA",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
         },
         {
             "type": "java",
             "name": "PathPlanning",
             "request": "launch",
-            "mainClass": "PathPlanning",
-            "projectName": "raines-2024-line-addition-problem_836a820"
+            "mainClass": "ExistingAlgorithms.PathPlanning",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
         },
         {
             "type": "java",
             "name": "RGA",
             "request": "launch",
-            "mainClass": "RGA",
-            "projectName": "raines-2024-line-addition-problem_836a820"
+            "mainClass": "ExistingAlgorithms.RGA",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "DemandSet",
+            "request": "launch",
+            "mainClass": "Network.DemandSet",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "Line",
+            "request": "launch",
+            "mainClass": "Network.Line",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "Network.Main",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "Path",
+            "request": "launch",
+            "mainClass": "Network.Path",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
         },
         {
             "type": "java",
             "name": "SimpleNetwork",
             "request": "launch",
-            "mainClass": "SimpleNetwork",
-            "projectName": "raines-2024-line-addition-problem_836a820"
+            "mainClass": "Network.SimpleNetwork",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
         },
         {
             "type": "java",
             "name": "WMATA",
             "request": "launch",
-            "mainClass": "WMATA",
-            "projectName": "raines-2024-line-addition-problem_836a820"
+            "mainClass": "Network.WMATA",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
         },
         {
             "type": "java",
             "name": "WMATATransferTest",
             "request": "launch",
-            "mainClass": "WMATATransferTest",
-            "projectName": "raines-2024-line-addition-problem_836a820"
+            "mainClass": "Network.WMATATransferTest",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "CostData",
+            "request": "launch",
+            "mainClass": "NetworkEvaluation.CostData",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+        },
+        {
+            "type": "java",
+            "name": "Evaluation",
+            "request": "launch",
+            "mainClass": "NetworkEvaluation.Evaluation",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
         }
     ]
 }
