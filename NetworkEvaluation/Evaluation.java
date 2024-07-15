@@ -355,7 +355,7 @@ public class Evaluation {
                 count++;
             }
         }
- 
+
         return (totalCost / count);
     }
 

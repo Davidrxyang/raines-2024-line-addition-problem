@@ -1,4 +1,4 @@
-package Network; 
+package Network;
 
 import NetworkEvaluation.Evaluation;
 import NetworkEvaluation.CostData;
@@ -11,10 +11,8 @@ public class Main {
 
         WMATA wmata = new WMATA();
         DemandSet demandSet = new DemandSet();
-        DemandSet unmodifiedDemand = new DemandSet();
-        demandSet.loadTrips("Network/data.csv", wmata.WMATA);
-        unmodifiedDemand.loadTrips("Network/data.csv", wmata.WMATA);
-        Evaluation eval = new Evaluation("NetworkEvaluation/config");
+        demandSet.loadTrips("src/Network/data.csv", wmata.WMATA);
+        Evaluation eval = new Evaluation("src/NetworkEvaluation/config");
         
         Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, demandSet);
         
@@ -33,6 +31,8 @@ public class Main {
         System.out.println("Improvement " + piaPercentChange + "%");
         System.out.println("RGA network efficiency: " + rgaNetworkEfficiency);
         System.out.println("Improvement " + rgaPercentChange + "%");
+
+        // eval.compareNetworks(wmata2.WMATA, piaNetwork, demandSet);
 
         // using log-linear regression scheme, which makes the most sense from an economics perspective
         // PIA is improving the network by 114.8 percent.
