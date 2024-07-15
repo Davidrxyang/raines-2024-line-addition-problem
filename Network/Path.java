@@ -220,11 +220,35 @@ public class Path {
         }
     }
 
+    public boolean hasSubpath(Path p) {
+        if (p.stations.size() > stations.size()) {
+            return false;
+        }
+        for (int i = 0; i < stations.size() - p.stations.size(); i++) {
+            if (stations.get(i).equals(p.origin)) {
+                for (int j = 0; j < p.stations.size(); j++) {
+                    if (!stations.get(i + j).equals(p.stations.get(j))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+ 
+        }
+   
+        return false;
+    }
+
     public static void main(String[] args) {
         WMATA WMATA = new WMATA();
 
         PathPlanning pp = new PathPlanning(WMATA.WMATA);
-        Path bethesdaToAnacostia = pp.pathPlan(WMATA.WMATA.getStation("bethesda"), WMATA.WMATA.getStation("anacostia"));
-        System.out.println(bethesdaToAnacostia);
+        Path path = pp.pathPlan(WMATA.WMATA.getStation("arlington cemetery"), WMATA.WMATA.getStation("downtown largo"));
+        System.out.println(path);
+
+        Path subPath = pp.pathPlan(WMATA.WMATA.getStation("farragut west"), WMATA.WMATA.getStation("eastern market"));
+        Path falseSubPath = pp.pathPlan(WMATA.WMATA.getStation("farragut west"), WMATA.WMATA.getStation("shady grove"));
+        System.out.println(path.hasSubpath(subPath));
+        System.out.println(path.hasSubpath(falseSubPath));
     }
 }
