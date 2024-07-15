@@ -30,7 +30,7 @@ public class CostData {
         costs = new ArrayList<Double>();
 
         try {
-            filename = "src/NetworkEvaluation/cost.csv";
+            filename = "NetworkEvaluation/cost.csv";
             File file = new File(filename);
             Scanner scanner = new Scanner(file);
             scanner.nextLine(); // skip header
