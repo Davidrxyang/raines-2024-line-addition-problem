@@ -137,6 +137,15 @@ public class DemandSet {
         return d;
     }
 
+    public Demand getDemand(Station start, Station end) {
+        for (Demand demand : trips) {
+            if (demand.start == start && demand.end == end) {
+                return demand;
+            }
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         WMATA wmata = new WMATA();
         // sample usage
