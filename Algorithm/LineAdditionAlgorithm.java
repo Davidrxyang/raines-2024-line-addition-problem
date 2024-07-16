@@ -69,6 +69,9 @@ public class LineAdditionAlgorithm {
         }
     }
 
+    // constructs a line between two stations vi and vj
+    // height is a percentage of the distance between vi and vj
+    // IMPORTANT: call sort() function on l after constructing, stations are unordered
     public void constructLine(Station vi, Station vj, ArrayList<Station> stations, Line l, double height) {
         // the stations that are considered in a range between vi and vj
         ArrayList<Station> s = new ArrayList<>();
@@ -79,7 +82,7 @@ public class LineAdditionAlgorithm {
             }
         }
 
-        System.out.println("vi: " + vi.name + " vj: " + vj.name);
+        // System.out.println("vi: " + vi.name + " vj: " + vj.name);
 
         if (s.size() == 0) {
             if (G.connectionMap.get(vi.name + " -> " + vj.name) != null) {
@@ -118,9 +121,45 @@ public class LineAdditionAlgorithm {
                     maxDemand = demand;
                 }
             }
+            l.addStationUnordered(vi);
+            l.addStationUnordered(vk);
+            l.addStationUnordered(vj);
+
             constructLine(vi, vk, s, l, height);
             constructLine(vk, vj, s, l, height);
+
+            l.setOrigin(vi);
+            l.setDestination(vj);
         }
+    }
+
+    // adds a station into the most suitable position (shortest total distance) in the line
+    // returns a new line
+    public Line addToLine(Station vj, Line l) {
+        Line temp = null;
+        double distance = Double.MAX_VALUE;
+        for (int i = 0; i <= l.stations.size(); i++) {
+            Line temp2 = new Line(l);
+            Line c1 = null;
+            if (i > 0) {
+                c1 = new Line();
+                constructLine(l.stations.get(i - 1), vj, l.stations, c1, 0.3);
+            }
+            Line c2 = null;
+            if (i < l.stations.size()) {
+                c2 = new Line();
+                constructLine(vj, l.stations.get(i), l.stations, c2, 0.3);
+            }
+            temp2.insertStation(vj, i);
+            temp2.insertLine(c2, i + 1);
+            temp2.insertLine(c1, i);
+            
+            if (temp2.getLength() < distance) { // TODO: add constraints on length and circuity
+                temp = temp2;
+                distance = temp2.getLength();
+            }
+        }
+        return temp;
     }
 
     // function to calculate if a station vk is in the corridor between vi and vj
@@ -196,6 +235,8 @@ public class LineAdditionAlgorithm {
         Line l = new Line();
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
         laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
+        l.sort();
+        l = laa.addToLine(wmata.WMATA.getStation("arlington cemetery"), l);
         System.out.println(l);
     }
 }
