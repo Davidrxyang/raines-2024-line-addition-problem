@@ -18,9 +18,9 @@ import Network.Station;
 
 public class Connection {
 
-    Station origin;
-    Station destination;
-    Double distance;
+    public Station origin;
+    public Station destination;
+    public Double distance;
 
     /*
      * add data members for ridership data? 
