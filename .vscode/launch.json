@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "AStar",
+            "request": "launch",
+            "mainClass": "ExistingAlgorithms.AStar",
+            "projectName": "raines-2024-line-addition-problem_836a820"
+        },
+        {
+            "type": "java",
+            "name": "UCS",
+            "request": "launch",
+            "mainClass": "ExistingAlgorithms.UCS",
+            "projectName": "raines-2024-line-addition-problem_836a820"
+        },
+        {
+            "type": "java",
             "name": "LineAdditionAlgorithm",
             "request": "launch",
             "mainClass": "Algorithm.LineAdditionAlgorithm",

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import Network.Station;
 import ExistingAlgorithms.PathPlanning;
+import ExistingAlgorithms.LeastTransfers;
 
 public class Path {
     public Station origin;
@@ -44,12 +45,12 @@ public class Path {
     public Path(Path l) {
         this.connections = new ArrayList<>(l.connections);
         this.stations = new ArrayList<>(l.stations);
-        this.lines = new ArrayList<>();
+        this.lines = new ArrayList<>(l.lines);
 
         this.origin = l.origin;
         this.destination = l.destination;
         this.length = l.length;
-        this.nTransfers = 0;
+        this.nTransfers = l.nTransfers;
     }
 
     public void buildPath(Network network, Line line, Station origin, Station destination) {
@@ -69,6 +70,28 @@ public class Path {
         }
     }
 
+    public void findLines() {
+        ArrayList<Line> foundLines = new ArrayList<>();
+        
+        if (stations.size() == 1) {
+            foundLines.add(origin.lines.get(0));
+            lines = foundLines;
+            return;
+        }
+
+        for (int i = 0; i < stations.size() - 1; i++) {
+            Station currentStation = stations.get(i);
+            Station nextStation = stations.get(i + 1);
+            Line currentLine = currentStation.getCommonLines(nextStation).get(0);
+            if (!foundLines.contains(currentLine)) {
+                foundLines.add(currentLine);
+            }
+        }
+
+        lines = foundLines;
+        nTransfers = lines.size() - 1;
+    }
+
     /*
      * these setter functions are dangerous
      */
@@ -80,7 +103,7 @@ public class Path {
     public void setDestination(Station station) {
         this.destination = station;
     }
-
+ 
     public void calculateLength() {
         for (int i = 0; i < connections.size(); i++) {
             length += connections.get(i).distance;
@@ -101,7 +124,7 @@ public class Path {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Path from ").append(origin.name).append("to ").append(destination.name).append("\n");
+        sb.append("Path from ").append(origin.name).append(" to ").append(destination.name).append("\n");
         sb.append("\n");
         sb.append("Lines: \n");
         for (Line l : lines) {
@@ -239,10 +262,14 @@ public class Path {
         return false;
     }
 
+    public Station getLastStation() {
+        return stations.get(stations.size() - 1);
+    }
+
     public static void main(String[] args) {
         WMATA WMATA = new WMATA();
 
-        PathPlanning pp = new PathPlanning(WMATA.WMATA);
+        PathPlanning pp = new LeastTransfers(WMATA.WMATA);
         Path path = pp.pathPlan(WMATA.WMATA.getStation("arlington cemetery"), WMATA.WMATA.getStation("downtown largo"));
         System.out.println(path);
 

@@ -124,5 +124,40 @@ public class Station extends Object {
     public double calculateDemandSatisfied() {
         return (double) demandSatisfied / demand;
     }
+
+    public ArrayList<Line> getCommonLines(Station station) {
+        ArrayList<Line> commonLines = new ArrayList<Line>();
+        for (Line line : lines) {
+            for (Connection c : line.connections) {
+                if (c.origin.equals(this) && c.destination.equals(station)) {
+                    commonLines.add(line);
+                    break;
+                }
+            }
+        }
+        return commonLines;
+    }
+
+    /*
+    public ArrayList<Station> getNeighbors() {
+        ArrayList<Station> neighbors = new ArrayList<Station>();
+        for (Line line : lines) {
+            for (Connection connection : line.connections) {
+                if (connection.origin.equals(this)) {
+                    if (!neighbors.contains(connection.destination)) {
+                        neighbors.add(connection.destination);
+                    }
+                }
+                if (connection.destination.equals(this)) {
+                    if (!neighbors.contains(connection.origin)) {
+                        neighbors.add(connection.origin);
+                    }
+                }
+            }
+        }   
+        return neighbors;
+    }
+    */
+        
 }
 

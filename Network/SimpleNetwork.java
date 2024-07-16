@@ -10,6 +10,7 @@ import Network.Station;
 import Network.Line;
 
 import ExistingAlgorithms.PathPlanning;
+import ExistingAlgorithms.LeastTransfers;
 
 public class SimpleNetwork {
     public static void main(String[] args) {
@@ -87,9 +88,14 @@ public class SimpleNetwork {
         simpleNetwork.addLine(purple_BH);
         simpleNetwork.addLine(purple_HB);
 
-        PathPlanning pathPlanning = new PathPlanning(simpleNetwork);
+        PathPlanning pathPlanning = new LeastTransfers(simpleNetwork);
+
+        /*
+        deprecated
+        
         pathPlanning.printMatrix(pathPlanning.connectivityMatrix);
         pathPlanning.printMatrix(pathPlanning.connectivityMatrixPower(pathPlanning.connectivityMatrix, 2));
+        */
 
         System.out.println(pathPlanning.pathPlan(C, A).connections);
         System.out.println(pathPlanning.pathPlan(F, A).connections);

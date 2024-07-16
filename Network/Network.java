@@ -188,4 +188,8 @@ public class Network {
         return neighbors;
     }
 
+    public Connection getConnection(Station origin, Station destination) {
+        return connectionMap.get(origin.name + " -> " + destination.name);
+    }
+
 }
