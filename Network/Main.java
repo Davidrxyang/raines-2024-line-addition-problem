@@ -11,8 +11,8 @@ public class Main {
 
         WMATA wmata = new WMATA();
         DemandSet demandSet = new DemandSet();
-        demandSet.loadTrips("src/Network/data.csv", wmata.WMATA);
-        Evaluation eval = new Evaluation("src/NetworkEvaluation/config");
+        demandSet.loadTrips("Network/data.csv", wmata.WMATA);
+        Evaluation eval = new Evaluation("NetworkEvaluation/config");
         
         Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, demandSet);
         

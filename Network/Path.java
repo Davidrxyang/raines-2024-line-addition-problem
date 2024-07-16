@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import Network.Station;
 import ExistingAlgorithms.PathPlanning;
+import ExistingAlgorithms.LeastTransfers;
 
 public class Path {
     public Station origin;
@@ -242,7 +243,7 @@ public class Path {
     public static void main(String[] args) {
         WMATA WMATA = new WMATA();
 
-        PathPlanning pp = new PathPlanning(WMATA.WMATA);
+        PathPlanning pp = new LeastTransfers(WMATA.WMATA);
         Path path = pp.pathPlan(WMATA.WMATA.getStation("arlington cemetery"), WMATA.WMATA.getStation("downtown largo"));
         System.out.println(path);
 

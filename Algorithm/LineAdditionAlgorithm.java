@@ -5,6 +5,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
 import ExistingAlgorithms.PathPlanning;
+import ExistingAlgorithms.LeastTransfers;
 import Network.DemandSet;
 import Network.Line;
 import Network.Network;
@@ -43,7 +44,7 @@ public class LineAdditionAlgorithm {
         DemandSet modifiedDemand = new DemandSet();
         ArrayList<Path> paths = new ArrayList<>();
         
-        PathPlanning pp = new PathPlanning(G);
+        PathPlanning pp = new LeastTransfers(G);
         
         for (Station a : G.stationList) {
             for (Station b : G.stationList) {
