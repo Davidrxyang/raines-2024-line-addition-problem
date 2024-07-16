@@ -156,6 +156,12 @@ public class Line {
         stations.add(station);
     }
 
+    public void addStationUnordered(Station station) {
+        if (!stations.contains(station)) {
+            stations.add(station);
+        }
+    }
+
     /*
      * METHOD 2
      * 
