@@ -176,7 +176,7 @@ public class Network {
         return null;
     }
 
-    public ArrayList<Station> getNeightbors(Station s) {
+    public ArrayList<Station> getNeighbors(Station s) {
         ArrayList<Station> neighbors = new ArrayList<>();
         for (Connection c : connections) {
             if (c.origin == s) {

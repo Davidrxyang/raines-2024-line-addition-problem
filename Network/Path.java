@@ -53,6 +53,11 @@ public class Path {
         this.nTransfers = l.nTransfers;
     }
 
+    public void update() {
+        calculateLength();
+        findLines();
+    }
+
     public void buildPath(Network network, Line line, Station origin, Station destination) {
 
         Station currentStation = destination;

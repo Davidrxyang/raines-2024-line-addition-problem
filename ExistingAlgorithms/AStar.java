@@ -8,8 +8,9 @@ package ExistingAlgorithms;
 
 import Network.*;
 import java.util.PriorityQueue;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Comparator;
+import java.util.ArrayList;
 
 public class AStar extends PathPlanning {
 
@@ -19,49 +20,59 @@ public class AStar extends PathPlanning {
     public AStar(Network network) {
         this.network = network;
         c1 = 0.2;
-        c2 = 1.0;
+        c2 = 10.0;
         c3 = 0.8;
     }
 
     /*
      * finding the least cost route
      */
-
     public Path pathPlan(Station origin, Station destination) {
-        PriorityQueue<Path> frontier = new PriorityQueue<>((path1, path2) -> Double.compare(getCost(path1) + heuristic(path1.getLastStation(), destination), getCost(path2) + heuristic(path2.getLastStation(), destination)));
+        HashMap<Station, Path> reached = new HashMap<>();
+        PriorityQueue<Path> frontier = new PriorityQueue<Path>(new Comparator<Path>() {
+            public int compare(Path p1, Path p2) {
+                return totalCost(p1, origin, destination)
+                        .compareTo(totalCost(p2, origin, destination));
+            }
+        });
+
         Path initialPath = new Path();
         initialPath.addStation(origin, null);
+        initialPath.update();
+
+        Path currentPath = initialPath;
+
+        reached.put(initialPath.destination, initialPath);
+
         frontier.add(initialPath);
 
-        Set<Station> explored = new HashSet<>();
+        while(!frontier.isEmpty()) {
+            currentPath = frontier.peek();
+            currentPath.update();
+            frontier.remove();
 
-        int iterations = 0;
-
-        while (!frontier.isEmpty()) {
-            Path currentPath = frontier.poll(); // Assuming frontier is a PriorityQueue that orders paths by their total cost
-            Station currentStation = currentPath.getLastStation();
-        
-            if (currentStation.equals(destination)) {
-                currentPath.findLines(); // Now it's efficient to find lines and calculate length
-                currentPath.calculateLength();
+            if(currentPath.destination.equals(destination)) {
                 return currentPath;
             }
-        
-            explored.add(currentStation);
-        
-            for (Station neighbor : network.getNeightbors(currentStation)) {
-                if (!explored.contains(neighbor)) {
-                    Path newPath = new Path(currentPath);
-                    newPath.calculateLength();
-                    newPath.findLines();
-                    Connection connection = network.getConnection(currentStation, neighbor);
-                    newPath.addStation(neighbor, connection.distance);
-        
-                    // Instead of checking if newPath is in frontier, we add paths to the frontier with their total cost
-                    // The PriorityQueue will automatically handle duplicates based on the comparator logic
-                    if (!frontier.contains(newPath) || totalCost(newPath, neighbor, destination) < totalCost(currentPath, currentStation, destination)) {
-                        frontier.add(newPath);
-                    }
+
+            Station currentStation = currentPath.destination;
+            ArrayList<Station> neighbors = network.getNeighbors(currentStation);
+
+            for (Station neighbor : neighbors) {
+                Double cost = totalCost(currentPath, origin, destination);
+                Path newPath = new Path(currentPath);
+                Connection connection = network.getConnection(currentStation, neighbor);
+                newPath.addStation(neighbor, connection.distance);
+                newPath.update();
+
+                if (!reached.containsKey(neighbor)) {
+                    reached.put(neighbor, newPath);
+                    frontier.add(newPath);
+                }
+                else if (cost < totalCost(reached.get(neighbor), origin, destination)) {
+                    frontier.remove(reached.get(neighbor));
+                    reached.replace(neighbor, newPath);
+                    frontier.add(newPath);
                 }
             }
         }
@@ -69,7 +80,7 @@ public class AStar extends PathPlanning {
 
         return null;
     }
-
+    
     public Double getCost(Path path) {
         return c1 * path.length + c2 * path.nTransfers + c3 * path.stations.size();
     }
@@ -82,12 +93,13 @@ public class AStar extends PathPlanning {
         // This method should calculate the total cost of the path including the heuristic from current to goal
         return getCost(path) + heuristic(current, goal); // Placeholder for actual implementation
     }
+
     public static void main(String[] args) {
         WMATA WMATA = new WMATA();
 
         PathPlanning pp = new AStar(WMATA.WMATA);
 
-        Path path = pp.pathPlan(WMATA.WMATA.getStation("glenmont"), WMATA.WMATA.getStation("columbia heights"));
+        Path path = pp.pathPlan(WMATA.WMATA.getStation("glenmont"), WMATA.WMATA.getStation("mclean"));
         System.out.println(path);
     }
     

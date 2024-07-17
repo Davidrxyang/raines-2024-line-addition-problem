@@ -155,8 +155,8 @@ public class RGA {
     // stations adjacent to the current origin and destination of the line
     // and not every possible station in the network
     public Station pickBestStation(Line l) {
-        ArrayList<Station> stationCandidates = existingNetwork.getNeightbors(l.origin);
-        stationCandidates.addAll(existingNetwork.getNeightbors(l.destination));
+        ArrayList<Station> stationCandidates = existingNetwork.getNeighbors(l.origin);
+        stationCandidates.addAll(existingNetwork.getNeighbors(l.destination));
 
         int demandIncrease = 0;
 
