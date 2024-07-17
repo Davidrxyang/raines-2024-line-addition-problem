@@ -55,6 +55,8 @@ public class UCS extends PathPlanning {
                     Path newPath = new Path(currentPath); // Assuming this constructor copies the path
                     Connection connection = network.getConnection(currentStation, neighbor); 
                     newPath.addStation(neighbor, connection.distance); // Add neighbor to the path
+                    newPath.findLines(); // TODO: this is very inefficient
+                    newPath.calculateLength();
                     if (!frontier.contains(newPath)) {
                         frontier.add(newPath);
                     }

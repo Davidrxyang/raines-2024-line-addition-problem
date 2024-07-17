@@ -55,6 +55,8 @@ public class AStar extends PathPlanning {
                     Path newPath = new Path(currentPath); // Assuming this constructor copies the path
                     Connection connection = network.getConnection(currentStation, neighbor); 
                     newPath.addStation(neighbor, connection.distance); // Add neighbor to the path
+                    newPath.findLines(); // TODO: this is very inefficient
+                    newPath.calculateLength();
                     if (!frontier.contains(newPath)) {
                         frontier.add(newPath);
                     }
@@ -79,7 +81,7 @@ public class AStar extends PathPlanning {
 
         PathPlanning pp = new AStar(WMATA.WMATA);
 
-        Path path = pp.pathPlan(WMATA.WMATA.getStation("glenmont"), WMATA.WMATA.getStation("west hyattsville"));
+        Path path = pp.pathPlan(WMATA.WMATA.getStation("glenmont"), WMATA.WMATA.getStation("rosslyn"));
         System.out.println(path);
     }
     
