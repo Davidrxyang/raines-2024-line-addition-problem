@@ -6,17 +6,11 @@
     "configurations": [
         {
             "type": "java",
-            "name": "UCS",
+            "name": "LineAdditionAlgorithm",
             "request": "launch",
-            "mainClass": "ExistingAlgorithms.UCS",
-            "projectName": "raines-2024-line-addition-problem_ae1328a5"
-        },
-        {
-            "type": "java",
-            "name": "AStar",
-            "request": "launch",
-            "mainClass": "ExistingAlgorithms.AStar",
-            "projectName": "raines-2024-line-addition-problem_ae1328a5"
+            "mainClass": "Algorithm.LineAdditionAlgorithm",
+            "projectName": "raines-2024-line-addition-problem_5db06d4b"
+
         },
         {
             "type": "java",

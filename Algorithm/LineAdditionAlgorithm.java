@@ -70,10 +70,17 @@ public class LineAdditionAlgorithm {
         }
     }
 
+
     // constructs a line between two stations vi and vj
     // height is a percentage of the distance between vi and vj
-    // IMPORTANT: call sort() function on l after constructing, stations are unordered
     public void constructLine(Station vi, Station vj, ArrayList<Station> stations, Line l, double height) {
+        constructLineHelper(vi, vj, stations, l, height);
+        l.setOrigin(vi);
+        l.setDestination(vj);
+        l.sort();
+    }
+
+    private void constructLineHelper(Station vi, Station vj, ArrayList<Station> stations, Line l, double height) {
         // the stations that are considered in a range between vi and vj
         ArrayList<Station> s = new ArrayList<>();
 
@@ -126,11 +133,8 @@ public class LineAdditionAlgorithm {
             l.addStationUnordered(vk);
             l.addStationUnordered(vj);
 
-            constructLine(vi, vk, s, l, height);
-            constructLine(vk, vj, s, l, height);
-
-            l.setOrigin(vi);
-            l.setDestination(vj);
+            constructLineHelper(vi, vk, s, l, height);
+            constructLineHelper(vk, vj, s, l, height);
         }
     }
 
@@ -145,11 +149,19 @@ public class LineAdditionAlgorithm {
             if (i > 0) {
                 c1 = new Line();
                 constructLine(l.stations.get(i - 1), vj, l.stations, c1, 0.3);
+                if (c1 != null) {
+                    c1.stations.remove(c1.stations.size() - 1);
+                    c1.stations.remove(0);
+                }
             }
             Line c2 = null;
             if (i < l.stations.size()) {
                 c2 = new Line();
                 constructLine(vj, l.stations.get(i), l.stations, c2, 0.3);
+                if (c2 != null) {
+                    c2.stations.remove(c2.stations.size() - 1);
+                    c2.stations.remove(0);
+                }
             }
             temp2.insertStation(vj, i);
             temp2.insertLine(c2, i + 1);
@@ -161,6 +173,48 @@ public class LineAdditionAlgorithm {
             }
         }
         return temp;
+    }
+
+    public Line joinLine(Line l1, Line l2) {
+        Line newLine = joinLineHelper(l1, l2);
+        if (newLine == null) {
+            newLine = joinLineHelper(l2, l1);
+        }
+        if (newLine == null) {
+            l1.reverse(l1.name);
+            newLine = joinLineHelper(l1, l2);
+        }
+        if (newLine == null) {
+            newLine = joinLineHelper(l2, l1);
+        }
+        return newLine;
+    }
+
+    public Line joinLineHelper(Line l1, Line l2) {
+        Line newLine = null;
+
+        Station l2origin = l2.origin;
+
+        boolean overlap = false;
+        int startindex = 0;
+        for (int i = 0; i < l1.stations.size(); i++) {
+            if (l1.stations.get(i) == l2origin) {
+                startindex = i;
+                overlap = true;
+            }
+            if (startindex > 0 && l1.stations.get(i) != l2.stations.get(i - startindex)) {
+                overlap = false;
+            }
+        }
+
+        if (overlap) { // TODO: add constraints on length and circuity
+            newLine = new Line(l1);
+            for (int i = l1.stations.size() - startindex; i < l2.stations.size(); i++) {
+                newLine.addStation(l2.stations.get(i), l2.stations.get(i).getDistance(newLine.stations.get(newLine.stations.size() - 1)));
+            }
+        }
+
+        return newLine;
     }
 
     // function to calculate if a station vk is in the corridor between vi and vj
@@ -236,8 +290,16 @@ public class LineAdditionAlgorithm {
         Line l = new Line();
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
         laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
-        l.sort();
         l = laa.addToLine(wmata.WMATA.getStation("arlington cemetery"), l);
         System.out.println(l);
+
+        Line l2 = new Line();
+        laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("new carrollton"), wmata.WMATA.stationList, l2, 0.3);
+        l2 = laa.addToLine(wmata.WMATA.getStation("pentagon"), l2);
+        l2 = laa.addToLine(wmata.WMATA.getStation("huntington"), l2);
+        System.out.println(l2);
+
+        Line joinedLine = laa.joinLine(l, l2);
+        System.out.println(joinedLine);
     }
 }
