@@ -2,6 +2,7 @@
 ./ExistingAlgorithms/RGA.java
 ./ExistingAlgorithms/PIA.java
 ./ExistingAlgorithms/UCS.java
+./ExistingAlgorithms/AStar.java
 ./ExistingAlgorithms/LeastTransfers.java
 ./NetworkEvaluation/CostData.java
 ./NetworkEvaluation/Evaluation.java

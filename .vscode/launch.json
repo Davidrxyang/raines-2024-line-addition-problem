@@ -10,6 +10,7 @@
             "request": "launch",
             "mainClass": "Algorithm.LineAdditionAlgorithm",
             "projectName": "raines-2024-line-addition-problem_5db06d4b"
+
         },
         {
             "type": "java",

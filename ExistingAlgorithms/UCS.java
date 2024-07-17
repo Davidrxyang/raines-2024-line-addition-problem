@@ -39,23 +39,29 @@ public class UCS extends PathPlanning {
 
         while (!frontier.isEmpty()) {
             iterations++;
-            System.out.println("iteration: " + iterations);
-            Path currentPath = frontier.poll(); // remove throws exception, poll returns null, same otherwise
-            Station currentStation = currentPath.getLastStation(); // Assuming getLastStation returns the last station in the path
-
+            System.out.println("Iteration: " + iterations);
+            Path currentPath = frontier.poll(); // Assuming frontier is a PriorityQueue that orders paths by their total cost
+            Station currentStation = currentPath.getLastStation();
+        
             if (currentStation.equals(destination)) {
-                currentPath.findLines();
+                currentPath.findLines(); // Now it's efficient to find lines and calculate length
+                currentPath.calculateLength();
                 return currentPath;
             }
-
+        
             explored.add(currentStation);
-
-            for (Station neighbor : network.getNeightbors(currentStation)) { // Assuming getNeighbors returns directly connected stations
+        
+            for (Station neighbor : network.getNeightbors(currentStation)) {
                 if (!explored.contains(neighbor)) {
-                    Path newPath = new Path(currentPath); // Assuming this constructor copies the path
-                    Connection connection = network.getConnection(currentStation, neighbor); 
-                    newPath.addStation(neighbor, connection.distance); // Add neighbor to the path
-                    if (!frontier.contains(newPath)) {
+                    Path newPath = new Path(currentPath);
+                    newPath.calculateLength();
+                    newPath.findLines();
+                    Connection connection = network.getConnection(currentStation, neighbor);
+                    newPath.addStation(neighbor, connection.distance);
+        
+                    // Instead of checking if newPath is in frontier, we add paths to the frontier with their total cost
+                    // The PriorityQueue will automatically handle duplicates based on the comparator logic
+                    if (!frontier.contains(newPath) || totalCost(newPath, neighbor, destination) < totalCost(currentPath, currentStation, destination)) {
                         frontier.add(newPath);
                     }
                 }
@@ -68,6 +74,11 @@ public class UCS extends PathPlanning {
 
     public Double getCost(Path path) {
         return c1 * path.length + c2 * path.nTransfers + c3 * path.stations.size();
+    }
+
+    public Double totalCost(Path path, Station current, Station goal) {
+        // This method should calculate the total cost of the path including the heuristic from current to goal
+        return getCost(path);
     }
 
     public static void main(String[] args) {
