@@ -1,0 +1,28 @@
+package Network; 
+
+import java.util.ArrayList;
+import Network.WMATA;
+import Network.DemandSet;
+import NetworkEvaluation.Evaluation;
+import ExistingAlgorithms.PIA;
+import Network.Network;
+
+public class Main {
+    public static void main(String[] args) {
+
+        WMATA WMATA = new WMATA();
+        WMATA protectedWMATA = new WMATA();
+        DemandSet demandSet = new DemandSet();
+        DemandSet protectedDemandSet = new DemandSet();
+        demandSet.loadTrips("Network/data.csv", WMATA.WMATA);
+        protectedDemandSet.loadTrips("Network/data.csv", WMATA.WMATA);
+        Evaluation eval = new Evaluation("NetworkEvaluation/config");
+                
+        PIA pia = new PIA(demandSet, WMATA.WMATA);
+
+        Network newNetwork = pia.R;
+
+        System.out.println("PIA improvement: " + eval.compareNetworks(protectedWMATA.WMATA, newNetwork, protectedDemandSet) + "%");
+
+    }
+}
