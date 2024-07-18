@@ -217,6 +217,22 @@ public class LineAdditionAlgorithm {
         return newLine;
     }
 
+    // removes all the routes from network R
+    // that are a subset of another route
+    public void removeSubsetRoutes() {
+        ArrayList<Line> toRemove = new ArrayList<Line>();
+        for (Line l1 : G.lines) {
+            for (Line l2 : G.lines) {
+                if (l1 != l2 && l1.connections.containsAll(l2.connections)) {
+                    toRemove.add(l2);
+                }
+            }
+        }
+        for (Line l : toRemove) {
+            G.lines.remove(l);
+        }
+    }
+
     // function to calculate if a station vk is in the corridor between vi and vj
     // height = [0, 1] is a percentage of the length between the stations vi and vj
     private boolean stationInCorridor(Station vi, Station vj, Station vk, double height) {
