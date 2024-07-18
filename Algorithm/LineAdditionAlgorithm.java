@@ -26,9 +26,6 @@ public class LineAdditionAlgorithm {
     ArrayList<Double> E;
     ArrayList<Line> lineCandidates;
     Evaluation eval;
-    double pMax = 1.5; // circuity factor
-    double maxLength = 40; // maximum length of a line in miles
-    double minLength = 10; // minimum length of a line in miles
     
     public LineAdditionAlgorithm(Network network, DemandSet demandSet, double targetEfficiency) {
         G = network;
@@ -170,7 +167,7 @@ public class LineAdditionAlgorithm {
             temp2.insertLine(c2, i + 1);
             temp2.insertLine(c1, i);
             
-            if (temp2.getLength() < distance && constraintsSatisfied(temp2)) {
+            if (temp2.getLength() < distance) { // TODO: add constraints on length and circuity
                 temp = temp2;
                 distance = temp2.getLength();
             }
@@ -210,59 +207,14 @@ public class LineAdditionAlgorithm {
             }
         }
 
-        if (overlap) {
+        if (overlap) { // TODO: add constraints on length and circuity
             newLine = new Line(l1);
             for (int i = l1.stations.size() - startindex; i < l2.stations.size(); i++) {
                 newLine.addStation(l2.stations.get(i), l2.stations.get(i).getDistance(newLine.stations.get(newLine.stations.size() - 1)));
             }
-            if (!constraintsSatisfied(newLine)) {
-                newLine = null;
-            }
         }
 
         return newLine;
-    }
-
-    // removes all the routes from network R
-    // that are a subset of another route
-    public void removeSubsetRoutes() {
-        ArrayList<Line> toRemove = new ArrayList<Line>();
-        for (Line l1 : G.lines) {
-            for (Line l2 : G.lines) {
-                if (l1 != l2 && l1.connections.containsAll(l2.connections)) {
-                    toRemove.add(l2);
-                }
-            }
-        }
-        for (Line l : toRemove) {
-            G.lines.remove(l);
-        }
-    }
-
-    // checks if a line satisfies the constraints on length and circuity
-    public boolean constraintsSatisfied(Line l) {
-        double p = 0;
-        for (int i = 0; i < l.stations.size() - 1; i++) {
-            for (int j = i + 1; j < l.stations.size(); j++) {
-                double directDistance = l.stations.get(i).getDistance(l.stations.get(j));
-                double lineDistance = l.travelCost(l.stations.get(i), l.stations.get(j));
-                double d = lineDistance / directDistance;
-                if (d > p) {
-                    p = d;
-                }
-            }
-        }
-        if (p > pMax) {
-            // System.out.println("circuity constraint not satisfied for line: " + l.name);
-            return false;
-        }
-
-        if (l.getLength() > maxLength || l.getLength() < minLength) {
-            // System.out.println("length constraint not satisfied for line: " + l.name);
-            return false;
-        }
-
-        return true;
     }
 
     // function to calculate if a station vk is in the corridor between vi and vj
@@ -335,26 +287,19 @@ public class LineAdditionAlgorithm {
         WMATA wmata = new WMATA();
         DemandSet d = new DemandSet();
         d.loadTrips("Network/data.csv", wmata.WMATA);
-        Line l = new Line("l1");
+        Line l = new Line();
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
         laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
         l = laa.addToLine(wmata.WMATA.getStation("arlington cemetery"), l);
         System.out.println(l);
 
-        Line l2 = new Line("l2");
+        Line l2 = new Line();
         laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("new carrollton"), wmata.WMATA.stationList, l2, 0.3);
         l2 = laa.addToLine(wmata.WMATA.getStation("pentagon"), l2);
         l2 = laa.addToLine(wmata.WMATA.getStation("huntington"), l2);
-        l2 = laa.addToLine(wmata.WMATA.getStation("takoma"), l2);
         System.out.println(l2);
-
-        Line l3 = new Line("l3");
-        laa.constructLine(wmata.WMATA.getStation("pentagon") , wmata.WMATA.getStation("huntington"), wmata.WMATA.stationList, l3, 0.3);
-        System.out.println(l3);
 
         Line joinedLine = laa.joinLine(l, l2);
         System.out.println(joinedLine);
-
-        System.out.println("l2 satisfies constraints: " + laa.constraintsSatisfied(l2));
     }
 }

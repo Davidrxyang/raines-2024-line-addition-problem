@@ -35,8 +35,4 @@ public class Connection {
     public String toString() {
         return (new StringBuilder()).append(origin.name).append(" -> ").append(destination.name).toString();
     }
-
-    public boolean equals(Connection other) {
-        return (origin.equals(other.origin) && destination.equals(other.destination));
-    }
 }
