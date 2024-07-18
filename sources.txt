@@ -24,6 +24,7 @@
 ./Network/Network.java
 ./Network/Demand.java
 ./Network/WMATARedLineGlenmont.java
+./Network/Efficiency.java
 ./Network/DemandSet.java
 ./Network/Connection.java
 ./Network/Path.java
