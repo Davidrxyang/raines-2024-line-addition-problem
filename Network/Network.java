@@ -64,6 +64,25 @@ public class Network {
         }
     }
 
+    // copy constructor
+    // note: this is not a copy constructor in the traditional sense
+    // it makes a shallow copy of everything except for line
+    // used for computing efficiency
+    public Network (Network n) {
+        this.name = n.name;
+        this.stationList = n.stationList;
+        this.stations = n.stations;
+        this.nStations = n.nStations;
+
+        this.connections = new ArrayList<>(n.connections);
+        this.connectionMap = new HashMap<>(n.connectionMap);
+        this.lines = new ArrayList<>(n.lines);
+        this.nLines = n.nLines;
+
+        this.distanceMatrix = n.distanceMatrix;
+        this.lineMatrix = n.lineMatrix;
+    }
+
     
 
     /*

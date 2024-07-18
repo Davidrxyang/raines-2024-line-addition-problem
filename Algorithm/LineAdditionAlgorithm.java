@@ -1,6 +1,8 @@
 package Algorithm;
 
 import java.util.ArrayList;
+import java.util.PriorityQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
@@ -11,8 +13,9 @@ import java.util.ArrayList;
 
 public class LineAdditionAlgorithm {
     Network G;
+    Network networkCopy; // copy of the network with the line candidates added
     DemandSet D;
-    ArrayList<Efficiency> E;
+    PriorityQueue<Efficiency> E;
     ArrayList<Line> lineCandidates;
     Evaluation eval;
     double pMax = 1.5; // circuity factor
@@ -23,68 +26,83 @@ public class LineAdditionAlgorithm {
     public LineAdditionAlgorithm(Network network, DemandSet demandSet, double targetEfficiency) {
         bestLine = null;
         G = network;
+        networkCopy = new Network(G);
         D = demandSet;
         eval = new Evaluation("NetworkEvaluation/config");
 
 
         lineCandidates = new ArrayList<Line>();
-        E = new ArrayList<>();
+        E = new PriorityQueue<>();
+        
+        // TODO: could consider making this a factor of
+        // the distance shortened through a new connection vs the total distance of the line
+        // as the percentage of distance shortened represents the desirability of a new connection there
+        Double additionalDemandCoefficient = 0.3; 
+        updateEfficienciesAndDemand(additionalDemandCoefficient);
 
-        Double additionalDemandCoefficient = 0.3;
-
-        while (!targetEfficiencySatisfied(targetEfficiency) || E.size() > 0) {
+        while (!targetEfficiencySatisfied(targetEfficiency) && E.size() > 0) {
             
-            updateEfficienciesAndDemand(additionalDemandCoefficient);
-
             // the worst efficiency is the one with the highest value
-            Double worstEfficiencyValue = Double.MIN_VALUE;
-            Efficiency worstEfficiency = null;
-            
-            for (Efficiency e : E) {
-                if (e.efficiency > worstEfficiencyValue) {
-                    worstEfficiencyValue = e.efficiency;
-                    worstEfficiency = e;
-                }
-            }
+            Efficiency worstEfficiency = E.poll();
+
+            System.out.println(worstEfficiency + " " + worstEfficiency.efficiency);
             
             Station v_i = worstEfficiency.origin;
             Station v_j = worstEfficiency.destination;
             Line r_m_prime = null;
             Line r_n_prime = null;
+            Line remove = null;
             Line r = null;
             
+            ArrayList<Line> addLines = new ArrayList<>();
             for (Line r_m : lineCandidates) {
                 if (r_m.stations.contains(v_i)) {
                     r_m_prime = addToLine(v_j, r_m);
-                    lineCandidates.add(r_m_prime);
-                    lineCandidates.remove(r_m);
+                    remove = r_m;
                     
-                    for (Line r_k : lineCandidates) {
-                        Line r_k_prime = joinLine(r_k, r_m_prime);
-                        if (r_k_prime != null) {
-                            lineCandidates.add(r_k_prime);
+                    if (r_m_prime != null) {
+                        for (Line r_k : lineCandidates) {
+                            Line r_k_prime = joinLine(r_k, r_m_prime);
+                            if (r_k_prime != null) {
+                                addLines.add(r_k_prime);
+                            }
                         }
                     }
+                    
                 }
+            }
+            if (r_m_prime != null) {
+                lineCandidates.add(r_m_prime);
+                lineCandidates.remove(remove);
             }
 
             for (Line r_n : lineCandidates) {
                 if (r_n.stations.contains(v_j)) {
                     r_n_prime = addToLine(v_i, r_n);
-                    lineCandidates.add(r_n_prime);
-                    lineCandidates.remove(r_n);
+                    remove = r_n;
                     
-                    for (Line r_k : lineCandidates) {
-                        Line r_k_prime = joinLine(r_k, r_n_prime);
-                        if (r_k_prime != null) {
-                            lineCandidates.add(r_k_prime);
+                    if (r_n_prime != null) {
+                        for (Line r_k : lineCandidates) {
+                            Line r_k_prime = joinLine(r_k, r_m_prime);
+                            if (r_k_prime != null) {
+                                addLines.add(r_k_prime);
+                            }
                         }
                     }
                 }
             }
+            if (r_n_prime != null) {
+                lineCandidates.add(r_n_prime);
+                lineCandidates.remove(remove);
+            }
+            // to avoid concurrent line issues
+            for (Line l : addLines) {
+                lineCandidates.add(l);
+            }
             
             if (r_m_prime == null && r_n_prime == null) {
                 Double corridorHeight = 0.3;
+                r = new Line();
                 constructLine(v_i, v_j, network.stationList, r, corridorHeight);
                 lineCandidates.add(r);
             }
@@ -93,10 +111,12 @@ public class LineAdditionAlgorithm {
             relevantLines.add(r);
             relevantLines.add(r_m_prime);
             relevantLines.add(r_n_prime);
-            removeNodePairsFromE(relevantLines);
+            updateEfficienciesAndDemand(additionalDemandCoefficient);
+            removeNodePairsFromD(relevantLines);
             removeSubsetLines();
+            
+            System.out.println("line candidates: " + lineCandidates);
         }
-
         // find the best line
         findBestLine();
 
@@ -108,7 +128,7 @@ public class LineAdditionAlgorithm {
 
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
-            if (eval.lineEfficiency(G, r, D) < targetEfficiency && r.getLength() > minLength) {
+            if (eval.lineEfficiency(networkCopy, r, D) < targetEfficiency && r.getLength() > minLength) {
                 return true;
             }
         }
@@ -123,7 +143,7 @@ public class LineAdditionAlgorithm {
         // the best line is the line with the lowest number for efficiency
         Double bestEfficiency = Double.MAX_VALUE;
         for (Line line : lineCandidates) {
-            Double efficiency = eval.lineEfficiency(G, line, D);
+            Double efficiency = eval.lineEfficiency(networkCopy, line, D);
             if (efficiency < bestEfficiency) {
                 bestEfficiency = efficiency;
                 bestLine = line;
@@ -131,16 +151,36 @@ public class LineAdditionAlgorithm {
         }
     }
 
+    // TODO: optimization idea: affected path-aware paths
+    // so that when one path is updated, only the affected paths are changed
     public void updateEfficienciesAndDemand(Double c) {
-        E = new ArrayList<>(); // reset E
+        E = new PriorityQueue<>(); // reset E
         DemandSet modifiedDemand = new DemandSet();
         ArrayList<Path> paths = new ArrayList<>();
+
+        // make a copy of the existing network and add the line candidates to it
+        networkCopy = new Network(G);
+        for (Line l : lineCandidates) {
+            networkCopy.addLine(l);
+            networkCopy.addLine(l.generateReverseDirection(l.name));
+        }
         
-        PathPlanning pp = new LeastTransfers(G);
+        // using astar for now: least transfers does not make sense for WMATA
+        PathPlanning pp = new AStar(networkCopy);
         
-        for (Station a : G.stationList) {
-            for (Station b : G.stationList) {
-                paths.add(pp.pathPlan(a, b));
+        // for (Station a : G.stationList) {
+        //     for (Station b : G.stationList) {
+        //         if (a != b) {
+        //             paths.add(pp.pathPlan(a, b));
+        //         }
+                
+        //     }
+        // }
+
+        // use demandset instead of the entire station list to keep track of removed stations
+        for (Demand d : D.trips) {
+            if (d.start != d.end){
+                paths.add(pp.pathPlan(d.start, d.end));
             }
         }
         
@@ -162,15 +202,20 @@ public class LineAdditionAlgorithm {
         }
     }
 
-    public void removeNodePairsFromE(ArrayList<Line> lines) {
+    public void removeNodePairsFromD(ArrayList<Line> lines) {
+        ArrayList<Demand> toRemove = new ArrayList<>();
         for (Line line : lines) {
             if (line != null) {
-                for (Efficiency e : E) {
-                    if (line.stations.contains(e.origin) && line.stations.contains(e.destination)) {
-                        E.remove(e);
+                for (Demand d : D.trips) {
+                    if (line.stations.contains(d.start) && line.stations.contains(d.end)) {
+                        // to avoid concurrent modification
+                        toRemove.add(d);
                     }
                 }
             }
+        }
+        for (Demand d : toRemove) {
+            D.trips.remove(d);
         }
     }
 
@@ -274,9 +319,6 @@ public class LineAdditionAlgorithm {
                 temp = temp2;
                 distance = temp2.getLength();
             }
-        }
-        if (temp == null) {
-            return l;
         }
         return temp;
     }
@@ -439,26 +481,8 @@ public class LineAdditionAlgorithm {
         WMATA wmata = new WMATA();
         DemandSet d = new DemandSet();
         d.loadTrips("Network/data.csv", wmata.WMATA);
-        Line l = new Line("l1");
+
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
-        laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
-        // l = laa.addToLine(wmata.WMATA.getStation("arlington cemetery"), l);
-        System.out.println(l);
-
-        Line l2 = new Line("l2");
-        laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("new carrollton"), wmata.WMATA.stationList, l2, 0.3);
-        l2 = laa.addToLine(wmata.WMATA.getStation("pentagon"), l2);
-        l2 = laa.addToLine(wmata.WMATA.getStation("huntington"), l2);
-        l2 = laa.addToLine(wmata.WMATA.getStation("takoma"), l2);
-        System.out.println(l2);
-
-        Line l3 = new Line("l3");
-        laa.constructLine(wmata.WMATA.getStation("pentagon") , wmata.WMATA.getStation("takoma"), wmata.WMATA.stationList, l3, 0.3);
-        System.out.println(l3);
-
-        Line joinedLine = laa.joinLine(l, l2);
-        System.out.println(joinedLine);
-
-        System.out.println("l2 satisfies constraints: " + laa.constraintsSatisfied(l2));
+        System.out.println(laa.getBestLine());
     }
 }
