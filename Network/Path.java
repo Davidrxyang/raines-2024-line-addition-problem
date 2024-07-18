@@ -248,6 +248,7 @@ public class Path {
         }
     }
 
+    // checks if p is a subpath of this
     public boolean hasSubpath(Path p) {
         if (p.stations.size() > stations.size()) {
             return false;
