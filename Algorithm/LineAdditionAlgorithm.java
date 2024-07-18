@@ -96,14 +96,14 @@ public class LineAdditionAlgorithm {
         // System.out.println("vi: " + vi.name + " vj: " + vj.name);
 
         if (s.size() == 0) {
-            // if (G.connectionMap.get(vi.name + " -> " + vj.name) != null) {
-            //     l.addConnection(G.connectionMap.get(vi.name + " -> " + vj.name)); 
-            // } else {
-            Connection newConnection = new Connection(vi, vj, vi.getDistance(vj));
-            G.connections.add(newConnection);
-            G.connectionMap.put(newConnection.toString(), newConnection);
-            l.addConnection(newConnection);
-            // }
+            if (G.connectionMap.get(vi.name + " -> " + vj.name) != null) {
+                l.addConnection(G.connectionMap.get(vi.name + " -> " + vj.name)); 
+            } else {
+                Connection newConnection = new Connection(vi, vj, vi.getDistance(vj));
+                G.connections.add(newConnection);
+                G.connectionMap.put(newConnection.toString(), newConnection);
+                l.addConnection(newConnection);
+            }
         } else {
             int maxDemand = 0;
             Station vk = null;
