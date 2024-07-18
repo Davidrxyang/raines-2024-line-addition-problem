@@ -18,8 +18,10 @@ public class LineAdditionAlgorithm {
     double pMax = 1.5; // circuity factor
     double maxLength = 40; // maximum length of a line in miles
     double minLength = 10; // minimum length of a line in miles
+    Line bestLine;
     
     public LineAdditionAlgorithm(Network network, DemandSet demandSet, double targetEfficiency) {
+        bestLine = null;
         G = network;
         D = demandSet;
         eval = new Evaluation("NetworkEvaluation/config");
@@ -30,71 +32,102 @@ public class LineAdditionAlgorithm {
 
         Double additionalDemandCoefficient = 0.3;
 
+        while (!targetEfficiencySatisfied(targetEfficiency) || E.size() > 0) {
+            
+            updateEfficienciesAndDemand(additionalDemandCoefficient);
 
-        updateEfficienciesAndDemand(additionalDemandCoefficient);
-
-        Double minEfficiencyValue = Double.MAX_VALUE;
-        Efficiency minEfficiency = null;
-
-        for (Efficiency e : E) {
-            if (e.efficiency < minEfficiencyValue) {
-                minEfficiency = e;
+            // the worst efficiency is the one with the highest value
+            Double worstEfficiencyValue = Double.MIN_VALUE;
+            Efficiency worstEfficiency = null;
+            
+            for (Efficiency e : E) {
+                if (e.efficiency > worstEfficiencyValue) {
+                    worstEfficiencyValue = e.efficiency;
+                    worstEfficiency = e;
+                }
             }
-        }
-
-        Station v_i = minEfficiency.origin;
-        Station v_j = minEfficiency.destination;
-        Line r_m_prime = null;
-        Line r_n_prime = null;
-        Line r = null;
-
-        for (Line r_m : lineCandidates) {
-            if (r_m.stations.contains(v_i)) {
-                r_m_prime = addToLine(v_j, r_m);
-                lineCandidates.add(r_m_prime);
-                lineCandidates.remove(r_m);
-
-                for (Line r_k : lineCandidates) {
-                    Line r_k_prime = joinLine(r_k, r_m_prime);
-                    if (r_k_prime != null) {
-                        lineCandidates.add(r_k_prime);
+            
+            Station v_i = worstEfficiency.origin;
+            Station v_j = worstEfficiency.destination;
+            Line r_m_prime = null;
+            Line r_n_prime = null;
+            Line r = null;
+            
+            for (Line r_m : lineCandidates) {
+                if (r_m.stations.contains(v_i)) {
+                    r_m_prime = addToLine(v_j, r_m);
+                    lineCandidates.add(r_m_prime);
+                    lineCandidates.remove(r_m);
+                    
+                    for (Line r_k : lineCandidates) {
+                        Line r_k_prime = joinLine(r_k, r_m_prime);
+                        if (r_k_prime != null) {
+                            lineCandidates.add(r_k_prime);
+                        }
                     }
                 }
             }
-        }
 
-        for (Line r_n : lineCandidates) {
-            if (r_n.stations.contains(v_j)) {
-                r_n_prime = addToLine(v_i, r_n);
-                lineCandidates.add(r_n_prime);
-                lineCandidates.remove(r_n);
-
-                for (Line r_k : lineCandidates) {
-                    Line r_k_prime = joinLine(r_k, r_n_prime);
-                    if (r_k_prime != null) {
-                        lineCandidates.add(r_k_prime);
+            for (Line r_n : lineCandidates) {
+                if (r_n.stations.contains(v_j)) {
+                    r_n_prime = addToLine(v_i, r_n);
+                    lineCandidates.add(r_n_prime);
+                    lineCandidates.remove(r_n);
+                    
+                    for (Line r_k : lineCandidates) {
+                        Line r_k_prime = joinLine(r_k, r_n_prime);
+                        if (r_k_prime != null) {
+                            lineCandidates.add(r_k_prime);
+                        }
                     }
                 }
             }
+            
+            if (r_m_prime == null && r_n_prime == null) {
+                Double corridorHeight = 0.3;
+                constructLine(v_i, v_j, network.stationList, r, corridorHeight);
+                lineCandidates.add(r);
+            }
+            
+            ArrayList<Line> relevantLines = new ArrayList<>();
+            relevantLines.add(r);
+            relevantLines.add(r_m_prime);
+            relevantLines.add(r_n_prime);
+            removeNodePairsFromE(relevantLines);
+            removeSubsetLines();
         }
 
-        if (r_m_prime == null && r_n_prime == null) {
-            Double corridorHeight = 0.3;
-            constructLine(v_i, v_j, network.stationList, r, corridorHeight);
-            lineCandidates.add(r);
-        }
-
-        ArrayList<Line> relevantLines = new ArrayList<>();
-        relevantLines.add(r);
-        relevantLines.add(r_m_prime);
-        relevantLines.add(r_n_prime);
-        removeNodePairsFromE(relevantLines);
+        // find the best line
+        findBestLine();
 
     }   
 
+    public void removeSubsetLines() {
+        
+    }
+
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
-            
+            if (eval.lineEfficiency(G, r, D) < targetEfficiency && r.getLength() > minLength) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Line getBestLine() {
+        return bestLine;
+    }
+
+    public void findBestLine() {
+        // the best line is the line with the lowest number for efficiency
+        Double bestEfficiency = Double.MAX_VALUE;
+        for (Line line : lineCandidates) {
+            Double efficiency = eval.lineEfficiency(G, line, D);
+            if (efficiency < bestEfficiency) {
+                bestEfficiency = efficiency;
+                bestLine = line;
+            }
         }
     }
 
