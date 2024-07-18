@@ -35,7 +35,7 @@ public class Station extends Object {
 
     public String comment; 
 
-    public Station(String name, Double longitude, Double latitude) {
+    public Station(String name, Double latitude, Double longitude) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
