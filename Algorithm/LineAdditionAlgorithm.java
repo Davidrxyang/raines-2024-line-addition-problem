@@ -196,14 +196,14 @@ public class LineAdditionAlgorithm {
         // System.out.println("vi: " + vi.name + " vj: " + vj.name);
 
         if (s.size() == 0) {
-            if (G.connectionMap.get(vi.name + " -> " + vj.name) != null) {
-                l.addConnection(G.connectionMap.get(vi.name + " -> " + vj.name)); 
-            } else {
-                Connection newConnection = new Connection(vi, vj, vi.getDistance(vj));
-                G.connections.add(newConnection);
-                G.connectionMap.put(newConnection.toString(), newConnection);
-                l.addConnection(newConnection);
-            }
+            // if (G.connectionMap.get(vi.name + " -> " + vj.name) != null) {
+            //     l.addConnection(G.connectionMap.get(vi.name + " -> " + vj.name)); 
+            // } else {
+            Connection newConnection = new Connection(vi, vj, vi.getDistance(vj));
+            G.connections.add(newConnection);
+            G.connectionMap.put(newConnection.toString(), newConnection);
+            l.addConnection(newConnection);
+            // }
         } else {
             int maxDemand = 0;
             Station vk = null;
@@ -275,6 +275,9 @@ public class LineAdditionAlgorithm {
                 distance = temp2.getLength();
             }
         }
+        if (temp == null) {
+            return l;
+        }
         return temp;
     }
 
@@ -301,12 +304,12 @@ public class LineAdditionAlgorithm {
         boolean overlap = false;
         int startindex = 0;
         for (int i = 0; i < l1.stations.size(); i++) {
+            if (startindex > 0 && i - startindex < l2.stations.size() && l1.stations.get(i) != l2.stations.get(i - startindex)) {
+                overlap = false;
+            }
             if (l1.stations.get(i) == l2origin) {
                 startindex = i;
                 overlap = true;
-            }
-            if (startindex > 0 && l1.stations.get(i) != l2.stations.get(i - startindex)) {
-                overlap = false;
             }
         }
 
@@ -327,15 +330,15 @@ public class LineAdditionAlgorithm {
     // that are a subset of another route
     public void removeSubsetRoutes() {
         ArrayList<Line> toRemove = new ArrayList<Line>();
-        for (Line l1 : G.lines) {
-            for (Line l2 : G.lines) {
+        for (Line l1 : lineCandidates) {
+            for (Line l2 : lineCandidates) {
                 if (l1 != l2 && l1.connections.containsAll(l2.connections)) {
                     toRemove.add(l2);
                 }
             }
         }
         for (Line l : toRemove) {
-            G.lines.remove(l);
+            lineCandidates.remove(l);
         }
     }
 
@@ -367,6 +370,7 @@ public class LineAdditionAlgorithm {
 
     // function to calculate if a station vk is in the corridor between vi and vj
     // height = [0, 1] is a percentage of the length between the stations vi and vj
+    // note: latitude and longitude should be swapped around, but functionality is not changed
     private boolean stationInCorridor(Station vi, Station vj, Station vk, double height) {
         Point target = new Point(vk.longitude, vk.latitude);
         ArrayList<Point> vertices = new ArrayList<>();
@@ -438,7 +442,7 @@ public class LineAdditionAlgorithm {
         Line l = new Line("l1");
         LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
         laa.constructLine(wmata.WMATA.getStation("anacostia"), wmata.WMATA.getStation("vienna"), wmata.WMATA.stationList, l, 0.3);
-        l = laa.addToLine(wmata.WMATA.getStation("arlington cemetery"), l);
+        // l = laa.addToLine(wmata.WMATA.getStation("arlington cemetery"), l);
         System.out.println(l);
 
         Line l2 = new Line("l2");
@@ -449,7 +453,7 @@ public class LineAdditionAlgorithm {
         System.out.println(l2);
 
         Line l3 = new Line("l3");
-        laa.constructLine(wmata.WMATA.getStation("pentagon") , wmata.WMATA.getStation("huntington"), wmata.WMATA.stationList, l3, 0.3);
+        laa.constructLine(wmata.WMATA.getStation("pentagon") , wmata.WMATA.getStation("takoma"), wmata.WMATA.stationList, l3, 0.3);
         System.out.println(l3);
 
         Line joinedLine = laa.joinLine(l, l2);

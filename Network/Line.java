@@ -384,7 +384,7 @@ public class Line {
         if (!stations.contains(start) && !stations.contains(end)) {
             return -1;
         }
-        double cost = -1;
+        double cost = 0;
         sort();
         for (int i = 0; i < stations.size(); i++) {
             if (stations.get(i) == start) {
