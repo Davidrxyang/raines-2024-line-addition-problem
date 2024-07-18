@@ -4,26 +4,15 @@ import java.util.ArrayList;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
-import ExistingAlgorithms.PathPlanning;
-import ExistingAlgorithms.LeastTransfers;
-import Network.DemandSet;
-import Network.Line;
-import Network.Network;
-import Network.Path;
-import Network.Station;
-import Network.WMATA;
-import Network.Connection;
-import Network.Demand;
-import Network.Line;
+import ExistingAlgorithms.*;
+import Network.*;
 import NetworkEvaluation.*;
-import Network.Demand;
 import java.util.ArrayList;
-
 
 public class LineAdditionAlgorithm {
     Network G;
     DemandSet D;
-    ArrayList<Double> E;
+    ArrayList<Efficiency> E;
     ArrayList<Line> lineCandidates;
     Evaluation eval;
     
@@ -36,7 +25,74 @@ public class LineAdditionAlgorithm {
         lineCandidates = new ArrayList<Line>();
         E = new ArrayList<>();
 
+        Double additionalDemandCoefficient = 0.3;
 
+
+        updateEfficienciesAndDemand(additionalDemandCoefficient);
+
+        Double minEfficiencyValue = Double.MAX_VALUE;
+        Efficiency minEfficiency = null;
+
+        for (Efficiency e : E) {
+            if (e.efficiency < minEfficiencyValue) {
+                minEfficiency = e;
+            }
+        }
+
+        Station v_i = minEfficiency.origin;
+        Station v_j = minEfficiency.destination;
+        Line r_m_prime = null;
+        Line r_n_prime = null;
+        Line r = null;
+
+        for (Line r_m : lineCandidates) {
+            if (r_m.stations.contains(v_i)) {
+                r_m_prime = addToLine(v_j, r_m);
+                lineCandidates.add(r_m_prime);
+                lineCandidates.remove(r_m);
+
+                for (Line r_k : lineCandidates) {
+                    Line r_k_prime = joinLine(r_k, r_m_prime);
+                    if (r_k_prime != null) {
+                        lineCandidates.add(r_k_prime);
+                    }
+                }
+            }
+        }
+
+        for (Line r_n : lineCandidates) {
+            if (r_n.stations.contains(v_j)) {
+                r_n_prime = addToLine(v_i, r_n);
+                lineCandidates.add(r_n_prime);
+                lineCandidates.remove(r_n);
+
+                for (Line r_k : lineCandidates) {
+                    Line r_k_prime = joinLine(r_k, r_n_prime);
+                    if (r_k_prime != null) {
+                        lineCandidates.add(r_k_prime);
+                    }
+                }
+            }
+        }
+
+        if (r_m_prime == null && r_n_prime == null) {
+            Double corridorHeight = 0.3;
+            constructLine(v_i, v_j, network.stationList, r, corridorHeight);
+            lineCandidates.add(r);
+        }
+
+        ArrayList<Line> relevantLines = new ArrayList<>();
+        relevantLines.add(r);
+        relevantLines.add(r_m_prime);
+        relevantLines.add(r_n_prime);
+        removeNodePairsFromE(relevantLines);
+
+    }   
+
+    public boolean targetEfficiencySatisfied(Double targetEfficiency) {
+        for (Line r : lineCandidates) {
+            
+        }
     }
 
     public void updateEfficienciesAndDemand(Double c) {
@@ -66,10 +122,21 @@ public class LineAdditionAlgorithm {
 
         for (Path i : paths) {
             Double e = eval.routeEfficiency(i) * modifiedDemand.getDemand(i.origin, i.destination).trips;
-            E.add(e);
+            E.add(new Efficiency(i.origin, i.destination, e));
         }
     }
 
+    public void removeNodePairsFromE(ArrayList<Line> lines) {
+        for (Line line : lines) {
+            if (line != null) {
+                for (Efficiency e : E) {
+                    if (line.stations.contains(e.origin) && line.stations.contains(e.destination)) {
+                        E.remove(e);
+                    }
+                }
+            }
+        }
+    }
 
     // constructs a line between two stations vi and vj
     // height is a percentage of the distance between vi and vj
