@@ -158,8 +158,14 @@ public class LineAdditionAlgorithm {
         }
     }
 
-    // TODO: optimization idea: affected path-aware paths
+    // optimization idea: affected path-aware paths
     // so that when one path is updated, only the affected paths are changed
+    // ideally, we want to only recalculate modified demand for affected paths,
+    // however, due to the constantly changing nature of the network, subset-superset
+    // relationships are constantly changing and this efficiency improvement would 
+    // introduce some inaccuracies in the calculation. The current comprehensive
+    // (but slow) approach exists for completeness sake. 
+    
     public void updateEfficienciesAndDemand(Double c) {
         E = new PriorityQueue<>(); // reset E
         DemandSet modifiedDemand = new DemandSet();
