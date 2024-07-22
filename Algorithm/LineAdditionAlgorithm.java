@@ -113,17 +113,24 @@ public class LineAdditionAlgorithm {
             relevantLines.add(r_n_prime);
             updateEfficienciesAndDemand(additionalDemandCoefficient);
             removeNodePairsFromD(relevantLines);
-            removeSubsetLines();
+            removeSubsetLines(relevantLines);
             
             System.out.println("line candidates: " + lineCandidates);
         }
         // find the best line
         findBestLine();
-
     }   
 
-    public void removeSubsetLines() {
-        
+    public void removeSubsetLines(ArrayList<Line> relevantLines) {
+        for (Line line : relevantLines) {
+            if (line != null) {
+                for (Line l : lineCandidates) {
+                    if (line.hasSubsetLine(l)) {
+                        lineCandidates.remove(l);
+                    }
+                }
+            }
+        }
     }
 
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
@@ -168,15 +175,6 @@ public class LineAdditionAlgorithm {
         // using astar for now: least transfers does not make sense for WMATA
         PathPlanning pp = new AStar(networkCopy);
         
-        // for (Station a : G.stationList) {
-        //     for (Station b : G.stationList) {
-        //         if (a != b) {
-        //             paths.add(pp.pathPlan(a, b));
-        //         }
-                
-        //     }
-        // }
-
         // use demandset instead of the entire station list to keep track of removed stations
         for (Demand d : D.trips) {
             if (d.start != d.end){
@@ -370,12 +368,14 @@ public class LineAdditionAlgorithm {
 
     // removes all the routes from network R
     // that are a subset of another route
-    public void removeSubsetRoutes() {
+    public void removeSubsetRoutes(ArrayList<Line> lines) {
         ArrayList<Line> toRemove = new ArrayList<Line>();
-        for (Line l1 : lineCandidates) {
-            for (Line l2 : lineCandidates) {
-                if (l1 != l2 && l1.connections.containsAll(l2.connections)) {
-                    toRemove.add(l2);
+        for (Line l1 : lines) {
+            if (l1 != null) {
+                for (Line l2 : lineCandidates) {
+                    if (l1 != l2 && l1.connections.containsAll(l2.connections)) {
+                        toRemove.add(l2);
+                    }
                 }
             }
         }
