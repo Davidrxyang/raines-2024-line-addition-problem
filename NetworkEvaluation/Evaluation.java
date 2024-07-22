@@ -16,6 +16,7 @@ import Network.DemandSet;
 import Network.Demand;
 import Network.WMATA;
 import ExistingAlgorithms.PathPlanning;
+import ExistingAlgorithms.AStar;
 import ExistingAlgorithms.LeastTransfers;
 
 public class Evaluation {
@@ -250,7 +251,7 @@ public class Evaluation {
     public Double lineEfficiency(Network network, Line line, DemandSet demandSet) {
         Double lineEfficiency = 0.0;
         Double tripsComplexity = 0.0;
-        PathPlanning pp = new LeastTransfers(network);
+        PathPlanning pp = new AStar(network);
         String lineEvaluationMode = "standard"; // default evaluation mode
 
         if (config.get("line-eval-mode") != null) {

@@ -84,12 +84,18 @@ public class Path {
             return;
         }
 
+        Line currentLine = origin.getCommonLines(stations.get(1)).get(0);
+        foundLines.add(currentLine);
+
         for (int i = 0; i < stations.size() - 1; i++) {
             Station currentStation = stations.get(i);
             Station nextStation = stations.get(i + 1);
-            Line currentLine = currentStation.getCommonLines(nextStation).get(0);
-            if (!foundLines.contains(currentLine)) {
-                foundLines.add(currentLine);
+            ArrayList<Line> commonLines = currentStation.getCommonLines(nextStation);
+            if (!commonLines.contains(currentLine)) {
+                currentLine = commonLines.get(0);
+                if (!foundLines.contains(currentLine)) {
+                    foundLines.add(currentLine);
+                }
             }
         }
 
@@ -248,6 +254,7 @@ public class Path {
         }
     }
 
+    // checks if p is a subpath of this
     public boolean hasSubpath(Path p) {
         if (p.stations.size() > stations.size()) {
             return false;
@@ -261,9 +268,7 @@ public class Path {
                 }
                 return true;
             }
- 
         }
-   
         return false;
     }
 

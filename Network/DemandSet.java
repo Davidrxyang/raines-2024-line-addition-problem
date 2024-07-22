@@ -143,6 +143,11 @@ public class DemandSet {
                 return demand;
             }
         }
+        if (start != end) {
+            Demand d = new Demand(start, end, 0);
+            trips.add(d);
+            return d;
+        }
         return null;
     }
 
