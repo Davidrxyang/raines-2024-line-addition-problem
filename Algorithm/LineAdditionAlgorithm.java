@@ -418,12 +418,14 @@ public class LineAdditionAlgorithm {
 
     // removes all the routes from network R
     // that are a subset of another route
-    public void removeSubsetRoutes() {
+    public void removeSubsetRoutes(ArrayList<Line> lines) {
         ArrayList<Line> toRemove = new ArrayList<Line>();
-        for (Line l1 : lineCandidates) {
-            for (Line l2 : lineCandidates) {
-                if (l1 != l2 && l1.connections.containsAll(l2.connections)) {
-                    toRemove.add(l2);
+        for (Line l1 : lines) {
+            if (l1 != null) {
+                for (Line l2 : lineCandidates) {
+                    if (l1 != l2 && l1.connections.containsAll(l2.connections)) {
+                        toRemove.add(l2);
+                    }
                 }
             }
         }
