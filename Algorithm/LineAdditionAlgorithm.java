@@ -38,12 +38,6 @@ public class LineAdditionAlgorithm {
         E = new PriorityQueue<>();
         ArrayList<Line> relevantLines = new ArrayList<>();
 
-        // TODO: could consider making this a factor of
-        // the distance shortened through a new connection vs the total distance of the
-        // line
-        // as the percentage of distance shortened represents the desirability of a new
-        // connection there
-        // Double additionalDemandCoefficient = 0.3;
         updateEfficienciesAndDemand();
 
         while (!targetEfficiencySatisfied(targetEfficiency) && E.size() > 0) {
@@ -65,7 +59,7 @@ public class LineAdditionAlgorithm {
             for (Line r_m : lineCandidates) {
                 if (r_m.stations.contains(v_i)) {
                     r_m_prime = addToLine(v_j, r_m);
-                    
+
                     if (r_m_prime != null) {
                         addLines.add(r_m_prime);
                         removeLines.add(r_m);
@@ -84,7 +78,7 @@ public class LineAdditionAlgorithm {
             for (Line r_n : lineCandidates) {
                 if (r_n.stations.contains(v_j)) {
                     r_n_prime = addToLine(v_i, r_n);
-                    
+
                     if (r_n_prime != null) {
                         addLines.add(r_n_prime);
                         removeLines.add(r_n);
@@ -176,8 +170,15 @@ public class LineAdditionAlgorithm {
         }
     }
 
-    // TODO: optimization idea: affected path-aware paths
+    // optimization idea: affected path-aware paths
     // so that when one path is updated, only the affected paths are changed
+    // ideally, we want to only recalculate modified demand for affected paths,
+    // however, due to the constantly changing nature of the network,
+    // subset-superset
+    // relationships are constantly changing and this efficiency improvement would
+    // introduce some inaccuracies in the calculation. The current comprehensive
+    // (but slow) approach exists for completeness sake.
+
     public void updateEfficienciesAndDemand() {
         E = new PriorityQueue<>(); // reset E
         DemandSet modifiedDemand = new DemandSet();
@@ -185,10 +186,11 @@ public class LineAdditionAlgorithm {
 
         // make a copy of the existing network and add the line candidates to it
         networkCopy = new Network(G);
-        for (int i = 0; i < lineCandidates.size(); i++){
+        for (int i = 0; i < lineCandidates.size(); i++) {
             lineCandidates.get(i).name = "candidate r" + i;
             networkCopy.addLine(lineCandidates.get(i));
-            networkCopy.addLine(lineCandidates.get(i).generateReverseDirection(lineCandidates.get(i).name + " reverse"));
+            networkCopy
+                    .addLine(lineCandidates.get(i).generateReverseDirection(lineCandidates.get(i).name + " reverse"));
         }
 
         // using astar for now: least transfers does not make sense for WMATA
