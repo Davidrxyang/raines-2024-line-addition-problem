@@ -108,6 +108,26 @@ public class Line {
         return this.name.equals(line.name);
     }
 
+    // checks if p is a subset line of this
+    public boolean hasSubsetLine(Line p) {
+        if (p.stations.size() > stations.size()) {
+            return false;
+        }
+        sort();
+        p.sort();
+        for (int i = 0; i < stations.size() - p.stations.size() + 1; i++) {
+            if (stations.get(i).equals(p.origin)) {
+                for (int j = 0; j < p.stations.size(); j++) {
+                    if (!stations.get(i + j).equals(p.stations.get(j))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
     /*
      * two methods to construct a line
      * 

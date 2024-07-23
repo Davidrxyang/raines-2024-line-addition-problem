@@ -19,9 +19,12 @@ public class AStar extends PathPlanning {
 
     public AStar(Network network) {
         this.network = network;
-        c1 = 0.2;
-        c2 = 10.0;
-        c3 = 0.8;
+        // c1 = 0.2;
+        // c2 = 10.0;
+        // c3 = 0.8;
+        c1 = 1.0;
+        c2 = 0.0; // disabling transfers for now since when looking at stations with multiple lines, only one line is considered
+        c3 = 0.0;
     }
 
     /*
@@ -99,7 +102,7 @@ public class AStar extends PathPlanning {
 
         PathPlanning pp = new AStar(WMATA.WMATA);
 
-        Path path = pp.pathPlan(WMATA.WMATA.getStation("glenmont"), WMATA.WMATA.getStation("mclean"));
+        Path path = pp.pathPlan(WMATA.WMATA.getStation("pentagon city"), WMATA.WMATA.getStation("lenfant plaza"));
         System.out.println(path);
     }
     

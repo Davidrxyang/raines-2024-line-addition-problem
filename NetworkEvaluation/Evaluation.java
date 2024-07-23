@@ -23,6 +23,7 @@ public class Evaluation {
 
     CostData costData;
     HashMap<String, String> config;
+    double evalPower = 4; // power to raise the route complexity to in order to penalize low efficiency routes
 
     // pass in a config file 
     public Evaluation(String filename) {
@@ -138,7 +139,8 @@ public class Evaluation {
             distanceWeight = 1 + Double.parseDouble(config.get("distance-weight"));
         }
 
-        return (transferWeight * path.nTransfers + stationWeight * path.stations.size() + distanceWeight * path.getLength());
+        // TODO: updated so that the origin and destination stations are not included in station complexity calculation
+        return (transferWeight * path.nTransfers + stationWeight * (path.stations.size() - 2) + distanceWeight * path.getLength());
     }
 
     /*
@@ -164,7 +166,13 @@ public class Evaluation {
             adjustmentWeight = Double.parseDouble(config.get("adjustment-weight"));
         }
 
-        return simpleComplexity / (adjustmentWeight * geographicalDistance);
+        if(path.stations.size() <= 3) { // there is no complexity for any connection that has only two stations
+            return 1.0;
+        }
+
+        // TODO: change in paper
+        // raised to power so that low efficiency routes are penalized more
+        return Math.pow(simpleComplexity / (adjustmentWeight * geographicalDistance), evalPower);
     }
     /*
      * calculates the efficiency of a network based on route demand data

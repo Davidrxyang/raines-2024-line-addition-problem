@@ -3,3 +3,6 @@ regression:log-linear
 eval-mode:standard
 line-eval-mode:standard
 line-regression:log-log
+transfer-weight:-1
+station-weight:-1
+adjustment-weight:1
