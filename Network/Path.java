@@ -84,19 +84,18 @@ public class Path {
             return;
         }
 
+        Line currentLine = origin.getCommonLines(stations.get(1)).get(0);
+        foundLines.add(currentLine);
+
         for (int i = 0; i < stations.size() - 1; i++) {
             Station currentStation = stations.get(i);
             Station nextStation = stations.get(i + 1);
-            // System.out.println("current station: " + currentStation.name + " next station: " + nextStation.name + " common lines: " + currentStation.getCommonLines(nextStation));
-            if (currentStation.getCommonLines(nextStation).size() == 0) {
-                System.out.println("No common lines between " + currentStation.name + " and " + nextStation.name);
-                System.out.println(this);
-                System.out.println(currentStation);
-                System.out.println(nextStation);
-            }
-            Line currentLine = currentStation.getCommonLines(nextStation).get(0);
-            if (!foundLines.contains(currentLine)) {
-                foundLines.add(currentLine);
+            ArrayList<Line> commonLines = currentStation.getCommonLines(nextStation);
+            if (!commonLines.contains(currentLine)) {
+                currentLine = commonLines.get(0);
+                if (!foundLines.contains(currentLine)) {
+                    foundLines.add(currentLine);
+                }
             }
         }
 
@@ -270,7 +269,6 @@ public class Path {
                 }
                 return true;
             }
-
         }
         return false;
     }
