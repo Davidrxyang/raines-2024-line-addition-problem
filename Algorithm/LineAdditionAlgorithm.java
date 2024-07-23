@@ -38,12 +38,6 @@ public class LineAdditionAlgorithm {
         E = new PriorityQueue<>();
         ArrayList<Line> relevantLines = new ArrayList<>();
 
-        // TODO: could consider making this a factor of
-        // the distance shortened through a new connection vs the total distance of the
-        // line
-        // as the percentage of distance shortened represents the desirability of a new
-        // connection there
-        // Double additionalDemandCoefficient = 0.3;
         updateEfficienciesAndDemand();
 
         while (!targetEfficiencySatisfied(targetEfficiency) && E.size() > 0) {

@@ -4,5 +4,5 @@ eval-mode:standard
 line-eval-mode:standard
 line-regression:log-log
 transfer-weight:-1
-station-weight:-1
+station-weight:-0.75
 adjustment-weight:1
