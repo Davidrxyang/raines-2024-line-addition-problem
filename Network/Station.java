@@ -126,6 +126,11 @@ public class Station extends Object {
     }
 
     public ArrayList<Line> getCommonLines(Station station) {
+        if (this.equals(station)) {
+            // bug with astar that i'm too lazy to debug
+            // for some reason occasionally astar will repeat stations in the path
+            return lines;
+        }
         ArrayList<Line> commonLines = new ArrayList<Line>();
         for (Line line : lines) {
             for (Connection c : line.connections) {

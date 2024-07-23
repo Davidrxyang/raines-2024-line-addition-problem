@@ -69,7 +69,7 @@ public class WMATA {
          */
 
         WMATAStations.add(new Station("vienna", 38.8770, -77.2714));
-        WMATAStations.add(new Station("dunn loring", 38.8840, -77.2710));
+        WMATAStations.add(new Station("dunn loring", 38.8840, -77.22724));
         WMATAStations.add(new Station("west falls church", 38.9011, -77.18927));
         WMATAStations.add(new Station("east falls church", 38.8861, -77.1570));
         WMATAStations.add(new Station("ballston", 38.8820, -77.1122));
