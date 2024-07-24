@@ -113,7 +113,9 @@ public class Line {
         if (p.stations.size() > stations.size()) {
             return false;
         }
-        for (int i = 0; i < stations.size() - p.stations.size(); i++) {
+        sort();
+        p.sort();
+        for (int i = 0; i < stations.size() - p.stations.size() + 1; i++) {
             if (stations.get(i).equals(p.origin)) {
                 for (int j = 0; j < p.stations.size(); j++) {
                     if (!stations.get(i + j).equals(p.stations.get(j))) {

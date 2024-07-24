@@ -114,17 +114,18 @@ public class Path {
     public void setDestination(Station station) {
         this.destination = station;
     }
- 
+
     public void calculateLength() {
+        length = 0.0;
         for (int i = 0; i < connections.size(); i++) {
             length += connections.get(i).distance;
         }
     }
 
     public Double getLength() {
-        if (length == 0.0) {
+        //if (length == 0.0) {
             calculateLength();
-        }
+        //}
         return length;
     }
 
@@ -256,7 +257,7 @@ public class Path {
 
     // checks if p is a subpath of this
     public boolean hasSubpath(Path p) {
-        if (p.stations.size() > stations.size()) {
+        if (p.stations.size() >= stations.size()) {
             return false;
         }
         for (int i = 0; i < stations.size() - p.stations.size(); i++) {
@@ -274,6 +275,37 @@ public class Path {
 
     public Station getLastStation() {
         return stations.get(stations.size() - 1);
+    }
+
+     // cost of travelling down a line
+    public double travelCost(Station start, Station end) {
+        if (!stations.contains(start) && !stations.contains(end)) {
+            return -1;
+        }
+        double cost = 0;
+        sort();
+        for (int i = 0; i < stations.size(); i++) {
+            if (stations.get(i) == start) {
+                for (int j = i; j < stations.size(); j++) {
+                    if (stations.get(j) == end) {
+                        for (int k = i; k < j; k++) {
+                            cost += connections.get(k).distance;
+                        }
+                        return cost;
+                    }
+                }
+            } else if (stations.get(i) == end) {
+                for (int j = i; j < stations.size(); j++) {
+                    if (stations.get(j) == start) {
+                        for (int k = i; k < j; k++) {
+                            cost += connections.get(k).distance;
+                        }
+                        return cost;
+                    }
+                }
+            }
+        }
+        return cost;
     }
 
     public static void main(String[] args) {

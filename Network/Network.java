@@ -97,6 +97,9 @@ public class Network {
         for (Connection connection : line.connections) {
             connectionMap.put(connection.toString(), connection);
         }
+        for (Station station : line.stations) {
+            station.addLine(line);
+        }
 
         // iterate through the set of connections encapsulated within the line
         

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class LineAdditionAlgorithm {
     Network G;
     Network networkCopy; // copy of the network with the line candidates added
+    DemandSet unmodifiedDemand;
     DemandSet D;
     PriorityQueue<Efficiency> E;
     ArrayList<Line> lineCandidates;
@@ -22,70 +23,70 @@ public class LineAdditionAlgorithm {
     double maxLength = 40; // maximum length of a line in miles
     double minLength = 10; // minimum length of a line in miles
     Line bestLine;
-    
+    double corridorHeight = 0.3;
+    double demandAdjustmentWeight = 10;
+
     public LineAdditionAlgorithm(Network network, DemandSet demandSet, double targetEfficiency) {
         bestLine = null;
         G = network;
         networkCopy = new Network(G);
-        D = demandSet;
+        unmodifiedDemand = demandSet;
+        D = new DemandSet(demandSet);
         eval = new Evaluation("NetworkEvaluation/config");
-
 
         lineCandidates = new ArrayList<Line>();
         E = new PriorityQueue<>();
-        
-        // TODO: could consider making this a factor of
-        // the distance shortened through a new connection vs the total distance of the line
-        // as the percentage of distance shortened represents the desirability of a new connection there
-        Double additionalDemandCoefficient = 0.3; 
-        updateEfficienciesAndDemand(additionalDemandCoefficient);
+        ArrayList<Line> relevantLines = new ArrayList<>();
+
+        updateEfficienciesAndDemand();
 
         while (!targetEfficiencySatisfied(targetEfficiency) && E.size() > 0) {
-            
+
             // the worst efficiency is the one with the highest value
             Efficiency worstEfficiency = E.poll();
 
             System.out.println(worstEfficiency + " " + worstEfficiency.efficiency);
-            
+
             Station v_i = worstEfficiency.origin;
             Station v_j = worstEfficiency.destination;
             Line r_m_prime = null;
             Line r_n_prime = null;
             Line remove = null;
             Line r = null;
-            
+
             ArrayList<Line> addLines = new ArrayList<>();
+            ArrayList<Line> removeLines = new ArrayList<>();
             for (Line r_m : lineCandidates) {
                 if (r_m.stations.contains(v_i)) {
                     r_m_prime = addToLine(v_j, r_m);
-                    remove = r_m;
-                    
+
                     if (r_m_prime != null) {
+                        addLines.add(r_m_prime);
+                        removeLines.add(r_m);
                         for (Line r_k : lineCandidates) {
                             Line r_k_prime = joinLine(r_k, r_m_prime);
                             if (r_k_prime != null) {
                                 addLines.add(r_k_prime);
+                                relevantLines.add(r_k_prime);
                             }
                         }
                     }
-                    
+
                 }
-            }
-            if (r_m_prime != null) {
-                lineCandidates.add(r_m_prime);
-                lineCandidates.remove(remove);
             }
 
             for (Line r_n : lineCandidates) {
                 if (r_n.stations.contains(v_j)) {
                     r_n_prime = addToLine(v_i, r_n);
-                    remove = r_n;
-                    
+
                     if (r_n_prime != null) {
+                        addLines.add(r_n_prime);
+                        removeLines.add(r_n);
                         for (Line r_k : lineCandidates) {
-                            Line r_k_prime = joinLine(r_k, r_m_prime);
+                            Line r_k_prime = joinLine(r_k, r_n_prime);
                             if (r_k_prime != null) {
                                 addLines.add(r_k_prime);
+                                relevantLines.add(r_k_prime);
                             }
                         }
                     }
@@ -95,47 +96,58 @@ public class LineAdditionAlgorithm {
                 lineCandidates.add(r_n_prime);
                 lineCandidates.remove(remove);
             }
-            // to avoid concurrent line issues
+            // to avoid concurrent modification issues
             for (Line l : addLines) {
                 lineCandidates.add(l);
             }
-            
+            for (Line l : removeLines) {
+                lineCandidates.remove(l);
+            }
+
             if (r_m_prime == null && r_n_prime == null) {
-                Double corridorHeight = 0.3;
                 r = new Line();
                 constructLine(v_i, v_j, network.stationList, r, corridorHeight);
                 lineCandidates.add(r);
             }
-            
-            ArrayList<Line> relevantLines = new ArrayList<>();
-            relevantLines.add(r);
-            relevantLines.add(r_m_prime);
-            relevantLines.add(r_n_prime);
-            updateEfficienciesAndDemand(additionalDemandCoefficient);
+
+            relevantLines.addAll(addLines);
             removeNodePairsFromD(relevantLines);
             removeSubsetLines(relevantLines);
-            
-            System.out.println("line candidates: " + lineCandidates);
+            System.out.println("line candidates: " + lineCandidates + "\n");
+
+            updateEfficienciesAndDemand();
+
         }
         // find the best line
         findBestLine();
-    }   
+
+    }
 
     public void removeSubsetLines(ArrayList<Line> relevantLines) {
-        for (Line line : relevantLines) {
-            if (line != null) {
-                for (Line l : lineCandidates) {
-                    if (line.hasSubsetLine(l)) {
-                        lineCandidates.remove(l);
+        ArrayList<Line> toRemove = new ArrayList<>();
+        for (int i = 0; i < lineCandidates.size() - 1; i++) {
+            for (int j = i + 1; j < lineCandidates.size(); j++) {
+                if (lineCandidates.get(i).hasSubsetLine(lineCandidates.get(j))) {
+                    for (Station s : lineCandidates.get(j).stations) {
+                        s.removeLine(lineCandidates.get(j));
                     }
+                    toRemove.add(lineCandidates.get(j));
+                } else if (lineCandidates.get(j).hasSubsetLine(lineCandidates.get(i))) {
+                    for (Station s : lineCandidates.get(i).stations) {
+                        s.removeLine(lineCandidates.get(i));
+                    }
+                    toRemove.add(lineCandidates.get(i));
                 }
             }
+        }
+        for (Line l : toRemove) {
+            lineCandidates.remove(l);
         }
     }
 
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
-            if (eval.lineEfficiency(networkCopy, r, D) < targetEfficiency && r.getLength() > minLength) {
+            if (eval.lineEfficiency(networkCopy, r, unmodifiedDemand) < targetEfficiency && r.getLength() > minLength) {
                 return true;
             }
         }
@@ -161,47 +173,75 @@ public class LineAdditionAlgorithm {
     // optimization idea: affected path-aware paths
     // so that when one path is updated, only the affected paths are changed
     // ideally, we want to only recalculate modified demand for affected paths,
-    // however, due to the constantly changing nature of the network, subset-superset
-    // relationships are constantly changing and this efficiency improvement would 
+    // however, due to the constantly changing nature of the network,
+    // subset-superset
+    // relationships are constantly changing and this efficiency improvement would
     // introduce some inaccuracies in the calculation. The current comprehensive
-    // (but slow) approach exists for completeness sake. 
-    
-    public void updateEfficienciesAndDemand(Double c) {
+    // (but slow) approach exists for completeness sake.
+
+    public void updateEfficienciesAndDemand() {
         E = new PriorityQueue<>(); // reset E
         DemandSet modifiedDemand = new DemandSet();
         ArrayList<Path> paths = new ArrayList<>();
 
         // make a copy of the existing network and add the line candidates to it
         networkCopy = new Network(G);
-        for (Line l : lineCandidates) {
-            networkCopy.addLine(l);
-            networkCopy.addLine(l.generateReverseDirection(l.name));
+        for (int i = 0; i < lineCandidates.size(); i++) {
+            lineCandidates.get(i).name = "candidate r" + i;
+            networkCopy.addLine(lineCandidates.get(i));
+            networkCopy
+                    .addLine(lineCandidates.get(i).generateReverseDirection(lineCandidates.get(i).name + " reverse"));
         }
-        
+
         // using astar for now: least transfers does not make sense for WMATA
         PathPlanning pp = new AStar(networkCopy);
-        
-        // use demandset instead of the entire station list to keep track of removed stations
+
+        // for (Station a : G.stationList) {
+        // for (Station b : G.stationList) {
+        // if (a != b) {
+        // paths.add(pp.pathPlan(a, b));
+        // }
+
+        // }
+        // }
+
+        // temporary fix for line tracking in station
+        for (Station s : G.stationList) {
+            ArrayList<Line> toRemove = new ArrayList<>();
+            for (Line l : s.lines) {
+                if (!networkCopy.lines.contains(l)) {
+                    toRemove.add(l);
+                }
+            }
+            for (Line l : toRemove) {
+                s.lines.remove(l);
+            }
+        }
+
+        // use demandset instead of the entire station list to keep track of removed
+        // stations
         for (Demand d : D.trips) {
-            if (d.start != d.end){
+            if (d.start != d.end) {
                 paths.add(pp.pathPlan(d.start, d.end));
             }
         }
-        
+
         for (Path i : paths) {
             Double additionalDemand = 0.0;
             for (Path j : paths) {
-                if (i.hasSubpath(j)) {
-                    additionalDemand += c * D.getDemand(j.origin, j.destination).trips;
+                if (j.hasSubpath(i)) {
+                    additionalDemand += calculateDemandWeight(j, i)
+                            * unmodifiedDemand.getDemand(j.origin, j.destination).trips;
                 }
             }
-            Demand d = new Demand(D.getDemand(i.origin, i.destination));
-            d.trips = (int) Math.ceil(additionalDemand) + D.getDemand(i.origin, i.destination).trips;
+            Demand d = new Demand(unmodifiedDemand.getDemand(i.origin, i.destination));
+            d.trips = (int) Math.ceil(additionalDemand) + unmodifiedDemand.getDemand(i.origin, i.destination).trips;
             modifiedDemand.trips.add(d);
         }
 
         for (Path i : paths) {
             Double e = eval.routeEfficiency(i) * modifiedDemand.getDemand(i.origin, i.destination).trips;
+            e -= modifiedDemand.getDemand(i.origin, i.destination).trips; // TODO: update in paper
             E.add(new Efficiency(i.origin, i.destination, e));
         }
     }
@@ -235,26 +275,26 @@ public class LineAdditionAlgorithm {
     private void constructLineHelper(Station vi, Station vj, ArrayList<Station> stations, Line l, double height) {
         // the stations that are considered in a range between vi and vj
         ArrayList<Station> s = new ArrayList<>();
+        // System.out.println("vi: " + vi.name + " vj: " + vj.name);
 
         for (Station station : stations) {
             if (stationInCorridor(vi, vj, station, height) && station != vi && station != vj) {
                 s.add(station);
+                // System.out.println(station.name);
             }
         }
 
-        // System.out.println("vi: " + vi.name + " vj: " + vj.name);
+        // System.out.println();
 
         if (s.size() == 0) {
             if (G.connectionMap.get(vi.name + " -> " + vj.name) != null) {
-                l.addConnection(G.connectionMap.get(vi.name + " -> " + vj.name)); 
+                l.addConnection(G.connectionMap.get(vi.name + " -> " + vj.name));
             } else {
                 Connection newConnection = new Connection(vi, vj, vi.getDistance(vj));
-                G.connections.add(newConnection);
-                G.connectionMap.put(newConnection.toString(), newConnection);
                 l.addConnection(newConnection);
             }
         } else {
-            int maxDemand = 0;
+            int maxDemand = Integer.MIN_VALUE;
             Station vk = null;
             for (Station station : s) {
                 int demand = 0;
@@ -275,7 +315,7 @@ public class LineAdditionAlgorithm {
                 if (d4 != null) {
                     demand += d4.trips;
                 }
-                
+
                 if (demand > maxDemand && station != vi && station != vj) {
                     vk = station;
                     maxDemand = demand;
@@ -290,7 +330,8 @@ public class LineAdditionAlgorithm {
         }
     }
 
-    // adds a station into the most suitable position (shortest total distance) in the line
+    // adds a station into the most suitable position (shortest total distance) in
+    // the line
     // returns a new line
     public Line addToLine(Station vj, Line l) {
         Line temp = null;
@@ -300,25 +341,29 @@ public class LineAdditionAlgorithm {
             Line c1 = null;
             if (i > 0) {
                 c1 = new Line();
-                constructLine(l.stations.get(i - 1), vj, l.stations, c1, 0.3);
-                if (c1 != null) {
+                constructLine(l.stations.get(i - 1), vj, G.stationList, c1, corridorHeight);
+                if (c1.stations.size() > 1) {
                     c1.stations.remove(c1.stations.size() - 1);
+                    c1.stations.remove(0);
+                } else if (c1.stations.size() > 0) {
                     c1.stations.remove(0);
                 }
             }
             Line c2 = null;
             if (i < l.stations.size()) {
                 c2 = new Line();
-                constructLine(vj, l.stations.get(i), l.stations, c2, 0.3);
-                if (c2 != null) {
+                constructLine(vj, l.stations.get(i), G.stationList, c2, corridorHeight);
+                if (c2.stations.size() > 1) {
                     c2.stations.remove(c2.stations.size() - 1);
+                    c2.stations.remove(0);
+                } else if (c2.stations.size() > 0) {
                     c2.stations.remove(0);
                 }
             }
             temp2.insertStation(vj, i);
             temp2.insertLine(c2, i + 1);
             temp2.insertLine(c1, i);
-            
+
             if (temp2.getLength() < distance && constraintsSatisfied(temp2)) {
                 temp = temp2;
                 distance = temp2.getLength();
@@ -339,6 +384,11 @@ public class LineAdditionAlgorithm {
         if (newLine == null) {
             newLine = joinLineHelper(l2, l1);
         }
+        if (newLine != null) {
+            for (Station s : newLine.stations) {
+                s.addLine(newLine);
+            }
+        }
         return newLine;
     }
 
@@ -350,7 +400,8 @@ public class LineAdditionAlgorithm {
         boolean overlap = false;
         int startindex = 0;
         for (int i = 0; i < l1.stations.size(); i++) {
-            if (startindex > 0 && i - startindex < l2.stations.size() && l1.stations.get(i) != l2.stations.get(i - startindex)) {
+            if (startindex > 0 && i - startindex < l2.stations.size()
+                    && l1.stations.get(i) != l2.stations.get(i - startindex)) {
                 overlap = false;
             }
             if (l1.stations.get(i) == l2origin) {
@@ -362,7 +413,8 @@ public class LineAdditionAlgorithm {
         if (overlap) {
             newLine = new Line(l1);
             for (int i = l1.stations.size() - startindex; i < l2.stations.size(); i++) {
-                newLine.addStation(l2.stations.get(i), l2.stations.get(i).getDistance(newLine.stations.get(newLine.stations.size() - 1)));
+                newLine.addStation(l2.stations.get(i),
+                        l2.stations.get(i).getDistance(newLine.stations.get(newLine.stations.size() - 1)));
             }
             if (!constraintsSatisfied(newLine)) {
                 newLine = null;
@@ -404,12 +456,12 @@ public class LineAdditionAlgorithm {
             }
         }
         if (p > pMax) {
-            // System.out.println("circuity constraint not satisfied for line: " + l.name);
+            // System.out.println("circuity constraint not satisfied for line: " + l);
             return false;
         }
 
-        if (l.getLength() > maxLength || l.getLength() < minLength) {
-            // System.out.println("length constraint not satisfied for line: " + l.name);
+        if (l.getLength() > maxLength) {
+            // System.out.println("length constraint not satisfied for line: " + l);
             return false;
         }
 
@@ -418,13 +470,13 @@ public class LineAdditionAlgorithm {
 
     // function to calculate if a station vk is in the corridor between vi and vj
     // height = [0, 1] is a percentage of the length between the stations vi and vj
-    // note: latitude and longitude should be swapped around, but functionality is not changed
+    // note: latitude and longitude should be swapped around, but functionality is
+    // not changed
     private boolean stationInCorridor(Station vi, Station vj, Station vk, double height) {
         Point target = new Point(vk.longitude, vk.latitude);
         ArrayList<Point> vertices = new ArrayList<>();
         vertices.add(new Point(vj.longitude, vj.latitude));
-        
-        
+
         Point midPoint = new Point((vi.longitude + vj.longitude) / 2, (vi.latitude + vj.latitude) / 2);
         Vector v = new Vector((midPoint.x - vi.longitude) * height, (midPoint.y - vi.latitude) * height);
 
@@ -454,6 +506,19 @@ public class LineAdditionAlgorithm {
 
         // Check if the test point is inside the polygon
         return path.contains(testPoint);
+    }
+
+    // path j is the subset path of path i
+    // calculates the weight of the demand to add to the connection of path i
+    // TODO: update in paper
+    public double calculateDemandWeight(Path i, Path j) {
+        // double bestLength = i.origin.getDistance(i.destination);
+        // double actualLength = i.travelCost(i.origin, j.origin) +
+        // j.origin.getDistance(j.destination) + i.travelCost(j.destination,
+        // i.destination);
+
+        double distance = i.travelCost(i.origin, j.origin) + i.travelCost(j.destination, i.destination);
+        return 1.0 / (1.0 + (demandAdjustmentWeight * distance));
     }
 
     // aux class
