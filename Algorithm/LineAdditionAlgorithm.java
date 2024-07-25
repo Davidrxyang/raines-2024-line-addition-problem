@@ -20,7 +20,7 @@ public class LineAdditionAlgorithm {
     ArrayList<Line> lineCandidates;
     Evaluation eval;
     double pMax = 1.5; // circuity factor
-    double maxLength = 40; // maximum length of a line in miles
+    double maxLength = 35; // maximum length of a line in miles
     double minLength = 10; // minimum length of a line in miles
     Line bestLine;
     double corridorHeight = 0.3;
@@ -147,6 +147,9 @@ public class LineAdditionAlgorithm {
 
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
+            System.out.println("line: " + r);
+            System.out.println("efficiency: " + eval.lineEfficiency(networkCopy, r, unmodifiedDemand));
+            System.out.println("length: " + r.getLength());
             if (eval.lineEfficiency(networkCopy, r, unmodifiedDemand) < targetEfficiency && r.getLength() > minLength) {
                 return true;
             }
@@ -160,10 +163,11 @@ public class LineAdditionAlgorithm {
 
     public void findBestLine() {
         // the best line is the line with the lowest number for efficiency
+        // that satisfies line constraints
         Double bestEfficiency = Double.MAX_VALUE;
         for (Line line : lineCandidates) {
             Double efficiency = eval.lineEfficiency(networkCopy, line, D);
-            if (efficiency < bestEfficiency) {
+            if (efficiency < bestEfficiency && line.getLength() > minLength && constraintsSatisfied(line) ) {
                 bestEfficiency = efficiency;
                 bestLine = line;
             }
@@ -553,7 +557,7 @@ public class LineAdditionAlgorithm {
         DemandSet d = new DemandSet();
         d.loadTrips("Network/data.csv", wmata.WMATA);
 
-        LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 0);
+        LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 120);
         System.out.println(laa.getBestLine());
     }
 }

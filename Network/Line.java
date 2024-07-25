@@ -84,15 +84,16 @@ public class Line {
     }
 
     public void calculateLength() {
+        length = 0.0;
         for (int i = 0; i < connections.size(); i++) {
             length += connections.get(i).distance;
         }
     }
 
     public Double getLength() {
-        if (length == 0.0) {
-            calculateLength();
-        }
+        // if (length == 0.0) {
+        calculateLength();
+        // }
         return length;
     }
 
