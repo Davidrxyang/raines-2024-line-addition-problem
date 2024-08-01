@@ -174,6 +174,7 @@ public class Evaluation {
         // raised to power so that low efficiency routes are penalized more
         return Math.pow(simpleComplexity / (adjustmentWeight * geographicalDistance), evalPower);
     }
+    
     /*
      * calculates the efficiency of a network based on route demand data
      */
