@@ -22,7 +22,7 @@ Route complexity is measured in arbitrary units.
 
 ### Network Efficiency Evaluation
 
-The overall efficiency of a network is calculated as the sum of the complexities of all possible routes within the network weighed by their route ridership (based on empirical ridership data), multiplied by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
+The overall efficiency of a network is calculated as the sum of the efficiencies of all possible routes within the network weighed by their route ridership (based on empirical ridership data), multiplied by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
 
 ### Line Efficiency Evaluation
 
@@ -54,7 +54,7 @@ considers only cost data from the specified state in the calculation. NOTE: repl
 
 ### Evaluation mode
 
-defines the logic behind evaluating route complexity
+defines the logic behind evaluating route efficiency
 
 options: 
 
