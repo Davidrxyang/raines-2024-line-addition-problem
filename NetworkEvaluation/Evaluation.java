@@ -147,6 +147,8 @@ public class Evaluation {
      * calculates the complexity of a route adjusted for direct distance
      * 
      * units are arbitrary 
+     * 
+     * DEPRECATED
      */
 
     public Double adjustedRouteComplexity(Path path) {
@@ -156,6 +158,10 @@ public class Evaluation {
 
         return factor * simpleComplexity;
     }
+
+    /*
+     * calculates the efficiency of a route based on its complexity and direct distance
+     */
 
     public Double routeEfficiency(Path path) {
         Double simpleComplexity = routeComplexity(path);
