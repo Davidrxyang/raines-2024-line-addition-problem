@@ -122,6 +122,10 @@ public class Network {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
