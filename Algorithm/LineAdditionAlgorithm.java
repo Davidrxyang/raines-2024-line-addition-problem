@@ -38,6 +38,7 @@ public class LineAdditionAlgorithm {
     String experimentName = "experiment";
     String evalConfig = "NetworkEvaluation/config";
     int totalEpochs = 0;
+    long startTime = 0;
 
     HashMap<String, String> config;
 
@@ -45,6 +46,8 @@ public class LineAdditionAlgorithm {
 
     public LineAdditionAlgorithm(Network network, DemandSet demandSet, String filename) {
         
+        startTime = System.currentTimeMillis();
+
         config = new HashMap<>();
         readConfig(filename);
 
@@ -86,6 +89,8 @@ public class LineAdditionAlgorithm {
             if (log) {
                 System.out.println("LOG ||");
                 System.out.println("LOG || EPOCH: " + epoch);
+                System.out.println("LOG ||");
+                System.out.println("LOG || elapsed time in minutes: " + (System.currentTimeMillis() - startTime) / 60000);
             }
 
             Efficiency worstEfficiency = E.poll();
@@ -646,7 +651,8 @@ public class LineAdditionAlgorithm {
         // Create a list of strings to store the results
         ArrayList<String> results = new ArrayList<>();
         results.add(bestLine.toString());
-        results.add("\nnetwork: " + G.getName());
+        results.add("\ntotal algorithm runtime in minutes: " + (System.currentTimeMillis() - startTime) / 60000);
+        results.add("network: " + G.getName());
         results.add("pMax: " + pMax);
         results.add("maxLength: " + maxLength);
         results.add("minLength: " + minLength);
