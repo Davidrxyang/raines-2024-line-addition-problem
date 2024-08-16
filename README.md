@@ -15,8 +15,11 @@ alternatively:
 
 (make sure permissions for the bash script are set properly)
 
-to run the main function:
+to run the algorithm:
 
-`java Algorithm.LineAdditionAlgorithm`
+`java Algorithm.Main CONFIG_FILE`
+
+where CONFIG_FILE is the path to the config parameter file. 
+
 
 

@@ -4,6 +4,6 @@ max-length:35
 min-length:10
 corridor-height:0.5
 demand-adjustment-weight:10
-target-efficiency:120
+target-efficiency:150
 logging:true
 evaluation-config:NetworkEvaluation/config
