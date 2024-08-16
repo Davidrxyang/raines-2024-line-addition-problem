@@ -17,8 +17,6 @@ alternatively:
 
 to run the main function:
 
-`java Network.Main`
+`java Algorithm.LineAdditionAlgorithm`
 
-or 
 
-`java Network.Main.java`
