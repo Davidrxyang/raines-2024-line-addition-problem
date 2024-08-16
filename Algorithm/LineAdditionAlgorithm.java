@@ -1,5 +1,12 @@
 package Algorithm;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -12,7 +19,6 @@ import NetworkEvaluation.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.io.File;
 
 public class LineAdditionAlgorithm {
     Network G;
@@ -29,6 +35,8 @@ public class LineAdditionAlgorithm {
     double corridorHeight = 0.3;
     double demandAdjustmentWeight = 10;
     double targetEfficiency = 120;
+    String experimentName = "experiment";
+    int totalEpochs = 0;
 
     HashMap<String, String> config;
 
@@ -52,6 +60,7 @@ public class LineAdditionAlgorithm {
 
         if (log) {
             System.out.println("LOG || CONFIGURATION: ");
+            System.out.println("LOG || experiment name: " + experimentName);
             System.out.println("LOG || network name: " + G.getName());
             System.out.println("LOG || pMax: " + pMax);
             System.out.println("LOG || max length: " + maxLength);
@@ -158,6 +167,7 @@ public class LineAdditionAlgorithm {
             updateEfficienciesAndDemand();
 
         }
+        totalEpochs = epoch;
         // find the best line
         findBestLine();
 
@@ -197,6 +207,9 @@ public class LineAdditionAlgorithm {
         }
         if (config.get("target-efficiency") != null) {
             targetEfficiency = Double.parseDouble(config.get("target-efficiency"));
+        }
+        if (config.get("experiment-name") != null) {
+            experimentName = config.get("experiment-name");
         }
         if (config.get("logging") != null) {
             if (config.get("logging").equals("true")) {
@@ -617,6 +630,70 @@ public class LineAdditionAlgorithm {
         return 1.0 / (1.0 + (demandAdjustmentWeight * distance));
     }
 
+    public void SaveResults() {
+
+        File directory = new File("Results");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        // Create the file with the specified experiment name
+        File file = new File("Results" + File.separator + experimentName + ".results");
+
+        // Create a list of strings to store the results
+        ArrayList<String> results = new ArrayList<>();
+        results.add(bestLine.toString());
+        results.add("\nnetwork: " + G.getName());
+        results.add("pMax: " + pMax);
+        results.add("maxLength: " + maxLength);
+        results.add("minLength: " + minLength);
+        results.add("corridorHeight: " + corridorHeight);
+        results.add("demandAdjustmentWeight: " + demandAdjustmentWeight);
+        results.add("targetEfficiency: " + targetEfficiency);
+        results.add("totalEpochs: " + totalEpochs);
+
+        StringBuilder evalConfig = new StringBuilder();
+
+        // Read the contents of the source file into a string
+        try (BufferedReader reader = new BufferedReader(new FileReader("NetworkEvaluation/config"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                evalConfig.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
+
+        StringBuilder constructionConfig = new StringBuilder();
+
+        // Read the contents of the source file into a string
+        try (BufferedReader reader = new BufferedReader(new FileReader("Algorithm/config"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                constructionConfig.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
+
+        results.add("\nevaluation config: \n" + evalConfig.toString());
+        results.add("construction config: \n" + constructionConfig.toString());
+
+        // write to output file
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            // Write each result into the file
+            for (String result : results) {
+                writer.write(result);
+                writer.newLine(); // Add a new line after each string
+            }
+            System.out.println("Results saved successfully to " + file.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+
+        
+    }
+
     // aux class
     class Point {
         double x, y;
@@ -657,5 +734,6 @@ public class LineAdditionAlgorithm {
         System.out.println("Algorithm complete");
         System.out.println("Best line: ");
         System.out.println(laa.getBestLine());
+        laa.SaveResults();
     }
 }
