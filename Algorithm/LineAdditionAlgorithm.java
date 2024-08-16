@@ -36,6 +36,7 @@ public class LineAdditionAlgorithm {
     double demandAdjustmentWeight = 10;
     double targetEfficiency = 120;
     String experimentName = "experiment";
+    String evalConfig = "NetworkEvaluation/config";
     int totalEpochs = 0;
 
     HashMap<String, String> config;
@@ -52,7 +53,7 @@ public class LineAdditionAlgorithm {
         networkCopy = new Network(G);
         unmodifiedDemand = demandSet;
         D = new DemandSet(demandSet);
-        eval = new Evaluation("NetworkEvaluation/config");
+        eval = new Evaluation(evalConfig);
 
         lineCandidates = new ArrayList<Line>();
         E = new PriorityQueue<>();
@@ -210,6 +211,9 @@ public class LineAdditionAlgorithm {
         }
         if (config.get("experiment-name") != null) {
             experimentName = config.get("experiment-name");
+        }
+        if (config.get("evaluation-config") != null) {
+            evalConfig = config.get("evaluation-config");
         }
         if (config.get("logging") != null) {
             if (config.get("logging").equals("true")) {
