@@ -12,6 +12,11 @@ If a field is not specified or does not exist in the user-created config file, t
 
 ## Configuration Fields
 
+### experiment-name
+
+type: string
+name of the experiment run
+
 ### p-max
 
 type: double
@@ -46,3 +51,8 @@ defines the threshold efficiency to terminate the algorithm
 
 type: boolean (true/false)
 toggles logging output functionality
+
+### evaluation-config
+
+type: string
+file name and path for evaluation config parameters file
