@@ -1,8 +1,9 @@
 experiment-name:test-run-1
 p-max:1.5
 max-length:35
-min-length:10
+min-length:15
 corridor-height:0.5
 demand-adjustment-weight:10
-target-efficiency:120
+target-efficiency:150
 logging:true
+evaluation-config:NetworkEvaluation/config

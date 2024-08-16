@@ -1,12 +1,13 @@
-[farragut north -> farragut west]
+[shaw-howard university -> braddock road]
 
+total algorithm runtime in minutes: 1
 network: WMATA
 pMax: 1.5
 maxLength: 35.0
-minLength: 10.0
+minLength: 1.0
 corridorHeight: 0.5
 demandAdjustmentWeight: 10.0
-targetEfficiency: 120.0
+targetEfficiency: 150.0
 totalEpochs: 2
 
 evaluation config: 
@@ -23,9 +24,10 @@ construction config:
 experiment-name:test-run-1
 p-max:1.5
 max-length:35
-min-length:10
+min-length:1
 corridor-height:0.5
 demand-adjustment-weight:10
-target-efficiency:120
+target-efficiency:150
 logging:true
+evaluation-config:NetworkEvaluation/config
 
