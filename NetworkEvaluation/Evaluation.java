@@ -183,6 +183,8 @@ public class Evaluation {
     
     /*
      * calculates the efficiency of a network based on route demand data
+     * 
+     * DEPRECATED
      */
 
     public Double networkEfficiency(Network network, DemandSet demandSet) {
