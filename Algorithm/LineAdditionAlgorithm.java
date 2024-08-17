@@ -253,6 +253,12 @@ public class LineAdditionAlgorithm {
         for (Line r : lineCandidates) {
             // System.out.println("efficiency: " + eval.lineEfficiency(networkCopy, r, unmodifiedDemand));
             // System.out.println("length: " + r.getLength());
+
+            // check if min length constraint is satisfied FIRST
+            if (r.getLength() < minLength) {
+                return false;
+            }
+            
             Double efficiency = eval.lineEfficiency(networkCopy, r, unmodifiedDemand);
             
             if (log) {
