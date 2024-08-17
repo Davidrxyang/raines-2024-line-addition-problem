@@ -22,7 +22,7 @@ public class Main {
         System.out.println("Loading trips data ...");
         d.loadTrips("Network/data.csv", wmata.WMATA);
         System.out.println("Running Line Addition Algorithm ...");
-        LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, "Algorithm/config");
+        LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, config);
         System.out.println("Algorithm complete");
         System.out.println("Best line: ");
         System.out.println(laa.getBestLine());
