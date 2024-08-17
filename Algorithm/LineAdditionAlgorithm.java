@@ -254,10 +254,14 @@ public class LineAdditionAlgorithm {
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
 
+            /*
+            
             // check if min length constraint is satisfied FIRST
             if (r.getLength() < minLength) {
                 continue;
             }
+                
+            */
             
             Double efficiency = eval.lineEfficiency(networkCopy, r, unmodifiedDemand);
             
