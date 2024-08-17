@@ -1,5 +1,12 @@
 package Algorithm;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -10,6 +17,8 @@ import ExistingAlgorithms.*;
 import Network.*;
 import NetworkEvaluation.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class LineAdditionAlgorithm {
     Network G;
@@ -26,27 +35,70 @@ public class LineAdditionAlgorithm {
     Line bestLine;
     double corridorHeight = 0.3;
     double demandAdjustmentWeight = 10;
+    double targetEfficiency = 120;
+    String experimentName = "experiment";
+    String evalConfig = "NetworkEvaluation/config";
+    int totalEpochs = 0;
+    long startTime = 0;
 
-    public LineAdditionAlgorithm(Network network, DemandSet demandSet, double targetEfficiency) {
+    HashMap<String, String> config;
+
+    boolean log = false;
+
+    public LineAdditionAlgorithm(Network network, DemandSet demandSet, String filename) {
+        
+        startTime = System.currentTimeMillis();
+
+        config = new HashMap<>();
+        readConfig(filename);
+
         bestLine = null;
         G = network;
         networkCopy = new Network(G);
         unmodifiedDemand = demandSet;
         D = new DemandSet(demandSet);
-        eval = new Evaluation("NetworkEvaluation/config");
+        eval = new Evaluation(evalConfig);
 
         lineCandidates = new ArrayList<Line>();
         E = new PriorityQueue<>();
         ArrayList<Line> relevantLines = new ArrayList<>();
 
+        if (log) {
+            System.out.println("LOG || CONFIGURATION: ");
+            System.out.println("LOG || experiment name: " + experimentName);
+            System.out.println("LOG || network name: " + G.getName());
+            System.out.println("LOG || pMax: " + pMax);
+            System.out.println("LOG || max length: " + maxLength);
+            System.out.println("LOG || min length: " + minLength);
+            System.out.println("LOG || corridor height: " + corridorHeight);
+            System.out.println("LOG || demand adjustment weight: " + demandAdjustmentWeight);
+            System.out.println("LOG || target efficiency: " + targetEfficiency);
+            System.out.println("LOG ||");
+            System.out.println("LOG || starting algorithm...");
+            System.out.println("LOG ||");
+        }
+
         createEfficiencyMatrix();
+
+
+        int epoch = 0;
 
         while (!targetEfficiencySatisfied(targetEfficiency) && E.size() > 0) {
 
-            // the worst efficiency is the one with the highest value
+            epoch++;
+
+            if (log) {
+                System.out.println("LOG ||");
+                System.out.println("LOG || EPOCH: " + epoch);
+                System.out.println("LOG ||");
+                System.out.println("LOG || elapsed time in minutes: " + (System.currentTimeMillis() - startTime) / 60000);
+            }
+
             Efficiency worstEfficiency = E.poll();
 
-            System.out.println(worstEfficiency + " " + worstEfficiency.efficiency);
+            if (log) {
+                System.out.println("LOG || epoch worst efficiency line: " + worstEfficiency + ", efficiency value: " + worstEfficiency.efficiency);
+            }
 
             Station v_i = worstEfficiency.origin;
             Station v_j = worstEfficiency.destination;
@@ -115,14 +167,66 @@ public class LineAdditionAlgorithm {
             relevantLines.addAll(addLines);
             removeNodePairsFromE(relevantLines);
             removeSubsetLines(relevantLines);
-            System.out.println("line candidates: " + lineCandidates + "\n");
+
+            if (log) {
+                System.out.println("LOG || epoch line candidates: " + lineCandidates);
+            }
 
             updateEfficiency();
 
         }
+        totalEpochs = epoch;
         // find the best line
         findBestLine();
 
+    }
+
+    // reads parameters from config file
+    public void readConfig(String filename) {
+        try {
+            Scanner scanner = new Scanner(new File(filename));
+            
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] parts = line.split(":");
+                config.put(parts[0], parts[1]);
+            }
+            scanner.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error reading config file");
+        }
+
+        // extract parameters from config
+        if (config.get("p-max") != null) {
+            pMax = Double.parseDouble(config.get("p-max"));
+        }
+        if (config.get("max-length") != null) {
+            maxLength = Double.parseDouble(config.get("max-length"));
+        }
+        if (config.get("min-length") != null) {
+            minLength = Double.parseDouble(config.get("min-length"));
+        }
+        if (config.get("corridor-height") != null) {
+            corridorHeight = Double.parseDouble(config.get("corridor-height"));
+        }
+        if (config.get("demand-adjustment-weight") != null) {
+            demandAdjustmentWeight = Double.parseDouble(config.get("demand-adjustment-weight"));
+        }
+        if (config.get("target-efficiency") != null) {
+            targetEfficiency = Double.parseDouble(config.get("target-efficiency"));
+        }
+        if (config.get("experiment-name") != null) {
+            experimentName = config.get("experiment-name");
+        }
+        if (config.get("evaluation-config") != null) {
+            evalConfig = config.get("evaluation-config");
+        }
+        if (config.get("logging") != null) {
+            if (config.get("logging").equals("true")) {
+                log = true;
+            }
+        }
     }
 
     public void removeSubsetLines(ArrayList<Line> relevantLines) {
@@ -149,12 +253,28 @@ public class LineAdditionAlgorithm {
 
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
-            // System.out.println("line: " + r);
             // System.out.println("efficiency: " + eval.lineEfficiency(networkCopy, r, unmodifiedDemand));
             // System.out.println("length: " + r.getLength());
-            if (eval.lineEfficiency(networkCopy, r, unmodifiedDemand) < targetEfficiency && r.getLength() > minLength) {
+
+            // check if min length constraint is satisfied FIRST
+            if (r.getLength() < minLength) {
+                return false;
+            }
+            
+            Double efficiency = eval.lineEfficiency(networkCopy, r, unmodifiedDemand);
+            
+            if (log) {
+                System.out.println("LOG || evaluating termination target efficiency satisfiability");
+                System.out.println("LOG || line: " + r);
+                System.out.println("LOG || efficiency: " + efficiency + ", length: " + r.getLength());
+            }
+
+            if (efficiency < targetEfficiency && r.getLength() > minLength) {
                 return true;
             }
+        }
+        if (log) {
+            System.out.println("LOG || target efficiency not satisfied");
         }
         return false;
     }
@@ -531,6 +651,71 @@ public class LineAdditionAlgorithm {
         return 1.0 / (1.0 + (demandAdjustmentWeight * distance));
     }
 
+    public void SaveResults() {
+
+        File directory = new File("Results");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        // Create the file with the specified experiment name
+        File file = new File("Results" + File.separator + experimentName + ".results");
+
+        // Create a list of strings to store the results
+        ArrayList<String> results = new ArrayList<>();
+        results.add(bestLine.toString());
+        results.add("\ntotal algorithm runtime in minutes: " + (System.currentTimeMillis() - startTime) / 60000);
+        results.add("network: " + G.getName());
+        results.add("pMax: " + pMax);
+        results.add("maxLength: " + maxLength);
+        results.add("minLength: " + minLength);
+        results.add("corridorHeight: " + corridorHeight);
+        results.add("demandAdjustmentWeight: " + demandAdjustmentWeight);
+        results.add("targetEfficiency: " + targetEfficiency);
+        results.add("totalEpochs: " + totalEpochs);
+
+        StringBuilder evalConfig = new StringBuilder();
+
+        // Read the contents of the source file into a string
+        try (BufferedReader reader = new BufferedReader(new FileReader("NetworkEvaluation/config"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                evalConfig.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
+
+        StringBuilder constructionConfig = new StringBuilder();
+
+        // Read the contents of the source file into a string
+        try (BufferedReader reader = new BufferedReader(new FileReader("Algorithm/config"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                constructionConfig.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
+
+        results.add("\nevaluation config: \n" + evalConfig.toString());
+        results.add("construction config: \n" + constructionConfig.toString());
+
+        // write to output file
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            // Write each result into the file
+            for (String result : results) {
+                writer.write(result);
+                writer.newLine(); // Add a new line after each string
+            }
+            System.out.println("Results saved successfully to " + file.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+
+        
+    }
+
     // aux class
     class Point {
         double x, y;
@@ -559,11 +744,18 @@ public class LineAdditionAlgorithm {
     }
 
     public static void main(String[] args) {
+        System.out.println("----- Line Addition Algorithm -----");
+        System.out.println("Loading WMATA network ...");
         WMATA wmata = new WMATA();
+        System.out.println("Loading demand set ...");
         DemandSet d = new DemandSet();
+        System.out.println("Loading trips data ...");
         d.loadTrips("Network/data.csv", wmata.WMATA);
-
-        LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, 120);
+        System.out.println("Running Line Addition Algorithm ...");
+        LineAdditionAlgorithm laa = new LineAdditionAlgorithm(wmata.WMATA, d, "Algorithm/config");
+        System.out.println("Algorithm complete");
+        System.out.println("Best line: ");
         System.out.println(laa.getBestLine());
+        laa.SaveResults();
     }
 }

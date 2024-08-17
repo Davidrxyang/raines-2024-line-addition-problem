@@ -15,10 +15,11 @@ alternatively:
 
 (make sure permissions for the bash script are set properly)
 
-to run the main function:
+to run the algorithm:
 
-`java Network.Main`
+`java Algorithm.Main CONFIG_FILE`
 
-or 
+where CONFIG_FILE is the path to the config parameter file. 
 
-`java Network.Main.java`
+
+
