@@ -312,14 +312,24 @@ public class LineAdditionAlgorithm {
     // modified demand is a representation of how "impoerant" the station is
     // in the network, so it is not necessary to update it everytime
     public void updateEfficiency() {
+        System.out.println("LOG || updating efficiency");
+        networkCopy = new Network(G);
+        for (int i = 0; i < lineCandidates.size(); i++) {
+            lineCandidates.get(i).name = "candidate r" + i;
+            networkCopy.addLine(lineCandidates.get(i));
+            networkCopy
+                    .addLine(lineCandidates.get(i).generateReverseDirection(lineCandidates.get(i).name + " reverse"));
+        }
+
         Efficiency worstEfficiency;
         do {
-            worstEfficiency = E.peek();
+            worstEfficiency = E.poll();
             PathPlanning pp = new AStar(networkCopy);
             Path p = pp.pathPlan(worstEfficiency.origin, worstEfficiency.destination);
             Double e = eval.routeEfficiency(p) * modifiedDemand.getDemand(p.origin, p.destination).trips;
             e -= modifiedDemand.getDemand(p.origin, p.destination).trips; // TODO: update in paper
             worstEfficiency.efficiency = e;
+            E.add(worstEfficiency);
         } while (worstEfficiency != E.peek());
     }
 

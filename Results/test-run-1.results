@@ -1,4 +1,4 @@
-[silver spring -> tenleytown-au, tenleytown-au -> cleveland park, cleveland park -> woodley park-zoo, woodley park-zoo -> dupont circle, dupont circle -> farragut north, farragut north -> mcpherson square, mcpherson square -> metro center, metro center -> gallery place-chinatown, gallery place-chinatown -> judiciary square, judiciary square -> union station, union station -> eastern market, eastern market -> potomac avenue, potomac avenue -> anacostia]
+[crystal city -> farragut west, farragut west -> farragut north, farragut north -> columbia heights, columbia heights -> georgia avenue-petworth, georgia avenue-petworth -> silver spring, silver spring -> medical center]
 
 total algorithm runtime in minutes: 1
 network: WMATA
@@ -8,7 +8,7 @@ minLength: 12.3
 corridorHeight: 0.5
 demandAdjustmentWeight: 10.0
 targetEfficiency: 150.0
-totalEpochs: 36
+totalEpochs: 12
 
 evaluation config: 
 cost-mode:state-average-DC
