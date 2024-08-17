@@ -1,7 +1,7 @@
 experiment-name:test-run-1
 p-max:1.5
 max-length:35
-min-length:15
+min-length:12.3
 corridor-height:0.5
 demand-adjustment-weight:10
 target-efficiency:150
