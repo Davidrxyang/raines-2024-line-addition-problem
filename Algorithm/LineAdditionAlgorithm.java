@@ -178,7 +178,7 @@ public class LineAdditionAlgorithm {
         totalEpochs = epoch;
         // find the best line
         findBestLine();
-
+        System.out.println("LOG || best line: " + bestLine);
     }
 
     // reads parameters from config file
@@ -253,12 +253,10 @@ public class LineAdditionAlgorithm {
 
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
-            // System.out.println("efficiency: " + eval.lineEfficiency(networkCopy, r, unmodifiedDemand));
-            // System.out.println("length: " + r.getLength());
 
             // check if min length constraint is satisfied FIRST
             if (r.getLength() < minLength) {
-                return false;
+                continue;
             }
             
             Double efficiency = eval.lineEfficiency(networkCopy, r, unmodifiedDemand);
@@ -270,6 +268,7 @@ public class LineAdditionAlgorithm {
             }
 
             if (efficiency < targetEfficiency && r.getLength() > minLength) {
+                System.out.println("LOG || target efficiency and length satisfied");
                 return true;
             }
         }
@@ -284,10 +283,14 @@ public class LineAdditionAlgorithm {
     }
 
     public void findBestLine() {
+        System.out.println("LOG || finding best line");
         // the best line is the line with the lowest number for efficiency
         // that satisfies line constraints
         Double bestEfficiency = Double.MAX_VALUE;
         for (Line line : lineCandidates) {
+            if (line.getLength () < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
+                continue;
+            }
             Double efficiency = eval.lineEfficiency(networkCopy, line, D);
             if (efficiency < bestEfficiency && line.getLength() > minLength && constraintsSatisfied(line) ) {
                 bestEfficiency = efficiency;
@@ -317,7 +320,6 @@ public class LineAdditionAlgorithm {
             Double e = eval.routeEfficiency(p) * modifiedDemand.getDemand(p.origin, p.destination).trips;
             e -= modifiedDemand.getDemand(p.origin, p.destination).trips; // TODO: update in paper
             worstEfficiency.efficiency = e;
-            System.out.println("updated efficiency: " + worstEfficiency);
         } while (worstEfficiency != E.peek());
     }
 
