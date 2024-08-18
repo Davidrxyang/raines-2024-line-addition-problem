@@ -665,7 +665,7 @@ public class LineAdditionAlgorithm {
         return 1.0 / (1.0 + (demandAdjustmentWeight * distance));
     }
 
-    public void SaveResults() {
+    public void SaveResults(ArrayList<String> additionalText) {
 
         File directory = new File("Results");
         if (!directory.exists()) {
@@ -714,6 +714,10 @@ public class LineAdditionAlgorithm {
         results.add("\nevaluation config: \n" + evalConfig.toString());
         results.add("construction config: \n" + constructionConfig.toString());
 
+        if (additionalText != null) {
+            results.addAll(additionalText);
+        }
+
         // write to output file
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -726,6 +730,8 @@ public class LineAdditionAlgorithm {
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
         }
+
+
 
         
     }
@@ -770,6 +776,6 @@ public class LineAdditionAlgorithm {
         System.out.println("Algorithm complete");
         System.out.println("Best line: ");
         System.out.println(laa.getBestLine());
-        laa.SaveResults();
+        laa.SaveResults(null);
     }
 }

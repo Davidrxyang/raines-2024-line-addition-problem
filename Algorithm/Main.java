@@ -1,6 +1,8 @@
 package Algorithm;
 
 import Network.*;
+import NetworkEvaluation.*;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -26,6 +28,25 @@ public class Main {
         System.out.println("Algorithm complete");
         System.out.println("Best line: ");
         System.out.println(laa.getBestLine());
-        laa.SaveResults();
+
+        // now we want to add the new line to the network and evaluate network efficiency 
+        System.out.println("Evaluating Old Network Efficiency ... ");
+        Evaluation eval = new Evaluation("NetworkEvaluation/config");
+        Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, d);
+
+        System.out.println("Adding New Line to Network ... ");
+
+        Line bestLine = laa.getBestLine();
+        bestLine.name = "New Line";
+        wmata.WMATA.addLine(bestLine);
+        wmata.WMATA.addLine(bestLine.generateReverseDirection("New Line Reverse"));
+
+        System.out.println("Evaluating New Network Efficiency ... ");
+        Double newNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, d);
+        ArrayList<String> additionalText = new ArrayList<>();
+        additionalText.add("\nOld network efficiency: " + oldNetworkEfficiency + "\n");
+        additionalText.add("New network efficiency: " + newNetworkEfficiency + "\n");
+
+        laa.SaveResults(additionalText);
     }
 }
