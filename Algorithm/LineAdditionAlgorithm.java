@@ -25,6 +25,7 @@ public class LineAdditionAlgorithm {
     Network networkCopy; // copy of the network with the line candidates added
     DemandSet unmodifiedDemand;
     DemandSet D;
+    DemandSet modifiedDemand;
     PriorityQueue<Efficiency> E;
     ArrayList<Line> lineCandidates;
     Evaluation eval;
@@ -77,13 +78,13 @@ public class LineAdditionAlgorithm {
             System.out.println("LOG ||");
         }
 
-        updateEfficienciesAndDemand();
+        createEfficiencyMatrix();
+
 
         int epoch = 0;
 
         while (!targetEfficiencySatisfied(targetEfficiency) && E.size() > 0) {
 
-            // the worst efficiency is the one with the highest value
             epoch++;
 
             if (log) {
@@ -160,23 +161,24 @@ public class LineAdditionAlgorithm {
                 r = new Line();
                 constructLine(v_i, v_j, network.stationList, r, corridorHeight);
                 lineCandidates.add(r);
+                relevantLines.add(r);
             }
 
             relevantLines.addAll(addLines);
-            removeNodePairsFromD(relevantLines);
+            removeNodePairsFromE(relevantLines);
             removeSubsetLines(relevantLines);
 
             if (log) {
                 System.out.println("LOG || epoch line candidates: " + lineCandidates);
             }
 
-            updateEfficienciesAndDemand();
+            updateEfficiency();
 
         }
         totalEpochs = epoch;
         // find the best line
         findBestLine();
-
+        System.out.println("LOG || best line: " + bestLine);
     }
 
     // reads parameters from config file
@@ -251,14 +253,12 @@ public class LineAdditionAlgorithm {
 
     public boolean targetEfficiencySatisfied(Double targetEfficiency) {
         for (Line r : lineCandidates) {
-            // System.out.println("efficiency: " + eval.lineEfficiency(networkCopy, r, unmodifiedDemand));
-            // System.out.println("length: " + r.getLength());
 
             /*
             
             // check if min length constraint is satisfied FIRST
             if (r.getLength() < minLength) {
-                return false;
+                continue;
             }
                 
             */
@@ -272,6 +272,7 @@ public class LineAdditionAlgorithm {
             }
 
             if (efficiency < targetEfficiency && r.getLength() > minLength) {
+                System.out.println("LOG || target efficiency and length satisfied");
                 return true;
             }
         }
@@ -286,10 +287,14 @@ public class LineAdditionAlgorithm {
     }
 
     public void findBestLine() {
+        System.out.println("LOG || finding best line");
         // the best line is the line with the lowest number for efficiency
         // that satisfies line constraints
         Double bestEfficiency = Double.MAX_VALUE;
         for (Line line : lineCandidates) {
+            if (line.getLength () < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
+                continue;
+            }
             Double efficiency = eval.lineEfficiency(networkCopy, line, D);
             if (efficiency < bestEfficiency && line.getLength() > minLength && constraintsSatisfied(line) ) {
                 bestEfficiency = efficiency;
@@ -307,9 +312,33 @@ public class LineAdditionAlgorithm {
     // introduce some inaccuracies in the calculation. The current comprehensive
     // (but slow) approach exists for completeness sake.
 
-    public void updateEfficienciesAndDemand() {
-        E = new PriorityQueue<>(); // reset E
-        DemandSet modifiedDemand = new DemandSet();
+    // note here thar demand is unchanged, this is because
+    // modified demand is a representation of how "impoerant" the station is
+    // in the network, so it is not necessary to update it everytime
+    public void updateEfficiency() {
+        System.out.println("LOG || updating efficiency");
+        networkCopy = new Network(G);
+        for (int i = 0; i < lineCandidates.size(); i++) {
+            lineCandidates.get(i).name = "candidate r" + i;
+            networkCopy.addLine(lineCandidates.get(i));
+            networkCopy
+                    .addLine(lineCandidates.get(i).generateReverseDirection(lineCandidates.get(i).name + " reverse"));
+        }
+
+        Efficiency worstEfficiency;
+        do {
+            worstEfficiency = E.poll();
+            PathPlanning pp = new AStar(networkCopy);
+            Path p = pp.pathPlan(worstEfficiency.origin, worstEfficiency.destination);
+            Double e = eval.routeEfficiency(p) * modifiedDemand.getDemand(p.origin, p.destination).trips;
+            e -= modifiedDemand.getDemand(p.origin, p.destination).trips; // TODO: update in paper
+            worstEfficiency.efficiency = e;
+            E.add(worstEfficiency);
+        } while (worstEfficiency != E.peek());
+    }
+
+    public void createEfficiencyMatrix() {
+        modifiedDemand = new DemandSet();
         ArrayList<Path> paths = new ArrayList<>();
 
         // make a copy of the existing network and add the line candidates to it
@@ -324,15 +353,6 @@ public class LineAdditionAlgorithm {
         // using astar for now: least transfers does not make sense for WMATA
         PathPlanning pp = new AStar(networkCopy);
 
-        // for (Station a : G.stationList) {
-        // for (Station b : G.stationList) {
-        // if (a != b) {
-        // paths.add(pp.pathPlan(a, b));
-        // }
-
-        // }
-        // }
-
         // temporary fix for line tracking in station
         for (Station s : G.stationList) {
             ArrayList<Line> toRemove = new ArrayList<>();
@@ -346,8 +366,6 @@ public class LineAdditionAlgorithm {
             }
         }
 
-        // use demandset instead of the entire station list to keep track of removed
-        // stations
         for (Demand d : D.trips) {
             if (d.start != d.end) {
                 paths.add(pp.pathPlan(d.start, d.end));
@@ -374,20 +392,20 @@ public class LineAdditionAlgorithm {
         }
     }
 
-    public void removeNodePairsFromD(ArrayList<Line> lines) {
-        ArrayList<Demand> toRemove = new ArrayList<>();
+    public void removeNodePairsFromE(ArrayList<Line> lines) {
+        ArrayList<Efficiency> toRemove = new ArrayList<>();
         for (Line line : lines) {
             if (line != null) {
-                for (Demand d : D.trips) {
-                    if (line.stations.contains(d.start) && line.stations.contains(d.end)) {
+                for (Efficiency e : E) {
+                    if (line.stations.contains(e.origin) && line.stations.contains(e.destination)) {
                         // to avoid concurrent modification
-                        toRemove.add(d);
+                        toRemove.add(e);
                     }
                 }
             }
         }
-        for (Demand d : toRemove) {
-            D.trips.remove(d);
+        for (Efficiency e : toRemove) {
+            E.remove(e);
         }
     }
 
