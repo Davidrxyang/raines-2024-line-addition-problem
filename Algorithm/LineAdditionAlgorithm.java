@@ -299,6 +299,7 @@ public class LineAdditionAlgorithm {
             System.out.println("LOG || evaluating line " + i + " of " + lineCandidates.size());
             if (line.getLength() < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
                 System.out.println("LOG || line constraints not satisfied");
+                i++;
                 continue;
             }
             Double efficiency = eval.lineEfficiency(networkCopy, line, D);
