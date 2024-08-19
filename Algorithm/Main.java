@@ -31,7 +31,7 @@ public class Main {
 
         // now we want to add the new line to the network and evaluate network efficiency 
         System.out.println("Evaluating Old Network Efficiency ... ");
-        Evaluation eval = new Evaluation("NetworkEvaluation/config");
+        Evaluation eval = new Evaluation(laa.getEvalConfig());
         Double oldNetworkEfficiency = eval.networkEfficiency(wmata.WMATA, d);
 
         System.out.println("Adding New Line to Network ... ");

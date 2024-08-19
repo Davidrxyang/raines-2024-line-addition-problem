@@ -181,6 +181,10 @@ public class LineAdditionAlgorithm {
         System.out.println("LOG || best line: " + bestLine);
     }
 
+    public String getEvalConfig() {
+        return evalConfig;
+    }
+
     // reads parameters from config file
     public void readConfig(String filename) {
         try {
