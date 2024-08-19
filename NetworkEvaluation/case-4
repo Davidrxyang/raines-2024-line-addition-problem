@@ -1,5 +1,6 @@
 cost-mode:state-average-DC
 line-regression:log-log
+regression:log-log
 transfer-weight:1
 station-weight:-0.75
 distance-weight:0.5
