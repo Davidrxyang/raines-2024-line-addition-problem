@@ -1,0 +1,41 @@
+[farragut west -> foggy bottom, foggy bottom -> rosslyn, rosslyn -> east falls church, east falls church -> west falls church, west falls church -> tysons corner, tysons corner -> greensboro, greensboro -> vienna]
+
+total algorithm runtime in minutes: 7
+network: WMATA
+pMax: 1.5
+maxLength: 35.0
+minLength: 10.0
+corridorHeight: 0.5
+demandAdjustmentWeight: 10.0
+targetEfficiency: 175.0
+totalEpochs: 26
+
+evaluation config: 
+cost-mode:state-average-DC
+line-regression:log-log
+regression:log-log
+transfer-weight:-1
+station-weight:-0.75
+distance-weight:1
+adjustment-weight:1
+
+construction config: 
+experiment-name:test-run-1
+p-max:1.5
+max-length:35
+min-length:12.3
+corridor-height:0.5
+demand-adjustment-weight:10
+target-efficiency:150
+logging:true
+evaluation-config:NetworkEvaluation/config
+
+
+Old network efficiency: 217.37074433876535
+
+New network efficiency: 218.90776077119398
+
+Improvement: 1.5370164324286293
+
+Percentage improvement: 0.7070944331097465%
+

@@ -1,0 +1,41 @@
+[eastern market -> union station, union station -> judiciary square, judiciary square -> gallery place-chinatown, gallery place-chinatown -> metro center, metro center -> u street-cardozo, u street-cardozo -> columbia heights, columbia heights -> silver spring]
+
+total algorithm runtime in minutes: 15
+network: WMATA
+pMax: 1.5
+maxLength: 35.0
+minLength: 8.2
+corridorHeight: 0.5
+demandAdjustmentWeight: 10.0
+targetEfficiency: 150.0
+totalEpochs: 27
+
+evaluation config: 
+cost-mode:state-average-DC
+line-regression:log-log
+regression:log-log
+transfer-weight:-1
+station-weight:-0.75
+distance-weight:1
+adjustment-weight:1
+
+construction config: 
+experiment-name:test-run-1
+p-max:1.5
+max-length:35
+min-length:12.3
+corridor-height:0.5
+demand-adjustment-weight:10
+target-efficiency:150
+logging:true
+evaluation-config:NetworkEvaluation/config
+
+
+Old network efficiency: 217.37074433876535
+
+New network efficiency: 216.57277364458218
+
+Improvement: -0.7979706941831637
+
+Percentage improvement: -0.3671012383062699%
+

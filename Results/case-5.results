@@ -1,0 +1,41 @@
+[silver spring -> georgia avenue-petworth, georgia avenue-petworth -> columbia heights, columbia heights -> farragut north, farragut north -> farragut west, farragut west -> mcpherson square, mcpherson square -> metro center, metro center -> gallery place-chinatown, gallery place-chinatown -> judiciary square, judiciary square -> union station, union station -> capitol south, capitol south -> navy yard]
+
+total algorithm runtime in minutes: 2
+network: WMATA
+pMax: 2.0
+maxLength: 35.0
+minLength: 8.2
+corridorHeight: 0.5
+demandAdjustmentWeight: 10.0
+targetEfficiency: 150.0
+totalEpochs: 8
+
+evaluation config: 
+cost-mode:state-average-DC
+line-regression:log-log
+regression:log-log
+transfer-weight:-1
+station-weight:-0.75
+distance-weight:1
+adjustment-weight:1
+
+construction config: 
+experiment-name:test-run-1
+p-max:1.5
+max-length:35
+min-length:12.3
+corridor-height:0.5
+demand-adjustment-weight:10
+target-efficiency:150
+logging:true
+evaluation-config:NetworkEvaluation/config
+
+
+Old network efficiency: 217.37074433876535
+
+New network efficiency: 215.09252871024452
+
+Improvement: -2.278215628520826
+
+Percentage improvement: -1.0480783122177195%
+
