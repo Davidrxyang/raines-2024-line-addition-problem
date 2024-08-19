@@ -14,12 +14,16 @@ public class Efficiency implements Comparable<Efficiency>{
     }
 
     public String toString() {
-        return (new StringBuilder()).append(origin.name).append(" -> ").append(destination.name).toString();
+        return (new StringBuilder()).append(origin.name).append(" -> ").append(destination.name).append(": ").append(efficiency).toString();
     }
 
     // negative to invert the ordering for priority queue
     @Override
     public int compareTo(Efficiency o) {
         return -this.efficiency.compareTo(o.efficiency);
+    }
+
+    public boolean equals(Efficiency e) {
+        return this.origin.equals(e.origin) && this.destination.equals(e.destination);
     }
 }

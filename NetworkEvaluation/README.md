@@ -22,7 +22,7 @@ Route complexity is measured in arbitrary units.
 
 ### Network Efficiency Evaluation
 
-The overall efficiency of a network is calculated as the sum of the complexities of all possible routes within the network weighed by their route ridership (based on empirical ridership data), multiplied by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
+The overall efficiency of a network is calculated as the sum of the efficiencies of all possible routes within the network weighed by their route ridership (based on empirical ridership data), multiplied by the total estimated construction cost of the network. Total network efficiency is measured in units per dollar.
 
 ### Line Efficiency Evaluation
 
@@ -51,45 +51,6 @@ considers all cost data in the calculation
 `cost-mode:state-average-DC`
 
 considers only cost data from the specified state in the calculation. NOTE: replace "DC" with any state abbreviation within the dataset.
-
-### Evaluation mode
-
-defines the logic behind evaluating route complexity
-
-options: 
-
-`eval-mode:standard`
-
-simply considers the distance covered, amount of transfers, and amount of station stops along the route.
-
-mathematical formula for adjusted route complexity:
-
-Standardcomplexity = (Transfers * c1) + (Stations * c2) + (Distance * c3)
-
-where c1, c2, c3 are specified parameters, details below.
-
-route complexity is measured in arbitrary units, generally representing the complexity of a route. 
-
-`eval-mode:adjusted`
-
-considers the above metrics, adjusted accounting for the direct geographical distance between the origin and destination station and a weight coefficient. 
-
-mathematical formula for adjusted route complexity:
-
-FinalComplexity = (StandardComplexity) * (StandardComplexity / (c1 * GeographicalDistance))
-
-where c1 is a specified parameter
-
-Logic: adjusted evaluation mode adjusts route complexity by comparing the public transit route with the direct geographical "route" between the origin and destination. For two origin-destination pairs with the same geographical separation, if one origin-destination pair's public transit route has a higher complexity than the other, then this complexity should be further "penalized."
-
-### Line Evaluation Mode
-
-defines evaluation logic behind route complexity, but for line efficiency calculations. Works the same way. 
-
-`line-eval-mode:standard`
-
-`line-eval-mode:adjusted`
-
 
 ### Weights
 

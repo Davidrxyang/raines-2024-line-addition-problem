@@ -1,0 +1,9 @@
+experiment-name:case-2
+logging:true
+evaluation-config:NetworkEvaluation/case-2
+p-max:1.5
+max-length:35
+min-length:10
+corridor-height:0.5
+demand-adjustment-weight:10
+target-efficiency:175
