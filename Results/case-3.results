@@ -1,0 +1,41 @@
+[pentagon -> farragut west, farragut west -> farragut north, farragut north -> dupont circle, dupont circle -> woodley park-zoo, woodley park-zoo -> cleveland park, cleveland park -> van ness-udc, van ness-udc -> silver spring]
+
+total algorithm runtime in minutes: 3
+network: WMATA
+pMax: 1.5
+maxLength: 35.0
+minLength: 8.2
+corridorHeight: 1.0
+demandAdjustmentWeight: 10.0
+targetEfficiency: 150.0
+totalEpochs: 10
+
+evaluation config: 
+cost-mode:state-average-DC
+line-regression:log-log
+regression:log-log
+transfer-weight:-1
+station-weight:-0.75
+distance-weight:1
+adjustment-weight:1
+
+construction config: 
+experiment-name:test-run-1
+p-max:1.5
+max-length:35
+min-length:12.3
+corridor-height:0.5
+demand-adjustment-weight:10
+target-efficiency:150
+logging:true
+evaluation-config:NetworkEvaluation/config
+
+
+Old network efficiency: 217.37074433876535
+
+New network efficiency: 217.87379478553714
+
+Improvement: 0.5030504467717947
+
+Percentage improvement: 0.2314250927842464%
+

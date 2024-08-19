@@ -1,0 +1,41 @@
+[pentagon -> farragut west, farragut west -> farragut north, farragut north -> columbia heights, columbia heights -> georgia avenue-petworth, georgia avenue-petworth -> silver spring]
+
+total algorithm runtime in minutes: 2
+network: WMATA
+pMax: 1.5
+maxLength: 35.0
+minLength: 8.2
+corridorHeight: 0.5
+demandAdjustmentWeight: 10.0
+targetEfficiency: 175.0
+totalEpochs: 12
+
+evaluation config: 
+cost-mode:state-average-DC
+line-regression:log-log
+regression:log-log
+transfer-weight:-1
+station-weight:-0.75
+distance-weight:1
+adjustment-weight:1
+
+construction config: 
+experiment-name:test-run-1
+p-max:1.5
+max-length:35
+min-length:12.3
+corridor-height:0.5
+demand-adjustment-weight:10
+target-efficiency:150
+logging:true
+evaluation-config:NetworkEvaluation/config
+
+
+Old network efficiency: 218.9208053587901
+
+New network efficiency: 220.26122765368416
+
+Improvement: 1.3404222948940685
+
+Percentage improvement: 0.6122863894535951%
+
