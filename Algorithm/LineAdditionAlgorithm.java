@@ -294,7 +294,7 @@ public class LineAdditionAlgorithm {
         // that satisfies line constraints
         Double bestEfficiency = Double.MAX_VALUE;
         for (Line line : lineCandidates) {
-            if (line.getLength () < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
+            if (line.getLength() < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
                 continue;
             }
             Double efficiency = eval.lineEfficiency(networkCopy, line, D);
