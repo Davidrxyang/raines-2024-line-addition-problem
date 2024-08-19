@@ -6,4 +6,4 @@ max-length:35
 min-length:8.2
 corridor-height:0.5
 demand-adjustment-weight:10
-target-efficiency:150
+target-efficiency:175

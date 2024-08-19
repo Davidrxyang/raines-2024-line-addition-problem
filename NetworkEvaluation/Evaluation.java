@@ -190,7 +190,7 @@ public class Evaluation {
     public Double networkEfficiency(Network network, DemandSet demandSet) {
 
         Double networkEfficiency = 0.0;
-        PathPlanning pp = new LeastTransfers(network);
+        PathPlanning pp = new AStar(network);
         Double tripsEfficiency = 0.0;
 
         // for each trip in the demand set, calculate the efficiency of that route/trip

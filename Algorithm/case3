@@ -3,7 +3,7 @@ logging:true
 evaluation-config:NetworkEvaluation/case-3
 p-max:1.5
 max-length:35
-min-length:10
-corridor-height:0.5
+min-length:8.2
+corridor-height:1.0
 demand-adjustment-weight:10
-target-efficiency:175
+target-efficiency:150

@@ -181,6 +181,10 @@ public class LineAdditionAlgorithm {
         System.out.println("LOG || best line: " + bestLine);
     }
 
+    public String getEvalConfig() {
+        return evalConfig;
+    }
+
     // reads parameters from config file
     public void readConfig(String filename) {
         try {
@@ -289,8 +293,13 @@ public class LineAdditionAlgorithm {
         // the best line is the line with the lowest number for efficiency
         // that satisfies line constraints
         Double bestEfficiency = Double.MAX_VALUE;
+
+        int i = 1;
         for (Line line : lineCandidates) {
-            if (line.getLength () < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
+            System.out.println("LOG || evaluating line " + i + " of " + lineCandidates.size());
+            if (line.getLength() < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
+                System.out.println("LOG || line constraints not satisfied");
+                i++;
                 continue;
             }
             Double efficiency = eval.lineEfficiency(networkCopy, line, D);
@@ -298,6 +307,7 @@ public class LineAdditionAlgorithm {
                 bestEfficiency = efficiency;
                 bestLine = line;
             }
+            i++;
         }
     }
 
@@ -311,7 +321,7 @@ public class LineAdditionAlgorithm {
     // (but slow) approach exists for completeness sake.
 
     // note here thar demand is unchanged, this is because
-    // modified demand is a representation of how "impoerant" the station is
+    // modified demand is a representation of how "important" the station is
     // in the network, so it is not necessary to update it everytime
     public void updateEfficiency() {
         System.out.println("LOG || updating efficiency");
