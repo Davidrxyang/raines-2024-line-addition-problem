@@ -46,6 +46,8 @@ public class Main {
         ArrayList<String> additionalText = new ArrayList<>();
         additionalText.add("\nOld network efficiency: " + oldNetworkEfficiency + "\n");
         additionalText.add("New network efficiency: " + newNetworkEfficiency + "\n");
+        additionalText.add("Improvement: " + (newNetworkEfficiency - oldNetworkEfficiency) + "\n");
+        additionalText.add("Percentage improvement: " + ((newNetworkEfficiency - oldNetworkEfficiency) / oldNetworkEfficiency) * 100 + "%\n");
 
         laa.SaveResults(additionalText);
     }
