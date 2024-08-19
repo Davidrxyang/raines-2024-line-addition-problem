@@ -293,8 +293,12 @@ public class LineAdditionAlgorithm {
         // the best line is the line with the lowest number for efficiency
         // that satisfies line constraints
         Double bestEfficiency = Double.MAX_VALUE;
+
+        int i = 1;
         for (Line line : lineCandidates) {
+            System.out.println("LOG || evaluating line " + i + " of " + lineCandidates.size());
             if (line.getLength() < minLength || line.getLength() > maxLength || !constraintsSatisfied(line)) {
+                System.out.println("LOG || line constraints not satisfied");
                 continue;
             }
             Double efficiency = eval.lineEfficiency(networkCopy, line, D);
@@ -302,6 +306,7 @@ public class LineAdditionAlgorithm {
                 bestEfficiency = efficiency;
                 bestLine = line;
             }
+            i++;
         }
     }
 
