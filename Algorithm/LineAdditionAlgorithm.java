@@ -315,7 +315,7 @@ public class LineAdditionAlgorithm {
     // (but slow) approach exists for completeness sake.
 
     // note here thar demand is unchanged, this is because
-    // modified demand is a representation of how "impoerant" the station is
+    // modified demand is a representation of how "important" the station is
     // in the network, so it is not necessary to update it everytime
     public void updateEfficiency() {
         System.out.println("LOG || updating efficiency");
